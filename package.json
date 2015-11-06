@@ -1,0 +1,40 @@
+{
+  "name": "mapper",
+  "version": "0.0.1",
+  "description": "a pure javascript map editor for game making",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "gulp test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sleep2death/mapper.git"
+  },
+  "keywords": [
+    "map-editor"
+  ],
+  "author": "aspirin2d@outlook.com",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/sleep2death/mapper/issues"
+  },
+  "homepage": "https://github.com/sleep2death/mapper#readme",
+  "dependencies": {
+    "material-ui": "^0.13.1",
+    "react": "^0.14.2",
+    "react-addons-create-fragment": "^0.14.2",
+    "react-addons-pure-render-mixin": "^0.14.2",
+    "react-addons-transition-group": "^0.14.2",
+    "react-addons-update": "^0.14.2",
+    "react-dom": "^0.14.2",
+    "react-router": "^0.13.5",
+    "react-tap-event-plugin": "^0.2.1"
+  },
+  "devDependencies": {
+    "browserify": "^12.0.1",
+    "gulp": "^3.9.0",
+    "reactify": "^1.1.1",
+    "resolve": "^1.1.6",
+    "vinyl-source-stream": "^1.1.0"
+  }
+}
