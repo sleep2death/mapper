@@ -85,7 +85,7 @@ var EventListener = {
 
 module.exports = EventListener;
 }).call(this,require('_process'))
-},{"./emptyFunction":8,"_process":54}],2:[function(require,module,exports){
+},{"./emptyFunction":8,"_process":168}],2:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -425,7 +425,7 @@ function createNodesFromMarkup(markup, handleScript) {
 
 module.exports = createNodesFromMarkup;
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":2,"./createArrayFromMixed":6,"./getMarkupWrap":12,"./invariant":16,"_process":54}],8:[function(require,module,exports){
+},{"./ExecutionEnvironment":2,"./createArrayFromMixed":6,"./getMarkupWrap":12,"./invariant":16,"_process":168}],8:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -487,7 +487,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = emptyObject;
 }).call(this,require('_process'))
-},{"_process":54}],10:[function(require,module,exports){
+},{"_process":168}],10:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -646,7 +646,7 @@ function getMarkupWrap(nodeName) {
 
 module.exports = getMarkupWrap;
 }).call(this,require('_process'))
-},{"./ExecutionEnvironment":2,"./invariant":16,"_process":54}],13:[function(require,module,exports){
+},{"./ExecutionEnvironment":2,"./invariant":16,"_process":168}],13:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -811,7 +811,7 @@ var invariant = function (condition, format, a, b, c, d, e, f) {
 
 module.exports = invariant;
 }).call(this,require('_process'))
-},{"_process":54}],17:[function(require,module,exports){
+},{"_process":168}],17:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -912,7 +912,7 @@ var keyMirror = function (obj) {
 
 module.exports = keyMirror;
 }).call(this,require('_process'))
-},{"./invariant":16,"_process":54}],20:[function(require,module,exports){
+},{"./invariant":16,"_process":168}],20:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -1197,7 +1197,7 @@ function toArray(obj) {
 
 module.exports = toArray;
 }).call(this,require('_process'))
-},{"./invariant":16,"_process":54}],27:[function(require,module,exports){
+},{"./invariant":16,"_process":168}],27:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -1257,7 +1257,4519 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = warning;
 }).call(this,require('_process'))
-},{"./emptyFunction":8,"_process":54}],28:[function(require,module,exports){
+},{"./emptyFunction":8,"_process":168}],28:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var Typography = require('./styles/typography');
+var IconButton = require('./icon-button');
+var NavigationMenu = require('./svg-icons/navigation/menu');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+var Paper = require('./paper');
+
+var AppBar = React.createClass({
+  displayName: 'AppBar',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    onLeftIconButtonTouchTap: React.PropTypes.func,
+    onRightIconButtonTouchTap: React.PropTypes.func,
+    showMenuIconButton: React.PropTypes.bool,
+    style: React.PropTypes.object,
+    iconClassNameLeft: React.PropTypes.string,
+    iconClassNameRight: React.PropTypes.string,
+    iconElementLeft: React.PropTypes.element,
+    iconElementRight: React.PropTypes.element,
+    iconStyleRight: React.PropTypes.object,
+    title: React.PropTypes.node,
+    zDepth: React.PropTypes.number
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      showMenuIconButton: true,
+      title: '',
+      zDepth: 1
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    if (process.env.NODE_ENV !== 'production') {
+      if (this.props.iconElementLeft && this.props.iconClassNameLeft) {
+        console.warn('Properties iconClassNameLeft and iconElementLeft cannot be simultaneously ' + 'defined. Please use one or the other.');
+      }
+
+      if (this.props.iconElementRight && this.props.iconClassNameRight) {
+        console.warn('Properties iconClassNameRight and iconElementRight cannot be simultaneously ' + 'defined. Please use one or the other.');
+      }
+    }
+  },
+
+  getStyles: function getStyles() {
+    var spacing = this.state.muiTheme.rawTheme.spacing;
+    var themeVariables = this.state.muiTheme.appBar;
+    var iconButtonSize = this.state.muiTheme.button.iconButtonSize;
+    var flatButtonSize = 36;
+    var styles = {
+      root: {
+        zIndex: 5,
+        width: '100%',
+        display: '-webkit-box; display: -webkit-flex; display: flex',
+        minHeight: themeVariables.height,
+        backgroundColor: themeVariables.color,
+        paddingLeft: spacing.desktopGutter,
+        paddingRight: spacing.desktopGutter
+      },
+      title: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        margin: 0,
+        paddingTop: 0,
+        letterSpacing: 0,
+        fontSize: 24,
+        fontWeight: Typography.fontWeightNormal,
+        color: themeVariables.textColor,
+        lineHeight: themeVariables.height + 'px'
+      },
+      mainElement: {
+        boxFlex: 1,
+        flex: '1'
+      },
+      iconButton: {
+        style: {
+          marginTop: (themeVariables.height - iconButtonSize) / 2,
+          marginRight: 8,
+          marginLeft: -16
+        },
+        iconStyle: {
+          fill: themeVariables.textColor,
+          color: themeVariables.textColor
+        }
+      },
+      flatButton: {
+        color: themeVariables.textColor,
+        backgroundColor: 'transparent',
+        marginTop: (iconButtonSize - flatButtonSize) / 2 + 2
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var title = _props.title;
+    var iconStyleRight = _props.iconStyleRight;
+    var showMenuIconButton = _props.showMenuIconButton;
+    var iconElementLeft = _props.iconElementLeft;
+    var iconElementRight = _props.iconElementRight;
+    var iconClassNameLeft = _props.iconClassNameLeft;
+    var iconClassNameRight = _props.iconClassNameRight;
+    var className = _props.className;
+    var style = _props.style;
+    var zDepth = _props.zDepth;
+    var children = _props.children;
+
+    var other = _objectWithoutProperties(_props, ['title', 'iconStyleRight', 'showMenuIconButton', 'iconElementLeft', 'iconElementRight', 'iconClassNameLeft', 'iconClassNameRight', 'className', 'style', 'zDepth', 'children']);
+
+    var menuElementLeft = undefined;
+    var menuElementRight = undefined;
+    var styles = this.getStyles();
+    var iconRightStyle = this.mergeStyles(styles.iconButton.style, {
+      marginRight: -16,
+      marginLeft: 'auto'
+    }, iconStyleRight);
+    var titleElement = undefined;
+
+    if (title) {
+      // If the title is a string, wrap in an h1 tag.
+      // If not, just use it as a node.
+      titleElement = typeof title === 'string' || title instanceof String ? React.createElement(
+        'h1',
+        { style: this.prepareStyles(styles.title, styles.mainElement) },
+        title
+      ) : React.createElement(
+        'div',
+        { style: this.prepareStyles(styles.mainElement) },
+        title
+      );
+    }
+
+    if (showMenuIconButton) {
+      if (iconElementLeft) {
+        switch (iconElementLeft.type.displayName) {
+          case 'IconButton':
+            iconElementLeft = React.cloneElement(iconElementLeft, {
+              iconStyle: this.mergeStyles(styles.iconButton.iconStyle)
+            });
+            break;
+        }
+
+        menuElementLeft = React.createElement(
+          'div',
+          { style: this.prepareStyles(styles.iconButton.style) },
+          iconElementLeft
+        );
+      } else {
+        var child = iconClassNameLeft ? '' : React.createElement(NavigationMenu, { style: this.mergeStyles(styles.iconButton.iconStyle) });
+        menuElementLeft = React.createElement(
+          IconButton,
+          {
+            style: this.mergeStyles(styles.iconButton.style),
+            iconStyle: this.mergeStyles(styles.iconButton.iconStyle),
+            iconClassName: iconClassNameLeft,
+            onTouchTap: this._onLeftIconButtonTouchTap },
+          child
+        );
+      }
+    }
+
+    if (iconElementRight) {
+      switch (iconElementRight.type.displayName) {
+        case 'IconMenu':
+        case 'IconButton':
+          iconElementRight = React.cloneElement(iconElementRight, {
+            iconStyle: this.mergeStyles(styles.iconButton.iconStyle)
+          });
+          break;
+
+        case 'FlatButton':
+          iconElementRight = React.cloneElement(iconElementRight, {
+            style: this.mergeStyles(styles.flatButton, iconElementRight.props.style)
+          });
+          break;
+      }
+
+      menuElementRight = React.createElement(
+        'div',
+        { style: this.prepareStyles(iconRightStyle) },
+        iconElementRight
+      );
+    } else if (iconClassNameRight) {
+      menuElementRight = React.createElement(IconButton, {
+        style: iconRightStyle,
+        iconStyle: this.mergeStyles(styles.iconButton.iconStyle),
+        iconClassName: iconClassNameRight,
+        onTouchTap: this._onRightIconButtonTouchTap });
+    }
+
+    return React.createElement(
+      Paper,
+      _extends({}, other, {
+        rounded: false,
+        className: className,
+        style: this.mergeStyles(styles.root, style),
+        zDepth: zDepth }),
+      menuElementLeft,
+      titleElement,
+      menuElementRight,
+      children
+    );
+  },
+
+  _onLeftIconButtonTouchTap: function _onLeftIconButtonTouchTap(event) {
+    if (this.props.onLeftIconButtonTouchTap) {
+      this.props.onLeftIconButtonTouchTap(event);
+    }
+  },
+
+  _onRightIconButtonTouchTap: function _onRightIconButtonTouchTap(event) {
+    if (this.props.onRightIconButtonTouchTap) {
+      this.props.onRightIconButtonTouchTap(event);
+    }
+  }
+
+});
+
+module.exports = AppBar;
+}).call(this,require('_process'))
+},{"./icon-button":63,"./mixins/style-propable":81,"./paper":85,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/typography":106,"./svg-icons/navigation/menu":114,"_process":168,"react":"react"}],29:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var AppCanvas = React.createClass({
+  displayName: 'AppCanvas',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _this = this;
+
+    var styles = {
+      height: '100%',
+      backgroundColor: this.state.muiTheme.rawTheme.palette.canvasColor,
+      WebkitFontSmoothing: 'antialiased',
+      direction: 'ltr'
+    };
+
+    var newChildren = React.Children.map(this.props.children, function (currentChild) {
+      if (!currentChild) {
+        // If undefined, skip it
+        return null;
+      }
+
+      switch (currentChild.type.displayName) {
+        case 'AppBar':
+          return React.cloneElement(currentChild, {
+            style: _this.mergeStyles({
+              position: 'fixed'
+            }, currentChild.props.style)
+          });
+        default:
+          return currentChild;
+      }
+    }, this);
+
+    return React.createElement(
+      'div',
+      { style: this.prepareStyles(styles) },
+      newChildren
+    );
+  }
+
+});
+
+module.exports = AppCanvas;
+},{"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"react":"react"}],30:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var Colors = require('./styles/colors');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var Avatar = React.createClass({
+  displayName: 'Avatar',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    backgroundColor: React.PropTypes.string,
+    color: React.PropTypes.string,
+    icon: React.PropTypes.element,
+    size: React.PropTypes.number,
+    src: React.PropTypes.string,
+    style: React.PropTypes.object
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      backgroundColor: Colors.grey400,
+      color: Colors.white,
+      size: 40
+    };
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var backgroundColor = _props.backgroundColor;
+    var color = _props.color;
+    var icon = _props.icon;
+    var size = _props.size;
+    var src = _props.src;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['backgroundColor', 'color', 'icon', 'size', 'src', 'style']);
+
+    var styles = {
+      root: {
+        height: size,
+        width: size,
+        userSelect: 'none',
+        borderRadius: '50%',
+        display: 'inline-block'
+      }
+    };
+
+    if (src) {
+      var borderColor = this.state.muiTheme.avatar.borderColor;
+
+      if (borderColor) {
+        styles.root = this.mergeStyles(styles.root, {
+          height: size - 2,
+          width: size - 2,
+          border: 'solid 1px ' + borderColor
+        });
+      }
+
+      return React.createElement('img', _extends({}, other, { src: src, style: this.prepareStyles(styles.root, style) }));
+    } else {
+      styles.root = this.mergeStyles(styles.root, {
+        backgroundColor: backgroundColor,
+        textAlign: 'center',
+        lineHeight: size + 'px',
+        fontSize: size / 2 + 4,
+        color: color
+      });
+
+      var styleIcon = {
+        margin: 8
+      };
+
+      var iconElement = icon ? React.cloneElement(icon, {
+        color: color,
+        style: this.mergeStyles(styleIcon, icon.props.style)
+      }) : null;
+
+      return React.createElement(
+        'div',
+        _extends({}, other, { style: this.prepareStyles(styles.root, style) }),
+        iconElement,
+        this.props.children
+      );
+    }
+  }
+});
+
+module.exports = Avatar;
+},{"./mixins/style-propable":81,"./styles/colors":98,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"react":"react"}],31:[function(require,module,exports){
+'use strict';
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var AutoPrefix = require('./styles/auto-prefix');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+/**
+ *  BeforeAfterWrapper
+ *    An alternative for the ::before and ::after css pseudo-elements for
+ *    components whose styles are defined in javascript instead of css.
+ *
+ *  Usage: For the element that we want to apply before and after elements to,
+ *    wrap its children with BeforeAfterWrapper. For example:
+ *
+ *                                            <Paper>
+ *  <Paper>                                     <div> // See notice
+ *    <BeforeAfterWrapper>        renders         <div/> // before element
+ *      [children of paper]       ------>         [children of paper]
+ *    </BeforeAfterWrapper>                       <div/> // after element
+ *  </Paper>                                    </div>
+ *                                            </Paper>
+ *
+ *  Notice: Notice that this div bundles together our elements. If the element
+ *    that we want to apply before and after elements is a HTML tag (i.e. a
+ *    div, p, or button tag), we can avoid this extra nesting by passing using
+ *    the BeforeAfterWrapper in place of said tag like so:
+ *
+ *  <p>
+ *    <BeforeAfterWrapper>   do this instead   <BeforeAfterWrapper elementType='p'>
+ *      [children of p]          ------>         [children of p]
+ *    </BeforeAfterWrapper>                    </BeforeAfterWrapper>
+ *  </p>
+ *
+ *  BeforeAfterWrapper features spread functionality. This means that we can
+ *  pass HTML tag properties directly into the BeforeAfterWrapper tag.
+ *
+ *  When using BeforeAfterWrapper, ensure that the parent of the beforeElement
+ *  and afterElement have a defined style position.
+ */
+
+var BeforeAfterWrapper = React.createClass({
+  displayName: 'BeforeAfterWrapper',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    beforeStyle: React.PropTypes.object,
+    afterStyle: React.PropTypes.object,
+    beforeElementType: React.PropTypes.string,
+    afterElementType: React.PropTypes.string,
+    elementType: React.PropTypes.string
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      beforeElementType: 'div',
+      afterElementType: 'div',
+      elementType: 'div'
+    };
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var beforeStyle = _props.beforeStyle;
+    var afterStyle = _props.afterStyle;
+    var beforeElementType = _props.beforeElementType;
+    var afterElementType = _props.afterElementType;
+    var elementType = _props.elementType;
+
+    var other = _objectWithoutProperties(_props, ['beforeStyle', 'afterStyle', 'beforeElementType', 'afterElementType', 'elementType']);
+
+    var beforeElement = undefined,
+        afterElement = undefined;
+
+    beforeStyle = AutoPrefix.all({ boxSizing: 'border-box' });
+    afterStyle = AutoPrefix.all({ boxSizing: 'border-box' });
+
+    if (this.props.beforeStyle) beforeElement = React.createElement(this.props.beforeElementType, {
+      style: this.prepareStyles(beforeStyle, this.props.beforeStyle),
+      key: "::before"
+    });
+    if (this.props.afterStyle) afterElement = React.createElement(this.props.afterElementType, {
+      style: this.prepareStyles(afterStyle, this.props.afterStyle),
+      key: "::after"
+    });
+
+    var children = [beforeElement, this.props.children, afterElement];
+
+    var props = other;
+    props.style = this.prepareStyles(this.props.style);
+
+    return React.createElement(this.props.elementType, props, children);
+  }
+
+});
+
+module.exports = BeforeAfterWrapper;
+},{"./mixins/style-propable":81,"./styles/auto-prefix":97,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"react":"react"}],32:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var ContextPure = require('../mixins/context-pure');
+var StylePropable = require('../mixins/style-propable');
+var Styles = require('../utils/styles');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var FlatButtonLabel = React.createClass({
+  displayName: 'FlatButtonLabel',
+
+  mixins: [ContextPure, StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    label: React.PropTypes.node,
+    style: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  statics: {
+    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+      return {
+        spacingDesktopGutterLess: muiTheme.rawTheme.spacing.desktopGutterLess
+      };
+    }
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var label = _props.label;
+    var style = _props.style;
+
+    var contextKeys = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+    var mergedRootStyles = this.mergeStyles({
+      position: 'relative',
+      padding: '0 ' + contextKeys.spacingDesktopGutterLess + 'px'
+    }, style);
+
+    return React.createElement(
+      'span',
+      { style: this.prepareStyles(mergedRootStyles) },
+      label
+    );
+  }
+
+});
+
+module.exports = FlatButtonLabel;
+},{"../mixins/context-pure":78,"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../utils/styles":166,"react":"react"}],33:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var ThemeManager = require('../styles/theme-manager');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+
+var CardActions = React.createClass({
+  displayName: 'CardActions',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getStyles: function getStyles() {
+    return {
+      root: {
+        padding: 8,
+        position: 'relative'
+      }
+    };
+  },
+
+  propTypes: {
+    expandable: React.PropTypes.bool,
+    actAsExpander: React.PropTypes.bool,
+    showExpandableButton: React.PropTypes.bool
+  },
+
+  render: function render() {
+    var styles = this.getStyles();
+
+    var children = React.Children.map(this.props.children, function (child) {
+      return React.cloneElement(child, {
+        style: { marginRight: 8 }
+      });
+    });
+
+    return React.createElement(
+      'div',
+      _extends({}, this.props, { style: this.prepareStyles(styles.root, this.props.style) }),
+      children
+    );
+  }
+});
+
+module.exports = CardActions;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],34:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var Extend = require('../utils/extend');
+var OpenIcon = require('../svg-icons/hardware/keyboard-arrow-up');
+var CloseIcon = require('../svg-icons/hardware/keyboard-arrow-down');
+var IconButton = require('../icon-button');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+var ContextPure = require('../mixins/context-pure');
+
+var CardExpandable = React.createClass({
+  displayName: 'CardExpandable',
+
+  mixins: [StylePropable, ContextPure],
+
+  getStyles: function getStyles() {
+    var contextKeys = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+    var directionStyle = contextKeys.isRtl ? {
+      left: 4
+    } : {
+      right: 4
+    };
+
+    return {
+      root: Extend({
+        top: 0,
+        bottom: 0,
+        margin: 'auto',
+        position: 'absolute'
+      }, directionStyle)
+    };
+  },
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    onExpanding: React.PropTypes.func.isRequired,
+    expanded: React.PropTypes.bool
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  statics: {
+    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+      return {
+        isRtl: muiTheme.isRtl
+      };
+    },
+    getChildrenClasses: function getChildrenClasses() {
+      return [IconButton];
+    }
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var styles = this.getStyles();
+
+    var expandable = undefined;
+    if (this.props.expanded === true) expandable = React.createElement(OpenIcon, null);else expandable = React.createElement(CloseIcon, null);
+
+    var mergedStyles = this.mergeStyles(styles.root, this.props.style);
+
+    var expandableBtn = React.createElement(
+      IconButton,
+      {
+        style: mergedStyles,
+        onTouchTap: this.props.onExpanding },
+      expandable
+    );
+
+    return expandableBtn;
+  }
+});
+
+module.exports = CardExpandable;
+},{"../icon-button":63,"../mixins/context-pure":78,"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../svg-icons/hardware/keyboard-arrow-down":108,"../svg-icons/hardware/keyboard-arrow-up":109,"../utils/extend":157,"react":"react"}],35:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var React = require('react');
+var Styles = require('../styles');
+var Avatar = require('../avatar');
+var StylePropable = require('../mixins/style-propable');
+var ThemeManager = require('../styles/theme-manager');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+
+var CardHeader = React.createClass({
+  displayName: 'CardHeader',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  propTypes: {
+    title: React.PropTypes.node,
+    titleColor: React.PropTypes.string,
+    titleStyle: React.PropTypes.object,
+    subtitle: React.PropTypes.node,
+    subtitleColor: React.PropTypes.string,
+    subtitleStyle: React.PropTypes.object,
+    textStyle: React.PropTypes.object,
+    expandable: React.PropTypes.bool,
+    actAsExpander: React.PropTypes.bool,
+    showExpandableButton: React.PropTypes.bool
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      titleColor: Styles.Colors.darkBlack,
+      subtitleColor: Styles.Colors.lightBlack
+    };
+  },
+
+  getStyles: function getStyles() {
+    return {
+      root: {
+        height: 72,
+        padding: 16,
+        fontWeight: Styles.Typography.fontWeightMedium,
+        boxSizing: 'border-box',
+        position: 'relative'
+      },
+      text: {
+        display: 'inline-block',
+        verticalAlign: 'top'
+      },
+      avatar: {
+        marginRight: 16
+      },
+      title: {
+        color: this.props.titleColor,
+        display: 'block',
+        fontSize: 15
+      },
+      subtitle: {
+        color: this.props.subtitleColor,
+        display: 'block',
+        fontSize: 14
+      }
+    };
+  },
+
+  render: function render() {
+    var styles = this.getStyles();
+    var rootStyle = this.prepareStyles(styles.root, this.props.style);
+    var textStyle = this.prepareStyles(styles.text, this.props.textStyle);
+    var titleStyle = this.prepareStyles(styles.title, this.props.titleStyle);
+    var subtitleStyle = this.prepareStyles(styles.subtitle, this.props.subtitleStyle);
+
+    var avatar = this.props.avatar;
+    if (React.isValidElement(this.props.avatar)) {
+      var avatarMergedStyle = this.mergeStyles(styles.avatar, avatar.props.style);
+      avatar = React.cloneElement(avatar, { style: avatarMergedStyle });
+    } else avatar = React.createElement(Avatar, { src: this.props.avatar, style: styles.avatar });
+
+    return React.createElement(
+      'div',
+      _extends({}, this.props, { style: rootStyle }),
+      avatar,
+      React.createElement(
+        'div',
+        { style: textStyle },
+        React.createElement(
+          'span',
+          { style: titleStyle },
+          this.props.title
+        ),
+        React.createElement(
+          'span',
+          { style: subtitleStyle },
+          this.props.subtitle
+        )
+      ),
+      this.props.children
+    );
+  }
+});
+
+module.exports = CardHeader;
+},{"../avatar":30,"../mixins/style-propable":81,"../styles":99,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],36:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var React = require('react');
+var Styles = require('../styles');
+var StylePropable = require('../mixins/style-propable');
+var ThemeManager = require('../styles/theme-manager');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+
+var CardMedia = React.createClass({
+  displayName: 'CardMedia',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  propTypes: {
+    overlay: React.PropTypes.node,
+    style: React.PropTypes.object,
+    overlayStyle: React.PropTypes.object,
+    overlayContainerStyle: React.PropTypes.object,
+    overlayContentStyle: React.PropTypes.object,
+    mediaStyle: React.PropTypes.object,
+    expandable: React.PropTypes.bool,
+    actAsExpander: React.PropTypes.bool
+  },
+
+  getStyles: function getStyles() {
+    return {
+      root: {
+        position: 'relative'
+      },
+      overlayContainer: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        right: 0,
+        left: 0
+      },
+      overlay: {
+        height: '100%',
+        position: 'relative'
+      },
+      overlayContent: {
+        position: 'absolute',
+        bottom: 0,
+        right: 0,
+        left: 0,
+        paddingTop: 8,
+        background: Styles.Colors.lightBlack
+      },
+      media: {},
+      mediaChild: {
+        verticalAlign: 'top',
+        maxWidth: '100%',
+        minWidth: '100%',
+        width: '100%'
+      }
+    };
+  },
+
+  render: function render() {
+    var _this = this;
+
+    var styles = this.getStyles();
+    var rootStyle = this.prepareStyles(styles.root, this.props.style);
+    var mediaStyle = this.prepareStyles(styles.media, this.props.mediaStyle);
+    var overlayContainerStyle = this.prepareStyles(styles.overlayContainer, this.props.overlayContainerStyle);
+    var overlayContentStyle = this.prepareStyles(styles.overlayContent, this.props.overlayContentStyle);
+    var overlayStyle = this.prepareStyles(styles.overlay, this.props.overlayStyle);
+
+    var children = React.Children.map(this.props.children, function (child) {
+      return React.cloneElement(child, { style: _this.prepareStyles(styles.mediaChild, child.props.style) });
+    });
+
+    var overlayChildren = React.Children.map(this.props.overlay, function (child) {
+      if (child.type.displayName === 'CardHeader' || child.type.displayName === 'CardTitle') {
+        return React.cloneElement(child, {
+          titleColor: Styles.Colors.darkWhite,
+          subtitleColor: Styles.Colors.lightWhite
+        });
+      } else if (child.type.displayName === 'CardText') {
+        return React.cloneElement(child, {
+          color: Styles.Colors.darkWhite
+        });
+      } else {
+        return child;
+      }
+    });
+
+    return React.createElement(
+      'div',
+      _extends({}, this.props, { style: rootStyle }),
+      React.createElement(
+        'div',
+        { style: mediaStyle },
+        children
+      ),
+      this.props.overlay ? React.createElement(
+        'div',
+        { style: overlayContainerStyle },
+        React.createElement(
+          'div',
+          { style: overlayStyle },
+          React.createElement(
+            'div',
+            { style: overlayContentStyle },
+            overlayChildren
+          )
+        )
+      ) : ''
+    );
+  }
+});
+
+module.exports = CardMedia;
+},{"../mixins/style-propable":81,"../styles":99,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],37:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var React = require('react');
+var Styles = require('../styles');
+var StylePropable = require('../mixins/style-propable');
+var ThemeManager = require('../styles/theme-manager');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+
+var CardText = React.createClass({
+  displayName: 'CardText',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  propTypes: {
+    color: React.PropTypes.string,
+    style: React.PropTypes.object,
+    expandable: React.PropTypes.bool,
+    actAsExpander: React.PropTypes.bool
+  },
+
+  getStyles: function getStyles() {
+    var themeVariables = this.state.muiTheme.cardText;
+    return {
+      root: {
+        padding: 16,
+        fontSize: '14px',
+        color: this.props.color ? this.props.color : themeVariables.textColor
+      }
+    };
+  },
+
+  render: function render() {
+    var styles = this.getStyles();
+    var rootStyle = this.prepareStyles(styles.root, this.props.style);
+
+    return React.createElement(
+      'div',
+      _extends({}, this.props, { style: rootStyle }),
+      this.props.children
+    );
+  }
+});
+
+module.exports = CardText;
+},{"../mixins/style-propable":81,"../styles":99,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],38:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var React = require('react');
+var Styles = require('../styles');
+var StylePropable = require('../mixins/style-propable');
+var ThemeManager = require('../styles/theme-manager');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+
+var CardTitle = React.createClass({
+  displayName: 'CardTitle',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  propTypes: {
+    title: React.PropTypes.string,
+    titleColor: React.PropTypes.string,
+    titleStyle: React.PropTypes.object,
+    subtitle: React.PropTypes.string,
+    subtitleColor: React.PropTypes.string,
+    subtitleStyle: React.PropTypes.object,
+    expandable: React.PropTypes.bool,
+    actAsExpander: React.PropTypes.bool,
+    showExpandableButton: React.PropTypes.bool
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      titleColor: Styles.Colors.darkBlack,
+      subtitleColor: Styles.Colors.lightBlack
+    };
+  },
+
+  getStyles: function getStyles() {
+    return {
+      root: {
+        padding: 16,
+        position: 'relative'
+      },
+      title: {
+        fontSize: 24,
+        color: this.props.titleColor,
+        display: 'block',
+        lineHeight: '36px'
+      },
+      subtitle: {
+        fontSize: 14,
+        color: this.props.subtitleColor,
+        display: 'block'
+      }
+    };
+  },
+
+  render: function render() {
+    var styles = this.getStyles();
+    var rootStyle = this.prepareStyles(styles.root, this.props.style);
+    var titleStyle = this.prepareStyles(styles.title, this.props.titleStyle);
+    var subtitleStyle = this.prepareStyles(styles.subtitle, this.props.subtitleStyle);
+
+    return React.createElement(
+      'div',
+      _extends({}, this.props, { style: rootStyle }),
+      React.createElement(
+        'span',
+        { style: titleStyle },
+        this.props.title
+      ),
+      React.createElement(
+        'span',
+        { style: subtitleStyle },
+        this.props.subtitle
+      ),
+      this.props.children
+    );
+  }
+});
+
+module.exports = CardTitle;
+},{"../mixins/style-propable":81,"../styles":99,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],39:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var Paper = require('../paper');
+var StylePropable = require('../mixins/style-propable');
+var CardExpandable = require('./card-expandable');
+
+var Card = React.createClass({
+  displayName: 'Card',
+
+  mixins: [StylePropable],
+
+  getInitialState: function getInitialState() {
+    return { expanded: this.props.initiallyExpanded ? true : false };
+  },
+
+  propTypes: {
+    style: React.PropTypes.object,
+    expandable: React.PropTypes.bool,
+    initiallyExpanded: React.PropTypes.bool,
+    onExpandChange: React.PropTypes.func
+  },
+
+  _onExpandable: function _onExpandable() {
+    var newExpandedState = !(this.state.expanded === true);
+    this.setState({ expanded: newExpandedState });
+    if (this.props.onExpandChange) this.props.onExpandChange(newExpandedState);
+  },
+
+  render: function render() {
+    var _this = this;
+
+    var lastElement = undefined;
+    var newChildren = React.Children.map(this.props.children, function (currentChild) {
+      var doClone = false;
+      var newChild = undefined;
+      var newProps = {};
+      var element = currentChild;
+      if (!currentChild || !currentChild.props) {
+        return null;
+      }
+      if (_this.state.expanded === false && currentChild.props.expandable === true) return;
+      if (currentChild.props.actAsExpander === true) {
+        doClone = true;
+        newProps.onTouchTap = _this._onExpandable;
+        newProps.style = _this.mergeStyles({ cursor: 'pointer' }, currentChild.props.style);
+      }
+      if (currentChild.props.showExpandableButton === true) {
+        doClone = true;
+        newChild = React.createElement(CardExpandable, { expanded: _this.state.expanded, onExpanding: _this._onExpandable });
+      }
+      if (doClone) {
+        element = React.cloneElement(currentChild, newProps, currentChild.props.children, newChild);
+      }
+      return element;
+    }, this);
+
+    // If the last element is text or a title we should add
+    // 8px padding to the bottom of the card
+    var addBottomPadding = lastElement && (lastElement.type.displayName === "CardText" || lastElement.type.displayName === "CardTitle");
+    var _props = this.props;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['style']);
+
+    var mergedStyles = this.mergeStyles({
+      overflow: 'hidden',
+      zIndex: 1
+    }, style);
+
+    return React.createElement(
+      Paper,
+      _extends({}, other, { style: mergedStyles }),
+      React.createElement(
+        'div',
+        { style: { paddingBottom: addBottomPadding ? 8 : 0 } },
+        newChildren
+      )
+    );
+  }
+});
+
+module.exports = Card;
+},{"../mixins/style-propable":81,"../paper":85,"./card-expandable":34,"react":"react"}],40:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var EnhancedSwitch = require('./enhanced-switch');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var CheckboxOutline = require('./svg-icons/toggle/check-box-outline-blank');
+var CheckboxChecked = require('./svg-icons/toggle/check-box');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var Checkbox = React.createClass({
+  displayName: 'Checkbox',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    checked: React.PropTypes.bool,
+    checkedIcon: React.PropTypes.element,
+    defaultChecked: React.PropTypes.bool,
+    iconStyle: React.PropTypes.object,
+    labelStyle: React.PropTypes.object,
+    onCheck: React.PropTypes.func,
+    unCheckedIcon: React.PropTypes.element
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      switched: this.props.checked || this.props.defaultChecked || this.props.valueLink && this.props.valueLink.value || false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.checkbox;
+  },
+
+  getStyles: function getStyles() {
+    var checkboxSize = 24;
+    var styles = {
+      icon: {
+        height: checkboxSize,
+        width: checkboxSize
+      },
+      check: {
+        position: 'absolute',
+        opacity: 0,
+        transform: 'scale(0)',
+        transitionOrigin: '50% 50%',
+        transition: Transitions.easeOut('450ms', 'opacity', '0ms') + ', ' + Transitions.easeOut('0ms', 'transform', '450ms'),
+        fill: this.getTheme().checkedColor
+      },
+      box: {
+        position: 'absolute',
+        opacity: 1,
+        fill: this.getTheme().boxColor,
+        transition: Transitions.easeOut('2s', null, '200ms')
+      },
+      checkWhenSwitched: {
+        opacity: 1,
+        transform: 'scale(1)',
+        transition: Transitions.easeOut('0ms', 'opacity', '0ms') + ', ' + Transitions.easeOut('800ms', 'transform', '0ms')
+      },
+      boxWhenSwitched: {
+        transition: Transitions.easeOut('100ms', null, '0ms'),
+        fill: this.getTheme().checkedColor
+      },
+      checkWhenDisabled: {
+        fill: this.getTheme().disabledColor
+      },
+      boxWhenDisabled: {
+        fill: this.getTheme().disabledColor
+      },
+      label: {
+        color: this.props.disabled ? this.getTheme().labelDisabledColor : this.getTheme().labelColor
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var iconStyle = _props.iconStyle;
+    var onCheck = _props.onCheck;
+    var checkedIcon = _props.checkedIcon;
+    var unCheckedIcon = _props.unCheckedIcon;
+
+    var other = _objectWithoutProperties(_props, ['iconStyle', 'onCheck', 'checkedIcon', 'unCheckedIcon']);
+
+    var styles = this.getStyles();
+    var boxStyles = this.mergeStyles(styles.box, this.state.switched && styles.boxWhenSwitched, iconStyle, this.props.disabled && styles.boxWhenDisabled);
+    var checkStyles = this.mergeStyles(styles.check, this.state.switched && styles.checkWhenSwitched, iconStyle, this.props.disabled && styles.checkWhenDisabled);
+
+    var checkedElement = checkedIcon ? React.cloneElement(checkedIcon, {
+      style: this.mergeStyles(checkStyles, checkedIcon.props.style)
+    }) : React.createElement(CheckboxChecked, {
+      style: checkStyles
+    });
+
+    var unCheckedElement = unCheckedIcon ? React.cloneElement(unCheckedIcon, {
+      style: this.mergeStyles(boxStyles, unCheckedIcon.props.style)
+    }) : React.createElement(CheckboxOutline, {
+      style: boxStyles
+    });
+
+    var checkboxElement = React.createElement(
+      'div',
+      null,
+      unCheckedElement,
+      checkedElement
+    );
+
+    var rippleColor = this.state.switched ? checkStyles.fill : boxStyles.fill;
+    var mergedIconStyle = this.mergeStyles(styles.icon, iconStyle);
+
+    var labelStyle = this.mergeStyles(styles.label, this.props.labelStyle);
+
+    var enhancedSwitchProps = {
+      ref: "enhancedSwitch",
+      inputType: "checkbox",
+      switched: this.state.switched,
+      switchElement: checkboxElement,
+      rippleColor: rippleColor,
+      iconStyle: mergedIconStyle,
+      onSwitch: this._handleCheck,
+      labelStyle: labelStyle,
+      onParentShouldUpdate: this._handleStateChange,
+      defaultSwitched: this.props.defaultChecked,
+      labelPosition: this.props.labelPosition ? this.props.labelPosition : "right"
+    };
+
+    return React.createElement(EnhancedSwitch, _extends({}, other, enhancedSwitchProps));
+  },
+
+  isChecked: function isChecked() {
+    return this.refs.enhancedSwitch.isSwitched();
+  },
+
+  setChecked: function setChecked(newCheckedValue) {
+    this.refs.enhancedSwitch.setSwitched(newCheckedValue);
+  },
+
+  _handleCheck: function _handleCheck(e, isInputChecked) {
+    if (this.props.onCheck) this.props.onCheck(e, isInputChecked);
+  },
+
+  _handleStateChange: function _handleStateChange(newSwitched) {
+    this.setState({ switched: newSwitched });
+  }
+
+});
+
+module.exports = Checkbox;
+},{"./enhanced-switch":56,"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./svg-icons/toggle/check-box":116,"./svg-icons/toggle/check-box-outline-blank":115,"react":"react"}],41:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('./mixins/style-propable');
+var AutoPrefix = require('./styles/auto-prefix');
+var Transitions = require("./styles/transitions");
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var CircularProgress = React.createClass({
+  displayName: 'CircularProgress',
+
+  mixins: [StylePropable],
+
+  propTypes: {
+    mode: React.PropTypes.oneOf(["determinate", "indeterminate"]),
+    value: React.PropTypes.number,
+    min: React.PropTypes.number,
+    max: React.PropTypes.number,
+    size: React.PropTypes.number,
+    color: React.PropTypes.string,
+    innerStyle: React.PropTypes.object
+  },
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  _getRelativeValue: function _getRelativeValue() {
+    var value = this.props.value;
+    var min = this.props.min;
+    var max = this.props.max;
+
+    var clampedValue = Math.min(Math.max(min, value), max);
+    var rangeValue = max - min;
+    var relValue = Math.round(clampedValue / rangeValue * 10000) / 10000;
+    return relValue * 100;
+  },
+
+  componentDidMount: function componentDidMount() {
+    var wrapper = ReactDOM.findDOMNode(this.refs.wrapper);
+    var path = ReactDOM.findDOMNode(this.refs.path);
+
+    this._scalePath(path);
+    this._rotateWrapper(wrapper);
+  },
+
+  _scalePath: function _scalePath(path, step) {
+    step = step || 0;
+    step %= 3;
+
+    setTimeout(this._scalePath.bind(this, path, step + 1), step ? 750 : 250);
+
+    if (!this.isMounted()) return;
+    if (this.props.mode !== "indeterminate") return;
+
+    if (step === 0) {
+      path.style.strokeDasharray = "1, 200";
+      path.style.strokeDashoffset = 0;
+      path.style.transitionDuration = "0ms";
+    } else if (step === 1) {
+      path.style.strokeDasharray = "89, 200";
+      path.style.strokeDashoffset = -35;
+      path.style.transitionDuration = "750ms";
+    } else {
+      path.style.strokeDasharray = "89,200";
+      path.style.strokeDashoffset = -124;
+      path.style.transitionDuration = "850ms";
+    }
+  },
+
+  _rotateWrapper: function _rotateWrapper(wrapper) {
+    setTimeout(this._rotateWrapper.bind(this, wrapper), 10050);
+
+    if (!this.isMounted()) return;
+    if (this.props.mode !== "indeterminate") return;
+
+    AutoPrefix.set(wrapper.style, "transform", null);
+    AutoPrefix.set(wrapper.style, "transform", "rotate(0deg)");
+    wrapper.style.transitionDuration = "0ms";
+
+    setTimeout(function () {
+      AutoPrefix.set(wrapper.style, "transform", "rotate(1800deg)");
+      wrapper.style.transitionDuration = "10s";
+      //wrapper.style.webkitTransitionTimingFunction = "linear";
+      AutoPrefix.set(wrapper.style, "transitionTimingFunction", "linear");
+    }, 50);
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      mode: "indeterminate",
+      value: 0,
+      min: 0,
+      max: 100,
+      size: 1
+    };
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.rawTheme.palette;
+  },
+
+  getStyles: function getStyles(zoom) {
+    zoom *= 1.4;
+    var size = "50px";
+
+    var margin = Math.round((50 * zoom - 50) / 2);
+
+    if (margin < 0) margin = 0;
+
+    var styles = {
+      root: {
+        position: "relative",
+        margin: margin + "px",
+        display: "inline-block",
+        width: size,
+        height: size
+      },
+      wrapper: {
+        width: size,
+        height: size,
+        margin: "5px",
+        display: "inline-block",
+        transition: Transitions.create("transform", "20s", null, "linear")
+      },
+      svg: {
+        height: size,
+        position: "relative",
+        transform: "scale(" + zoom + ")",
+        width: size
+      },
+      path: {
+        strokeDasharray: "89,200",
+        strokeDashoffset: 0,
+        stroke: this.props.color || this.getTheme().primary1Color,
+        strokeLinecap: "round",
+        transition: Transitions.create("all", "1.5s", null, "ease-in-out")
+      }
+    };
+
+    AutoPrefix.set(styles.wrapper, "transitionTimingFunction", "linear");
+
+    if (this.props.mode === "determinate") {
+      var relVal = this._getRelativeValue();
+      styles.path.transition = Transitions.create("all", "0.3s", null, "linear");
+      styles.path.strokeDasharray = Math.round(relVal * 1.25) + ",200";
+    }
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var style = _props.style;
+    var innerStyle = _props.innerStyle;
+    var size = _props.size;
+
+    var other = _objectWithoutProperties(_props, ['style', 'innerStyle', 'size']);
+
+    var styles = this.getStyles(size || 1);
+
+    return React.createElement(
+      'div',
+      _extends({}, other, { style: this.prepareStyles(styles.root, style) }),
+      React.createElement(
+        'div',
+        { ref: 'wrapper', style: this.prepareStyles(styles.wrapper, innerStyle) },
+        React.createElement(
+          'svg',
+          { style: this.prepareStyles(styles.svg) },
+          React.createElement('circle', { ref: 'path', style: this.prepareStyles(styles.path), cx: '25', cy: '25',
+            r: '20', fill: 'none', strokeWidth: '2.5', strokeMiterlimit: '10' })
+        )
+      )
+    );
+  }
+});
+
+module.exports = CircularProgress;
+},{"./mixins/style-propable":81,"./styles/auto-prefix":97,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react","react-dom":"react-dom"}],42:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var BeforeAfterWrapper = require('./before-after-wrapper');
+var StylePropable = require('./mixins/style-propable');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var ClearFix = React.createClass({
+  displayName: 'ClearFix',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['style']);
+
+    var before = function before() {
+      return {
+        content: "' '",
+        display: 'table'
+      };
+    };
+
+    var after = before();
+    after.clear = 'both';
+
+    return React.createElement(
+      BeforeAfterWrapper,
+      _extends({}, other, {
+        beforeStyle: before(),
+        afterStyle: after,
+        style: style }),
+      this.props.children
+    );
+  }
+});
+
+module.exports = ClearFix;
+},{"./before-after-wrapper":31,"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"react":"react"}],43:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var DateTime = require('../utils/date-time');
+var DayButton = require('./day-button');
+var ClearFix = require('../clearfix');
+
+var CalendarMonth = React.createClass({
+  displayName: 'CalendarMonth',
+
+  propTypes: {
+    displayDate: React.PropTypes.object.isRequired,
+    selectedDate: React.PropTypes.object.isRequired,
+    autoOk: React.PropTypes.bool,
+    maxDate: React.PropTypes.object,
+    minDate: React.PropTypes.object,
+    onDayTouchTap: React.PropTypes.func,
+    shouldDisableDate: React.PropTypes.func
+  },
+
+  render: function render() {
+    var styles = {
+      lineHeight: '32px',
+      textAlign: 'center',
+      padding: '16px 14px 0 14px'
+    };
+
+    return React.createElement(
+      'div',
+      { style: styles },
+      this._getWeekElements()
+    );
+  },
+
+  isSelectedDateDisabled: function isSelectedDateDisabled() {
+    return this._selectedDateDisabled;
+  },
+
+  _getWeekElements: function _getWeekElements() {
+    var _this = this;
+
+    var weekArray = DateTime.getWeekArray(this.props.displayDate);
+
+    return weekArray.map(function (week, i) {
+      return React.createElement(
+        ClearFix,
+        { key: i },
+        _this._getDayElements(week, i)
+      );
+    }, this);
+  },
+
+  _getDayElements: function _getDayElements(week, i) {
+    var _this2 = this;
+
+    return week.map(function (day, j) {
+      var isSameDate = DateTime.isEqualDate(_this2.props.selectedDate, day);
+      var disabled = _this2._shouldDisableDate(day);
+      var selected = !disabled && isSameDate;
+
+      if (isSameDate) {
+        if (disabled) {
+          _this2._selectedDateDisabled = true;
+        } else {
+          _this2._selectedDateDisabled = false;
+        }
+      }
+
+      return React.createElement(DayButton, {
+        key: 'db' + i + j,
+        date: day,
+        onTouchTap: _this2._handleDayTouchTap,
+        selected: selected,
+        disabled: disabled });
+    }, this);
+  },
+
+  _handleDayTouchTap: function _handleDayTouchTap(e, date) {
+    if (this.props.onDayTouchTap) this.props.onDayTouchTap(e, date);
+  },
+
+  _shouldDisableDate: function _shouldDisableDate(day) {
+    if (day === null) return false;
+    var disabled = !DateTime.isBetweenDates(day, this.props.minDate, this.props.maxDate);
+    if (!disabled && this.props.shouldDisableDate) disabled = this.props.shouldDisableDate(day);
+
+    return disabled;
+  }
+
+});
+
+module.exports = CalendarMonth;
+},{"../clearfix":42,"../utils/date-time":154,"./day-button":50,"react":"react"}],44:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var IconButton = require('../icon-button');
+var Toolbar = require('../toolbar/toolbar');
+var ToolbarGroup = require('../toolbar/toolbar-group');
+var NavigationChevronLeft = require('../svg-icons/navigation/chevron-left');
+var NavigationChevronRight = require('../svg-icons/navigation/chevron-right');
+var SlideInTransitionGroup = require('../transition-groups/slide-in');
+var ThemeManager = require('../styles/theme-manager');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+
+var styles = {
+  root: {
+    position: 'relative',
+    padding: 0,
+    backgroundColor: 'inherit'
+  },
+  title: {
+    position: 'absolute',
+    top: 17,
+    lineHeight: '14px',
+    fontSize: 14,
+    height: 14,
+    width: '100%',
+    fontWeight: '500',
+    textAlign: 'center'
+  }
+};
+
+var CalendarToolbar = React.createClass({
+  displayName: 'CalendarToolbar',
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    DateTimeFormat: React.PropTypes.func.isRequired,
+    locale: React.PropTypes.string.isRequired,
+    displayDate: React.PropTypes.object.isRequired,
+    nextMonth: React.PropTypes.bool,
+    onMonthChange: React.PropTypes.func,
+    prevMonth: React.PropTypes.bool
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      nextMonth: true,
+      prevMonth: true
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      transitionDirection: 'up'
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+
+    var direction = undefined;
+
+    if (nextProps.displayDate !== this.props.displayDate) {
+      direction = nextProps.displayDate > this.props.displayDate ? 'up' : 'down';
+      this.setState({
+        transitionDirection: direction
+      });
+    }
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var DateTimeFormat = _props.DateTimeFormat;
+    var locale = _props.locale;
+    var displayDate = _props.displayDate;
+
+    var dateTimeFormatted = new DateTimeFormat(locale, {
+      month: 'long',
+      year: 'numeric'
+    }).format(displayDate);
+
+    var nextButtonIcon = this.state.muiTheme.isRtl ? React.createElement(NavigationChevronRight, null) : React.createElement(NavigationChevronLeft, null);
+    var prevButtonIcon = this.state.muiTheme.isRtl ? React.createElement(NavigationChevronLeft, null) : React.createElement(NavigationChevronRight, null);
+
+    return React.createElement(
+      Toolbar,
+      { className: 'mui-date-picker-calendar-toolbar', style: styles.root, noGutter: true },
+      React.createElement(
+        SlideInTransitionGroup,
+        {
+          style: styles.title,
+          direction: this.state.transitionDirection },
+        React.createElement(
+          'div',
+          { key: dateTimeFormatted },
+          dateTimeFormatted
+        )
+      ),
+      React.createElement(
+        ToolbarGroup,
+        { key: 0, float: 'left' },
+        React.createElement(
+          IconButton,
+          {
+            style: styles.button,
+            disabled: !this.props.prevMonth,
+            onTouchTap: this._prevMonthTouchTap },
+          nextButtonIcon
+        )
+      ),
+      React.createElement(
+        ToolbarGroup,
+        { key: 1, float: 'right' },
+        React.createElement(
+          IconButton,
+          {
+            style: styles.button,
+            disabled: !this.props.nextMonth,
+            onTouchTap: this._nextMonthTouchTap },
+          prevButtonIcon
+        )
+      )
+    );
+  },
+
+  _prevMonthTouchTap: function _prevMonthTouchTap() {
+    if (this.props.onMonthChange && this.props.prevMonth) this.props.onMonthChange(-1);
+  },
+
+  _nextMonthTouchTap: function _nextMonthTouchTap() {
+    if (this.props.onMonthChange && this.props.nextMonth) this.props.onMonthChange(1);
+  }
+
+});
+
+module.exports = CalendarToolbar;
+},{"../icon-button":63,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../svg-icons/navigation/chevron-left":112,"../svg-icons/navigation/chevron-right":113,"../toolbar/toolbar":145,"../toolbar/toolbar-group":142,"../transition-groups/slide-in":150,"react":"react"}],45:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('../mixins/style-propable');
+var Colors = require('../styles/colors');
+var DateTime = require('../utils/date-time');
+var YearButton = require('./year-button');
+
+var CalendarYear = React.createClass({
+  displayName: 'CalendarYear',
+
+  mixins: [StylePropable],
+
+  propTypes: {
+    displayDate: React.PropTypes.object.isRequired,
+    onYearTouchTap: React.PropTypes.func,
+    selectedDate: React.PropTypes.object.isRequired,
+    minDate: React.PropTypes.object,
+    maxDate: React.PropTypes.object
+  },
+
+  componentDidMount: function componentDidMount() {
+    this._scrollToSelectedYear();
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    this._scrollToSelectedYear();
+  },
+
+  render: function render() {
+    var years = this._getYears();
+    var styles = {
+      position: 'relative',
+      height: 'inherit',
+      lineHeight: '36px',
+      textAlign: 'center',
+      padding: '8px 14px 0 14px',
+      backgroundColor: Colors.white,
+      overflowX: 'hidden',
+      overflowY: 'scroll'
+    };
+
+    return React.createElement(
+      'div',
+      { style: styles },
+      years
+    );
+  },
+
+  _getYears: function _getYears() {
+    var minYear = this.props.minDate.getFullYear();
+    var maxYear = this.props.maxDate.getFullYear();
+
+    var years = [];
+    var dateCheck = DateTime.clone(this.props.selectedDate);
+    for (var year = minYear; year <= maxYear; year++) {
+      dateCheck.setFullYear(year);
+      if (!DateTime.isBetweenDates(dateCheck, this.props.minDate, this.props.maxDate)) continue;
+      var selected = this.props.selectedDate.getFullYear() === year;
+      var selectedProps = {};
+      if (selected) {
+        selectedProps = { ref: 'selectedYearButton' };
+      }
+
+      var yearButton = React.createElement(YearButton, _extends({
+        key: 'yb' + year,
+        year: year,
+        onTouchTap: this._handleYearTouchTap,
+        selected: selected
+      }, selectedProps));
+
+      years.push(yearButton);
+    }
+
+    return years;
+  },
+
+  _scrollToSelectedYear: function _scrollToSelectedYear() {
+    if (this.refs.selectedYearButton === undefined) return;
+
+    var container = ReactDOM.findDOMNode(this);
+    var yearButtonNode = ReactDOM.findDOMNode(this.refs.selectedYearButton);
+
+    var containerHeight = container.clientHeight;
+    var yearButtonNodeHeight = yearButtonNode.clientHeight || 32;
+
+    var scrollYOffset = yearButtonNode.offsetTop + yearButtonNodeHeight / 2 - containerHeight / 2;
+    container.scrollTop = scrollYOffset;
+  },
+
+  _handleYearTouchTap: function _handleYearTouchTap(e, year) {
+    if (this.props.onYearTouchTap) this.props.onYearTouchTap(e, year);
+  }
+
+});
+
+module.exports = CalendarYear;
+},{"../mixins/style-propable":81,"../styles/colors":98,"../utils/date-time":154,"./year-button":51,"react":"react","react-dom":"react-dom"}],46:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var WindowListenable = require('../mixins/window-listenable');
+var DateTime = require('../utils/date-time');
+var KeyCode = require('../utils/key-code');
+var Transitions = require('../styles/transitions');
+var CalendarMonth = require('./calendar-month');
+var CalendarYear = require('./calendar-year');
+var CalendarToolbar = require('./calendar-toolbar');
+var DateDisplay = require('./date-display');
+var SlideInTransitionGroup = require('../transition-groups/slide-in');
+var ClearFix = require('../clearfix');
+var ThemeManager = require('../styles/theme-manager');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+
+var Calendar = React.createClass({
+  displayName: 'Calendar',
+
+  mixins: [StylePropable, WindowListenable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    DateTimeFormat: React.PropTypes.func.isRequired,
+    locale: React.PropTypes.string.isRequired,
+    disableYearSelection: React.PropTypes.bool,
+    initialDate: React.PropTypes.object,
+    isActive: React.PropTypes.bool,
+    minDate: React.PropTypes.object,
+    maxDate: React.PropTypes.object,
+    onDayTouchTap: React.PropTypes.func,
+    shouldDisableDate: React.PropTypes.func
+  },
+
+  windowListeners: {
+    'keydown': '_handleWindowKeyDown'
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      disableYearSelection: false,
+      initialDate: new Date(),
+      minDate: DateTime.addYears(new Date(), -100),
+      maxDate: DateTime.addYears(new Date(), 100)
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      displayDate: DateTime.getFirstDayOfMonth(this.props.initialDate),
+      displayMonthDay: true,
+      selectedDate: this.props.initialDate,
+      transitionDirection: 'left',
+      transitionEnter: true
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+
+    if (nextProps.initialDate !== this.props.initialDate) {
+      var d = nextProps.initialDate || new Date();
+      this.setState({
+        displayDate: DateTime.getFirstDayOfMonth(d),
+        selectedDate: d
+      });
+    }
+  },
+
+  render: function render() {
+    var yearCount = DateTime.yearDiff(this.props.maxDate, this.props.minDate) + 1;
+    var weekCount = DateTime.getWeekArray(this.state.displayDate).length;
+    var toolbarInteractions = this._getToolbarInteractions();
+    var isLandscape = this.props.mode === 'landscape';
+    var styles = {
+      root: {
+        fontSize: 12
+      },
+      calendarContainer: {
+        width: isLandscape ? 320 : '100%',
+        height: weekCount === 5 ? 284 : weekCount === 6 ? 324 : 244,
+        float: isLandscape ? 'right' : 'none',
+        transition: Transitions.easeOut('150ms', 'height'),
+        overflow: 'hidden'
+      },
+      yearContainer: {
+        width: 280,
+        overflow: 'hidden',
+        height: yearCount < 6 ? yearCount * 56 + 10 : weekCount === 5 ? 284 : weekCount === 6 ? 324 : 244,
+        float: isLandscape ? 'right' : 'none'
+      },
+      dateDisplay: {
+        width: isLandscape ? 120 : '',
+        height: isLandscape ? weekCount === 5 ? 238 : weekCount === 6 ? 278 : 198 : '100%',
+        float: isLandscape ? 'left' : 'none'
+      },
+      weekTitle: {
+        padding: '0 14px',
+        lineHeight: '12px',
+        opacity: '0.5',
+        height: 12,
+        fontWeight: '500',
+        margin: 0
+      },
+      weekTitleDay: {
+        listStyle: 'none',
+        float: 'left',
+        width: 37,
+        textAlign: 'center',
+        margin: '0 2px'
+      }
+    };
+
+    var weekTitleDayStyle = this.prepareStyles(styles.weekTitleDay);
+    var _props = this.props;
+    var DateTimeFormat = _props.DateTimeFormat;
+    var locale = _props.locale;
+
+    return React.createElement(
+      ClearFix,
+      { style: this.mergeStyles(styles.root) },
+      React.createElement(DateDisplay, {
+        DateTimeFormat: DateTimeFormat,
+        locale: locale,
+        disableYearSelection: this.props.disableYearSelection,
+        style: styles.dateDisplay,
+        selectedDate: this.state.selectedDate,
+        handleMonthDayClick: this._handleMonthDayClick,
+        handleYearClick: this._handleYearClick,
+        monthDaySelected: this.state.displayMonthDay,
+        mode: this.props.mode,
+        weekCount: weekCount }),
+      this.state.displayMonthDay && React.createElement(
+        'div',
+        { style: this.prepareStyles(styles.calendarContainer) },
+        React.createElement(CalendarToolbar, {
+          DateTimeFormat: DateTimeFormat,
+          locale: locale,
+          displayDate: this.state.displayDate,
+          onMonthChange: this._handleMonthChange,
+          prevMonth: toolbarInteractions.prevMonth,
+          nextMonth: toolbarInteractions.nextMonth }),
+        React.createElement(
+          ClearFix,
+          {
+            elementType: 'ul',
+            style: styles.weekTitle },
+          React.createElement(
+            'li',
+            { style: weekTitleDayStyle },
+            'S'
+          ),
+          React.createElement(
+            'li',
+            { style: weekTitleDayStyle },
+            'M'
+          ),
+          React.createElement(
+            'li',
+            { style: weekTitleDayStyle },
+            'T'
+          ),
+          React.createElement(
+            'li',
+            { style: weekTitleDayStyle },
+            'W'
+          ),
+          React.createElement(
+            'li',
+            { style: weekTitleDayStyle },
+            'T'
+          ),
+          React.createElement(
+            'li',
+            { style: weekTitleDayStyle },
+            'F'
+          ),
+          React.createElement(
+            'li',
+            { style: weekTitleDayStyle },
+            'S'
+          )
+        ),
+        React.createElement(
+          SlideInTransitionGroup,
+          {
+            direction: this.state.transitionDirection },
+          React.createElement(CalendarMonth, {
+            key: this.state.displayDate.toDateString(),
+            ref: 'calendar',
+            displayDate: this.state.displayDate,
+            onDayTouchTap: this._handleDayTouchTap,
+            selectedDate: this.state.selectedDate,
+            minDate: this.props.minDate,
+            maxDate: this.props.maxDate,
+            shouldDisableDate: this.props.shouldDisableDate })
+        )
+      ),
+      !this.state.displayMonthDay && React.createElement(
+        'div',
+        { style: this.prepareStyles(styles.yearContainer) },
+        this._yearSelector()
+      )
+    );
+  },
+
+  _yearSelector: function _yearSelector() {
+    if (this.props.disableYearSelection) return;
+
+    return React.createElement(CalendarYear, {
+      key: 'years',
+      displayDate: this.state.displayDate,
+      onYearTouchTap: this._handleYearTouchTap,
+      selectedDate: this.state.selectedDate,
+      minDate: this.props.minDate,
+      maxDate: this.props.maxDate });
+  },
+
+  getSelectedDate: function getSelectedDate() {
+    return this.state.selectedDate;
+  },
+
+  isSelectedDateDisabled: function isSelectedDateDisabled() {
+    return this.refs.calendar.isSelectedDateDisabled();
+  },
+
+  _addSelectedDays: function _addSelectedDays(days) {
+    this._setSelectedDate(DateTime.addDays(this.state.selectedDate, days));
+  },
+
+  _addSelectedMonths: function _addSelectedMonths(months) {
+    this._setSelectedDate(DateTime.addMonths(this.state.selectedDate, months));
+  },
+
+  _addSelectedYears: function _addSelectedYears(years) {
+    this._setSelectedDate(DateTime.addYears(this.state.selectedDate, years));
+  },
+
+  _setDisplayDate: function _setDisplayDate(d, newSelectedDate) {
+    var newDisplayDate = DateTime.getFirstDayOfMonth(d);
+    var direction = newDisplayDate > this.state.displayDate ? 'left' : 'right';
+
+    if (newDisplayDate !== this.state.displayDate) {
+      this.setState({
+        displayDate: newDisplayDate,
+        transitionDirection: direction,
+        selectedDate: newSelectedDate || this.state.selectedDate
+      });
+    }
+  },
+
+  _setSelectedDate: function _setSelectedDate(date) {
+    var adjustedDate = date;
+    if (DateTime.isBeforeDate(date, this.props.minDate)) {
+      adjustedDate = this.props.minDate;
+    } else if (DateTime.isAfterDate(date, this.props.maxDate)) {
+      adjustedDate = this.props.maxDate;
+    }
+
+    var newDisplayDate = DateTime.getFirstDayOfMonth(adjustedDate);
+    if (newDisplayDate !== this.state.displayDate) {
+      this._setDisplayDate(newDisplayDate, adjustedDate);
+    } else {
+      this.setState({
+        selectedDate: adjustedDate
+      });
+    }
+  },
+
+  _handleDayTouchTap: function _handleDayTouchTap(e, date) {
+    this._setSelectedDate(date);
+    if (this.props.onDayTouchTap) this.props.onDayTouchTap(e, date);
+  },
+
+  _handleMonthChange: function _handleMonthChange(months) {
+    this.setState({ displayDate: DateTime.addMonths(this.state.displayDate, months) });
+  },
+
+  _handleYearTouchTap: function _handleYearTouchTap(e, year) {
+    var date = DateTime.clone(this.state.selectedDate);
+    date.setFullYear(year);
+    this._setSelectedDate(date, e);
+  },
+
+  _getToolbarInteractions: function _getToolbarInteractions() {
+    return {
+      prevMonth: DateTime.monthDiff(this.state.displayDate, this.props.minDate) > 0,
+      nextMonth: DateTime.monthDiff(this.state.displayDate, this.props.maxDate) < 0
+    };
+  },
+
+  _handleMonthDayClick: function _handleMonthDayClick() {
+    this.setState({
+      displayMonthDay: true
+    });
+  },
+
+  _handleYearClick: function _handleYearClick() {
+    this.setState({
+      displayMonthDay: false
+    });
+  },
+
+  _handleWindowKeyDown: function _handleWindowKeyDown(e) {
+    if (this.props.isActive) {
+
+      switch (e.keyCode) {
+        case KeyCode.UP:
+          if (e.altKey && e.shiftKey) {
+            this._addSelectedYears(-1);
+          } else if (e.shiftKey) {
+            this._addSelectedMonths(-1);
+          } else {
+            this._addSelectedDays(-7);
+          }
+          break;
+
+        case KeyCode.DOWN:
+          if (e.altKey && e.shiftKey) {
+            this._addSelectedYears(1);
+          } else if (e.shiftKey) {
+            this._addSelectedMonths(1);
+          } else {
+            this._addSelectedDays(7);
+          }
+          break;
+
+        case KeyCode.RIGHT:
+          if (e.altKey && e.shiftKey) {
+            this._addSelectedYears(1);
+          } else if (e.shiftKey) {
+            this._addSelectedMonths(1);
+          } else {
+            this._addSelectedDays(1);
+          }
+          break;
+
+        case KeyCode.LEFT:
+          if (e.altKey && e.shiftKey) {
+            this._addSelectedYears(-1);
+          } else if (e.shiftKey) {
+            this._addSelectedMonths(-1);
+          } else {
+            this._addSelectedDays(-1);
+          }
+          break;
+      }
+    }
+  }
+
+});
+
+module.exports = Calendar;
+},{"../clearfix":42,"../mixins/style-propable":81,"../mixins/window-listenable":83,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/transitions":105,"../transition-groups/slide-in":150,"../utils/date-time":154,"../utils/key-code":161,"./calendar-month":43,"./calendar-toolbar":44,"./calendar-year":45,"./date-display":47,"react":"react"}],47:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var Transitions = require('../styles/transitions');
+var SlideInTransitionGroup = require('../transition-groups/slide-in');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var DateDisplay = React.createClass({
+  displayName: 'DateDisplay',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    DateTimeFormat: React.PropTypes.func.isRequired,
+    locale: React.PropTypes.string.isRequired,
+    disableYearSelection: React.PropTypes.bool,
+    monthDaySelected: React.PropTypes.bool,
+    selectedDate: React.PropTypes.object.isRequired,
+    weekCount: React.PropTypes.number
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      disableYearSelection: false,
+      monthDaySelected: true,
+      weekCount: 4
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      selectedYear: !this.props.monthDaySelected,
+      transitionDirection: 'up',
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+
+    var direction = undefined;
+
+    if (nextProps.selectedDate !== this.props.selectedDate) {
+      direction = nextProps.selectedDate > this.props.selectedDate ? 'up' : 'down';
+      this.setState({
+        transitionDirection: direction
+      });
+    }
+
+    if (nextProps.monthDaySelected !== undefined) {
+      this.setState({ selectedYear: !nextProps.monthDaySelected });
+    }
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.datePicker;
+  },
+
+  getStyles: function getStyles() {
+    var theme = this.getTheme();
+    var isLandscape = this.props.mode === 'landscape';
+
+    var styles = {
+      root: {
+        backgroundColor: theme.selectColor,
+        borderTopLeftRadius: 2,
+        borderTopRightRadius: 2,
+        color: theme.textColor,
+        height: 60,
+        padding: 20
+      },
+
+      monthDay: {
+        root: {
+          display: 'inline-block',
+          fontSize: 36,
+          fontWeight: '400',
+          lineHeight: '36px',
+          height: isLandscape ? 76 : 38,
+          opacity: this.state.selectedYear ? 0.7 : 1.0,
+          transition: Transitions.easeOut(),
+          width: '100%'
+        },
+
+        title: {
+          cursor: !this.state.selectedYear ? 'default' : 'pointer'
+        }
+      },
+
+      year: {
+        root: {
+          margin: 0,
+          fontSize: 16,
+          fontWeight: '400',
+          lineHeight: '16px',
+          height: 16,
+          opacity: this.state.selectedYear ? 1.0 : 0.7,
+          transition: Transitions.easeOut(),
+          marginBottom: 10
+        },
+
+        title: {
+          cursor: this.state.selectedYear && !this.props.disableYearSelection ? 'pointer' : 'default'
+        }
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var DateTimeFormat = _props.DateTimeFormat;
+    var locale = _props.locale;
+    var selectedDate = _props.selectedDate;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['DateTimeFormat', 'locale', 'selectedDate', 'style']);
+
+    var year = this.props.selectedDate.getFullYear();
+    var styles = this.getStyles();
+
+    var dateTimeFormatted = new DateTimeFormat(locale, {
+      month: 'short',
+      weekday: 'short',
+      day: '2-digit'
+    }).format(this.props.selectedDate);
+
+    return React.createElement(
+      'div',
+      _extends({}, other, { style: this.prepareStyles(styles.root, this.props.style) }),
+      React.createElement(
+        SlideInTransitionGroup,
+        {
+          style: styles.year.root,
+          direction: this.state.transitionDirection },
+        React.createElement(
+          'div',
+          { key: year, style: styles.year.title, onTouchTap: this._handleYearClick },
+          year
+        )
+      ),
+      React.createElement(
+        SlideInTransitionGroup,
+        {
+          style: styles.monthDay.root,
+          direction: this.state.transitionDirection },
+        React.createElement(
+          'div',
+          {
+            key: dateTimeFormatted,
+            style: styles.monthDay.title,
+            onTouchTap: this._handleMonthDayClick },
+          dateTimeFormatted
+        )
+      )
+    );
+  },
+
+  _handleMonthDayClick: function _handleMonthDayClick() {
+    if (this.props.handleMonthDayClick && this.state.selectedYear) {
+      this.props.handleMonthDayClick();
+    }
+
+    this.setState({ selectedYear: false });
+  },
+
+  _handleYearClick: function _handleYearClick() {
+    if (this.props.handleYearClick && !this.props.disableYearSelection && !this.state.selectedYear) {
+      this.props.handleYearClick();
+    }
+
+    if (!this.props.disableYearSelection) {
+      this.setState({ selectedYear: true });
+    }
+  }
+
+});
+
+module.exports = DateDisplay;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/transitions":105,"../transition-groups/slide-in":150,"react":"react"}],48:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var ContextPure = require('../mixins/context-pure');
+var StylePropable = require('../mixins/style-propable');
+var WindowListenable = require('../mixins/window-listenable');
+var CssEvent = require('../utils/css-event');
+var KeyCode = require('../utils/key-code');
+var Calendar = require('./calendar');
+var Dialog = require('../dialog');
+var FlatButton = require('../flat-button');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+var DateTime = require('../utils/date-time');
+
+var DatePickerDialog = React.createClass({
+  displayName: 'DatePickerDialog',
+
+  mixins: [StylePropable, WindowListenable, ContextPure],
+
+  statics: {
+    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+      return {
+        buttonColor: muiTheme.datePicker.calendarTextColor
+      };
+    },
+    getChildrenClasses: function getChildrenClasses() {
+      return [Calendar, Dialog];
+    }
+  },
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    DateTimeFormat: React.PropTypes.func,
+    locale: React.PropTypes.string,
+    wordings: React.PropTypes.object,
+    disableYearSelection: React.PropTypes.bool,
+    initialDate: React.PropTypes.object,
+    maxDate: React.PropTypes.object,
+    minDate: React.PropTypes.object,
+    onAccept: React.PropTypes.func,
+    onClickAway: React.PropTypes.func,
+    onDismiss: React.PropTypes.func,
+    onShow: React.PropTypes.func,
+    shouldDisableDate: React.PropTypes.func,
+    showYearSelector: React.PropTypes.bool
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      DateTimeFormat: DateTime.DateTimeFormat,
+      locale: 'en-US',
+      wordings: {
+        ok: 'OK',
+        cancel: 'Cancel'
+      }
+    };
+  },
+
+  windowListeners: {
+    keyup: '_handleWindowKeyUp'
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      isCalendarActive: false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var DateTimeFormat = _props.DateTimeFormat;
+    var locale = _props.locale;
+    var wordings = _props.wordings;
+    var initialDate = _props.initialDate;
+    var onAccept = _props.onAccept;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['DateTimeFormat', 'locale', 'wordings', 'initialDate', 'onAccept', 'style']);
+
+    var _constructor$getRelevantContextKeys = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+    var calendarTextColor = _constructor$getRelevantContextKeys.calendarTextColor;
+
+    var styles = {
+      root: {
+        fontSize: 14,
+        color: calendarTextColor
+      },
+
+      dialogContent: {
+        width: this.props.mode === 'landscape' ? 480 : 320
+      },
+
+      dialogBodyContent: {
+        padding: 0
+      },
+
+      actions: {
+        marginRight: 8
+      }
+    };
+
+    var actions = [React.createElement(FlatButton, {
+      key: 0,
+      label: wordings.cancel,
+      secondary: true,
+      style: styles.actions,
+      onTouchTap: this._handleCancelTouchTap })];
+
+    if (!this.props.autoOk) {
+      actions.push(React.createElement(FlatButton, {
+        key: 1,
+        label: wordings.ok,
+        secondary: true,
+        disabled: this.refs.calendar !== undefined && this.refs.calendar.isSelectedDateDisabled(),
+        style: styles.actions,
+        onTouchTap: this._handleOKTouchTap }));
+    }
+
+    return React.createElement(
+      Dialog,
+      _extends({}, other, {
+        ref: 'dialog',
+        style: styles.root,
+        contentStyle: styles.dialogContent,
+        bodyStyle: styles.dialogBodyContent,
+        actions: actions,
+        onDismiss: this._handleDialogDismiss,
+        onShow: this._handleDialogShow,
+        onClickAway: this._handleDialogClickAway,
+        repositionOnUpdate: false }),
+      React.createElement(Calendar, {
+        DateTimeFormat: DateTimeFormat,
+        locale: locale,
+        ref: 'calendar',
+        onDayTouchTap: this._onDayTouchTap,
+        initialDate: this.props.initialDate,
+        isActive: this.state.isCalendarActive,
+        minDate: this.props.minDate,
+        maxDate: this.props.maxDate,
+        shouldDisableDate: this.props.shouldDisableDate,
+        showYearSelector: this.props.showYearSelector,
+        mode: this.props.mode })
+    );
+  },
+
+  show: function show() {
+    this.refs.dialog.show();
+  },
+
+  dismiss: function dismiss() {
+    this.refs.dialog.dismiss();
+  },
+
+  _onDayTouchTap: function _onDayTouchTap() {
+    if (this.props.autoOk) {
+      setTimeout(this._handleOKTouchTap, 300);
+    }
+  },
+
+  _handleCancelTouchTap: function _handleCancelTouchTap() {
+    this.dismiss();
+  },
+
+  _handleOKTouchTap: function _handleOKTouchTap() {
+    if (this.props.onAccept && !this.refs.calendar.isSelectedDateDisabled()) {
+      this.props.onAccept(this.refs.calendar.getSelectedDate());
+    }
+
+    this.dismiss();
+  },
+
+  _handleDialogShow: function _handleDialogShow() {
+    this.setState({
+      isCalendarActive: true
+    });
+
+    if (this.props.onShow) this.props.onShow();
+  },
+
+  _handleDialogDismiss: function _handleDialogDismiss() {
+    var _this = this;
+
+    CssEvent.onTransitionEnd(ReactDOM.findDOMNode(this.refs.dialog), function () {
+      _this.setState({
+        isCalendarActive: false
+      });
+    });
+
+    if (this.props.onDismiss) this.props.onDismiss();
+  },
+
+  _handleDialogClickAway: function _handleDialogClickAway() {
+    var _this2 = this;
+
+    CssEvent.onTransitionEnd(ReactDOM.findDOMNode(this.refs.dialog), function () {
+      _this2.setState({
+        isCalendarActive: false
+      });
+    });
+
+    if (this.props.onClickAway) this.props.onClickAway();
+  },
+
+  _handleWindowKeyUp: function _handleWindowKeyUp(e) {
+    if (this.state.isCalendarActive) {
+      switch (e.keyCode) {
+        case KeyCode.ENTER:
+          this._handleOKTouchTap();
+          break;
+      }
+    }
+  }
+
+});
+
+module.exports = DatePickerDialog;
+},{"../dialog":52,"../flat-button":58,"../mixins/context-pure":78,"../mixins/style-propable":81,"../mixins/window-listenable":83,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../utils/css-event":153,"../utils/date-time":154,"../utils/key-code":161,"./calendar":46,"react":"react","react-dom":"react-dom"}],49:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var WindowListenable = require('../mixins/window-listenable');
+var DateTime = require('../utils/date-time');
+var DatePickerDialog = require('./date-picker-dialog');
+var TextField = require('../text-field');
+var ThemeManager = require('../styles/theme-manager');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+
+var DatePicker = React.createClass({
+  displayName: 'DatePicker',
+
+  mixins: [StylePropable, WindowListenable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    DateTimeFormat: React.PropTypes.func,
+    locale: React.PropTypes.string,
+    wordings: React.PropTypes.object,
+    autoOk: React.PropTypes.bool,
+    defaultDate: React.PropTypes.object,
+    formatDate: React.PropTypes.func,
+    hideToolbarYearChange: React.PropTypes.bool,
+    maxDate: React.PropTypes.object,
+    minDate: React.PropTypes.object,
+    mode: React.PropTypes.oneOf(['portrait', 'landscape', 'inline']),
+    onDismiss: React.PropTypes.func,
+    onChange: React.PropTypes.func,
+    onFocus: React.PropTypes.func,
+    onShow: React.PropTypes.func,
+    onTouchTap: React.PropTypes.func,
+    shouldDisableDate: React.PropTypes.func,
+    showYearSelector: React.PropTypes.bool,
+    style: React.PropTypes.object,
+    textFieldStyle: React.PropTypes.object
+  },
+
+  windowListeners: {
+    keyup: '_handleWindowKeyUp'
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      formatDate: DateTime.format,
+      autoOk: false,
+      showYearSelector: false,
+      style: {}
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      date: this._isControlled() ? this._getControlledDate() : this.props.defaultDate,
+      dialogDate: new Date(),
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    if (this._isControlled()) {
+      var newDate = this._getControlledDate(nextProps);
+      if (!DateTime.isEqualDate(this.state.date, newDate)) {
+        this.setState({
+          date: newDate
+        });
+      }
+    }
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var DateTimeFormat = _props.DateTimeFormat;
+    var locale = _props.locale;
+    var wordings = _props.wordings;
+    var autoOk = _props.autoOk;
+    var defaultDate = _props.defaultDate;
+    var formatDate = _props.formatDate;
+    var maxDate = _props.maxDate;
+    var minDate = _props.minDate;
+    var mode = _props.mode;
+    var onDismiss = _props.onDismiss;
+    var onFocus = _props.onFocus;
+    var onShow = _props.onShow;
+    var onTouchTap = _props.onTouchTap;
+    var showYearSelector = _props.showYearSelector;
+    var style = _props.style;
+    var textFieldStyle = _props.textFieldStyle;
+    var valueLink = _props.valueLink;
+
+    var other = _objectWithoutProperties(_props, ['DateTimeFormat', 'locale', 'wordings', 'autoOk', 'defaultDate', 'formatDate', 'maxDate', 'minDate', 'mode', 'onDismiss', 'onFocus', 'onShow', 'onTouchTap', 'showYearSelector', 'style', 'textFieldStyle', 'valueLink']);
+
+    return React.createElement(
+      'div',
+      { style: this.prepareStyles(style) },
+      React.createElement(TextField, _extends({}, other, {
+        style: textFieldStyle,
+        ref: 'input',
+        value: this.state.date ? formatDate(this.state.date) : undefined,
+        onFocus: this._handleInputFocus,
+        onTouchTap: this._handleInputTouchTap })),
+      React.createElement(DatePickerDialog, {
+        ref: 'dialogWindow',
+        DateTimeFormat: DateTimeFormat,
+        locale: locale,
+        wordings: wordings,
+        mode: mode,
+        initialDate: this.state.dialogDate,
+        onAccept: this._handleDialogAccept,
+        onShow: onShow,
+        onDismiss: this._handleDialogDismiss,
+        minDate: minDate,
+        maxDate: maxDate,
+        autoOk: autoOk,
+        showYearSelector: showYearSelector,
+        shouldDisableDate: this.props.shouldDisableDate,
+        hideToolbarYearChange: this.props.hideToolbarYearChange })
+    );
+  },
+
+  getDate: function getDate() {
+    return this.state.date;
+  },
+
+  setDate: function setDate(d) {
+    if (process.env.NODE_ENV !== 'production' && this._isControlled()) {
+      console.error('Cannot call DatePicker.setDate when value or valueLink is defined as a property.');
+    }
+    this.setState({
+      date: d
+    });
+  },
+
+  /**
+   * Open the date-picker dialog programmatically from a parent.
+   */
+  openDialog: function openDialog() {
+    this.setState({
+      dialogDate: this.getDate()
+    }, this.refs.dialogWindow.show);
+  },
+
+  /**
+   * Alias for `openDialog()` for an api consistent with TextField.
+   */
+  focus: function focus() {
+    this.openDialog();
+  },
+
+  _handleDialogAccept: function _handleDialogAccept(d) {
+    if (!this._isControlled()) {
+      this.setDate(d);
+    }
+    if (this.props.onChange) this.props.onChange(null, d);
+    if (this.props.valueLink) this.props.valueLink.requestChange(d);
+  },
+
+  _handleDialogDismiss: function _handleDialogDismiss() {
+    if (this.props.onDismiss) this.props.onDismiss();
+  },
+
+  _handleInputFocus: function _handleInputFocus(e) {
+    e.target.blur();
+    if (this.props.onFocus) this.props.onFocus(e);
+  },
+
+  _handleInputTouchTap: function _handleInputTouchTap(event) {
+    var _this = this;
+
+    if (this.props.onTouchTap) this.props.onTouchTap(event);
+
+    setTimeout(function () {
+      _this.openDialog();
+    }, 0);
+  },
+
+  _handleWindowKeyUp: function _handleWindowKeyUp() {
+    //TO DO: open the dialog if input has focus
+  },
+
+  _isControlled: function _isControlled() {
+    return this.props.hasOwnProperty('value') || this.props.hasOwnProperty('valueLink');
+  },
+
+  _getControlledDate: function _getControlledDate() {
+    var props = arguments.length <= 0 || arguments[0] === undefined ? this.props : arguments[0];
+
+    if (DateTime.isDateObject(props.value)) {
+      return props.value;
+    } else if (props.valueLink && DateTime.isDateObject(props.valueLink.value)) {
+      return props.valueLink.value;
+    }
+  }
+
+});
+
+module.exports = DatePicker;
+}).call(this,require('_process'))
+},{"../mixins/style-propable":81,"../mixins/window-listenable":83,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../text-field":129,"../utils/date-time":154,"./date-picker-dialog":48,"_process":168,"react":"react"}],50:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var Transition = require('../styles/transitions');
+var DateTime = require('../utils/date-time');
+var EnhancedButton = require('../enhanced-button');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var DayButton = React.createClass({
+  displayName: 'DayButton',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    date: React.PropTypes.object,
+    onTouchTap: React.PropTypes.func,
+    selected: React.PropTypes.bool,
+    disabled: React.PropTypes.bool
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      selected: false,
+      disabled: false
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      hover: false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.datePicker;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var date = _props.date;
+    var onTouchTap = _props.onTouchTap;
+    var selected = _props.selected;
+
+    var other = _objectWithoutProperties(_props, ['date', 'onTouchTap', 'selected']);
+
+    var styles = {
+      root: {
+        boxSizing: 'border-box',
+        WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+        position: 'relative',
+        float: 'left',
+        width: 41,
+        padding: '4px 2px'
+      },
+
+      label: {
+        position: 'relative',
+        color: this.state.muiTheme.rawTheme.palette.textColor
+      },
+
+      buttonState: {
+        position: 'absolute',
+        height: 36,
+        width: 36,
+        top: 2,
+        opacity: 0,
+        borderRadius: '50%',
+        transform: 'scale(0)',
+        transition: Transition.easeOut(),
+        backgroundColor: this.getTheme().selectColor
+      }
+    };
+
+    if (this.state.hover) {
+      styles.label.color = this.getTheme().selectTextColor;
+      styles.buttonState.opacity = '0.6';
+      styles.buttonState.transform = 'scale(1)';
+    }
+
+    if (this.props.selected) {
+      styles.label.color = this.getTheme().selectTextColor;
+      styles.buttonState.opacity = 1;
+      styles.buttonState.transform = 'scale(1)';
+    } else if (this.props.disabled) {
+      styles.root.opacity = '0.6';
+    }
+
+    if (DateTime.isEqualDate(this.props.date, new Date()) && !this.props.selected) {
+      styles.label.color = this.getTheme().color;
+    }
+
+    return this.props.date ? React.createElement(
+      EnhancedButton,
+      _extends({}, other, {
+        style: styles.root,
+        hoverStyle: styles.hover,
+        disabled: this.props.disabled,
+        disableFocusRipple: true,
+        disableTouchRipple: true,
+        onMouseEnter: this._handleMouseEnter,
+        onMouseLeave: this._handleMouseLeave,
+        onTouchTap: this._handleTouchTap,
+        onKeyboardFocus: this._handleKeyboardFocus }),
+      React.createElement('div', { style: this.prepareStyles(styles.buttonState) }),
+      React.createElement(
+        'span',
+        { style: this.prepareStyles(styles.label) },
+        this.props.date.getDate()
+      )
+    ) : React.createElement('span', { style: this.prepareStyles(styles.root) });
+  },
+
+  _handleMouseEnter: function _handleMouseEnter() {
+    if (!this.props.disabled) this.setState({ hover: true });
+  },
+
+  _handleMouseLeave: function _handleMouseLeave() {
+    if (!this.props.disabled) this.setState({ hover: false });
+  },
+
+  _handleTouchTap: function _handleTouchTap(e) {
+    if (!this.props.disabled && this.props.onTouchTap) this.props.onTouchTap(e, this.props.date);
+  },
+
+  _handleKeyboardFocus: function _handleKeyboardFocus(e, keyboardFocused) {
+    if (!this.props.disabled && this.props.onKeyboardFocus) this.props.onKeyboardFocus(e, keyboardFocused, this.props.date);
+  }
+
+});
+
+module.exports = DayButton;
+},{"../enhanced-button":55,"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/transitions":105,"../utils/date-time":154,"react":"react"}],51:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var EnhancedButton = require('../enhanced-button');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var YearButton = React.createClass({
+  displayName: 'YearButton',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    year: React.PropTypes.number,
+    onTouchTap: React.PropTypes.func,
+    selected: React.PropTypes.bool
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      selected: false
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      hover: false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.datePicker;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var className = _props.className;
+    var year = _props.year;
+    var onTouchTap = _props.onTouchTap;
+    var selected = _props.selected;
+
+    var other = _objectWithoutProperties(_props, ['className', 'year', 'onTouchTap', 'selected']);
+
+    var styles = {
+      root: {
+        boxSizing: 'border-box',
+        WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+        position: 'relative',
+        display: 'block',
+        margin: '0 auto',
+        width: 36,
+        fontSize: 14,
+        padding: '8px 2px'
+      },
+
+      label: {
+        position: 'relative',
+        top: -1,
+        color: this.state.muiTheme.rawTheme.palette.textColor
+      },
+
+      buttonState: {
+        position: 'absolute',
+        height: 32,
+        width: 32,
+        opacity: 0,
+        borderRadius: '50%',
+        transform: 'scale(0)',
+        backgroundColor: this.getTheme().selectColor
+      }
+    };
+
+    if (this.state.hover) {
+      styles.label.color = this.getTheme().selectTextColor;
+      styles.buttonState.opacity = 0.6;
+      styles.buttonState.transform = 'scale(1.5)';
+    }
+
+    if (selected) {
+      styles.label.color = this.getTheme().selectTextColor;
+      styles.buttonState.opacity = 1;
+      styles.buttonState.transform = 'scale(1.5)';
+    }
+
+    if (year === new Date().getFullYear()) {
+      styles.root.color = this.getTheme().color;
+    }
+
+    return React.createElement(
+      EnhancedButton,
+      _extends({}, other, {
+        style: styles.root,
+        disableFocusRipple: true,
+        disableTouchRipple: true,
+        onMouseEnter: this._handleMouseEnter,
+        onMouseLeave: this._handleMouseLeave,
+        onTouchTap: this._handleTouchTap }),
+      React.createElement('div', { style: this.prepareStyles(styles.buttonState) }),
+      React.createElement(
+        'span',
+        { style: this.prepareStyles(styles.label) },
+        year
+      )
+    );
+  },
+
+  _handleMouseEnter: function _handleMouseEnter() {
+    this.setState({ hover: true });
+  },
+
+  _handleMouseLeave: function _handleMouseLeave() {
+    this.setState({ hover: false });
+  },
+
+  _handleTouchTap: function _handleTouchTap(e) {
+    if (this.props.onTouchTap) this.props.onTouchTap(e, this.props.year);
+  }
+
+});
+
+module.exports = YearButton;
+},{"../enhanced-button":55,"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],52:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var WindowListenable = require('./mixins/window-listenable');
+var CssEvent = require('./utils/css-event');
+var KeyCode = require('./utils/key-code');
+var Transitions = require('./styles/transitions');
+var StylePropable = require('./mixins/style-propable');
+var FlatButton = require('./flat-button');
+var Overlay = require('./overlay');
+var Paper = require('./paper');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var ReactTransitionGroup = require('react-addons-transition-group');
+
+var TransitionItem = React.createClass({
+  displayName: 'TransitionItem',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      style: {},
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  componentWillEnter: function componentWillEnter(callback) {
+    var spacing = this.state.muiTheme.rawTheme.spacing;
+
+    this.setState({
+      style: {
+        opacity: 1,
+        transform: 'translate3d(0, ' + spacing.desktopKeylineIncrement + 'px, 0)'
+      }
+    });
+
+    setTimeout(callback, 450); // matches transition duration
+  },
+
+  componentWillLeave: function componentWillLeave(callback) {
+    var _this = this;
+
+    this.setState({
+      style: {
+        opacity: 0,
+        transform: 'translate3d(0, 0, 0)'
+      }
+    });
+
+    setTimeout(function () {
+      if (_this.isMounted()) callback();
+    }, 450); // matches transition duration
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['style']);
+
+    return React.createElement(
+      'div',
+      _extends({}, other, { style: this.prepareStyles(this.state.style, style) }),
+      this.props.children
+    );
+  }
+});
+
+var Dialog = React.createClass({
+  displayName: 'Dialog',
+
+  mixins: [WindowListenable, StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    actions: React.PropTypes.array,
+    autoDetectWindowHeight: React.PropTypes.bool,
+    autoScrollBodyContent: React.PropTypes.bool,
+    bodyStyle: React.PropTypes.object,
+    contentClassName: React.PropTypes.string,
+    contentStyle: React.PropTypes.object,
+    modal: React.PropTypes.bool,
+    openImmediately: React.PropTypes.bool,
+    onClickAway: React.PropTypes.func,
+    onDismiss: React.PropTypes.func,
+    onShow: React.PropTypes.func,
+    repositionOnUpdate: React.PropTypes.bool,
+    title: React.PropTypes.node
+  },
+
+  windowListeners: {
+    keyup: '_handleWindowKeyUp',
+    resize: '_positionDialog'
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      autoDetectWindowHeight: false,
+      autoScrollBodyContent: false,
+      actions: [],
+      modal: false,
+      repositionOnUpdate: true
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      open: this.props.openImmediately || false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  componentDidMount: function componentDidMount() {
+    this._positionDialog();
+    if (this.props.openImmediately) {
+      this.refs.dialogOverlay.preventScrolling();
+      this._onShow();
+    }
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    this._positionDialog();
+  },
+
+  getStyles: function getStyles() {
+    var spacing = this.state.muiTheme.rawTheme.spacing;
+
+    var main = {
+      position: 'fixed',
+      boxSizing: 'border-box',
+      WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+      zIndex: 10,
+      top: 0,
+      left: -10000,
+      width: '100%',
+      height: '100%',
+      transition: Transitions.easeOut('0ms', 'left', '450ms')
+    };
+
+    var content = {
+      boxSizing: 'border-box',
+      WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+      transition: Transitions.easeOut(),
+      position: 'relative',
+      width: '75%',
+      maxWidth: spacing.desktopKeylineIncrement * 12,
+      margin: '0 auto',
+      zIndex: 10
+    };
+
+    var body = {
+      padding: spacing.desktopGutter,
+      overflowY: this.props.autoScrollBodyContent ? 'auto' : 'hidden',
+      overflowX: 'hidden'
+    };
+
+    var gutter = spacing.desktopGutter + 'px ';
+    var title = {
+      margin: 0,
+      padding: gutter + gutter + '0 ' + gutter,
+      color: this.state.muiTheme.rawTheme.palette.textColor,
+      fontSize: 24,
+      lineHeight: '32px',
+      fontWeight: '400'
+    };
+
+    if (this.state.open) {
+      main = this.mergeStyles(main, {
+        left: 0,
+        transition: Transitions.easeOut('0ms', 'left', '0ms')
+      });
+    }
+
+    return {
+      main: this.mergeStyles(main, this.props.style),
+      content: this.mergeStyles(content, this.props.contentStyle),
+      paper: {
+        background: this.state.muiTheme.rawTheme.palette.canvasColor
+      },
+      body: this.mergeStyles(body, this.props.bodyStyle),
+      title: this.mergeStyles(title, this.props.titleStyle)
+    };
+  },
+
+  render: function render() {
+    var styles = this.getStyles();
+    var actions = this._getActionsContainer(this.props.actions);
+    var title = undefined;
+    if (this.props.title) {
+      // If the title is a string, wrap in an h3 tag.
+      // If not, just use it as a node.
+      title = Object.prototype.toString.call(this.props.title) === '[object String]' ? React.createElement(
+        'h3',
+        { style: this.prepareStyles(styles.title) },
+        this.props.title
+      ) : this.props.title;
+    }
+
+    return React.createElement(
+      'div',
+      { ref: 'container', style: this.prepareStyles(styles.main) },
+      React.createElement(
+        ReactTransitionGroup,
+        { component: 'div', ref: 'dialogWindow' },
+        this.state.open && React.createElement(
+          TransitionItem,
+          {
+            className: this.props.contentClassName,
+            style: styles.content },
+          React.createElement(
+            Paper,
+            {
+              style: styles.paper,
+              zDepth: 4 },
+            title,
+            React.createElement(
+              'div',
+              { ref: 'dialogContent', style: this.prepareStyles(styles.body) },
+              this.props.children
+            ),
+            actions
+          )
+        )
+      ),
+      React.createElement(Overlay, {
+        ref: 'dialogOverlay',
+        show: this.state.open,
+        autoLockScrolling: false,
+        onTouchTap: this._handleOverlayTouchTap })
+    );
+  },
+
+  isOpen: function isOpen() {
+    return this.state.open;
+  },
+
+  dismiss: function dismiss() {
+    var _this2 = this;
+
+    CssEvent.onTransitionEnd(ReactDOM.findDOMNode(this), function () {
+      _this2.refs.dialogOverlay.allowScrolling();
+    });
+
+    this.setState({ open: false });
+    this._onDismiss();
+  },
+
+  show: function show() {
+    this.refs.dialogOverlay.preventScrolling();
+    this.setState({ open: true }, this._onShow);
+  },
+
+  _getAction: function _getAction(actionJSON, key) {
+    var _this3 = this;
+
+    var styles = { marginRight: 8 };
+    var props = {
+      key: key,
+      secondary: true,
+      onClick: actionJSON.onClick,
+      onTouchTap: function onTouchTap() {
+        if (actionJSON.onTouchTap) {
+          actionJSON.onTouchTap.call(undefined);
+        }
+        if (!(actionJSON.onClick || actionJSON.onTouchTap)) {
+          _this3.dismiss();
+        }
+      },
+      label: actionJSON.text,
+      style: styles
+    };
+    if (actionJSON.ref) {
+      props.ref = actionJSON.ref;
+      props.keyboardFocused = actionJSON.ref === this.props.actionFocus;
+    }
+    if (actionJSON.id) {
+      props.id = actionJSON.id;
+    }
+
+    return React.createElement(FlatButton, props);
+  },
+
+  _getActionsContainer: function _getActionsContainer(actions) {
+    var actionContainer = undefined;
+    var actionObjects = [];
+    var actionStyle = {
+      boxSizing: 'border-box',
+      WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+      padding: 8,
+      marginBottom: 8,
+      width: '100%',
+      textAlign: 'right'
+    };
+
+    if (actions.length) {
+      for (var i = 0; i < actions.length; i++) {
+        var currentAction = actions[i];
+
+        //if the current action isn't a react object, create one
+        if (!React.isValidElement(currentAction)) {
+          currentAction = this._getAction(currentAction, i);
+        }
+
+        actionObjects.push(currentAction);
+      }
+
+      actionContainer = React.createElement(
+        'div',
+        { style: this.prepareStyles(actionStyle) },
+        actionObjects
+      );
+    }
+
+    return actionContainer;
+  },
+
+  _positionDialog: function _positionDialog() {
+    if (this.state.open) {
+      var clientHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+      var container = ReactDOM.findDOMNode(this);
+      var dialogWindow = ReactDOM.findDOMNode(this.refs.dialogWindow);
+      var dialogContent = ReactDOM.findDOMNode(this.refs.dialogContent);
+      var minPaddingTop = 16;
+
+      //Reset the height in case the window was resized.
+      dialogWindow.style.height = '';
+      dialogContent.style.height = '';
+
+      var dialogWindowHeight = dialogWindow.offsetHeight;
+      var paddingTop = (clientHeight - dialogWindowHeight) / 2 - 64;
+      if (paddingTop < minPaddingTop) paddingTop = minPaddingTop;
+
+      //Vertically center the dialog window, but make sure it doesn't
+      //transition to that position.
+      if (this.props.repositionOnUpdate || !container.style.paddingTop) {
+        container.style.paddingTop = paddingTop + 'px';
+      }
+
+      // Force a height if the dialog is taller than clientHeight
+      if (this.props.autoDetectWindowHeight || this.props.autoScrollBodyContent) {
+        var styles = this.getStyles();
+        var maxDialogContentHeight = clientHeight - 2 * (styles.body.padding + 64);
+
+        if (this.props.title) maxDialogContentHeight -= dialogContent.previousSibling.offsetHeight;
+        if (this.props.actions.length) maxDialogContentHeight -= dialogContent.nextSibling.offsetHeight;
+
+        dialogContent.style.maxHeight = maxDialogContentHeight + 'px';
+      }
+    }
+  },
+
+  _onShow: function _onShow() {
+    if (this.props.onShow) this.props.onShow();
+  },
+
+  _onDismiss: function _onDismiss() {
+    if (this.props.onDismiss) this.props.onDismiss();
+  },
+
+  _handleOverlayTouchTap: function _handleOverlayTouchTap(e) {
+    if (this.props.modal) {
+      e.stopPropagation();
+    } else {
+      this.dismiss();
+      if (this.props.onClickAway) this.props.onClickAway();
+    }
+  },
+
+  _handleWindowKeyUp: function _handleWindowKeyUp(e) {
+    if (e.keyCode === KeyCode.ESC && !this.props.modal) {
+      this.dismiss();
+    }
+  }
+
+});
+
+module.exports = Dialog;
+},{"./flat-button":58,"./mixins/style-propable":81,"./mixins/window-listenable":83,"./overlay":84,"./paper":85,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./utils/css-event":153,"./utils/key-code":161,"react":"react","react-addons-transition-group":171,"react-dom":"react-dom"}],53:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var ClickAwayable = require('./mixins/click-awayable');
+var FontIcon = require('./font-icon');
+var Menu = require('./menu/menu');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var DropDownIcon = React.createClass({
+  displayName: 'DropDownIcon',
+
+  mixins: [StylePropable, ClickAwayable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    onChange: React.PropTypes.func,
+    menuItems: React.PropTypes.array.isRequired,
+    closeOnMenuItemTouchTap: React.PropTypes.bool,
+    iconStyle: React.PropTypes.object,
+    iconClassName: React.PropTypes.string,
+    iconLigature: React.PropTypes.string
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      open: false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      closeOnMenuItemTouchTap: true
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    // This component can be deprecated once ./menu/menu has been deprecated.
+    // if (process.env.NODE_ENV !== 'production') {
+    //   console.warn('DropDownIcon has been deprecated. Use IconMenu instead.');
+    // }
+  },
+
+  componentClickAway: function componentClickAway() {
+    this.setState({ open: false });
+  },
+
+  getStyles: function getStyles() {
+    var spacing = this.state.muiTheme.rawTheme.spacing;
+    var iconWidth = 48;
+    var styles = {
+      root: {
+        display: 'inline-block',
+        width: iconWidth + 'px !important',
+        position: 'relative',
+        height: spacing.desktopToolbarHeight,
+        fontSize: spacing.desktopDropDownMenuFontSize,
+        cursor: 'pointer'
+      },
+      menu: {
+        transition: Transitions.easeOut(),
+        right: '-14px !important',
+        top: '9px !important',
+        opacity: this.state.open ? 1 : 0
+      },
+      menuItem: { // similair to drop down menu's menu item styles
+        paddingRight: spacing.iconSize + spacing.desktopGutterLess * 2,
+        height: spacing.desktopDropDownMenuItemHeight,
+        lineHeight: spacing.desktopDropDownMenuItemHeight + 'px'
+      }
+    };
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var style = _props.style;
+    var children = _props.children;
+    var menuItems = _props.menuItems;
+    var closeOnMenuItemTouchTap = _props.closeOnMenuItemTouchTap;
+    var iconStyle = _props.iconStyle;
+    var iconClassName = _props.iconClassName;
+
+    var other = _objectWithoutProperties(_props, ['style', 'children', 'menuItems', 'closeOnMenuItemTouchTap', 'iconStyle', 'iconClassName']);
+
+    var styles = this.getStyles();
+
+    return React.createElement(
+      'div',
+      _extends({}, other, { style: this.prepareStyles(styles.root, this.props.style) }),
+      React.createElement(
+        'div',
+        { onTouchTap: this._onControlClick },
+        React.createElement(
+          FontIcon,
+          {
+            className: iconClassName,
+            style: iconStyle },
+          this.props.iconLigature
+        ),
+        this.props.children
+      ),
+      React.createElement(Menu, {
+        ref: 'menuItems',
+        style: styles.menu,
+        menuItems: menuItems,
+        menuItemStyle: styles.menuItem,
+        hideable: true,
+        visible: this.state.open,
+        onItemTap: this._onMenuItemClick })
+    );
+  },
+
+  _onControlClick: function _onControlClick() {
+    this.setState({ open: !this.state.open });
+  },
+
+  _onMenuItemClick: function _onMenuItemClick(e, key, payload) {
+    if (this.props.onChange) this.props.onChange(e, key, payload);
+
+    if (this.props.closeOnMenuItemTouchTap) {
+      this.setState({ open: false });
+    }
+  }
+});
+
+module.exports = DropDownIcon;
+},{"./font-icon":60,"./menu/menu":73,"./mixins/click-awayable":77,"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react"}],54:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var KeyCode = require('./utils/key-code');
+var DropDownArrow = require('./svg-icons/navigation/arrow-drop-down');
+var Paper = require('./paper');
+var Menu = require('./menu/menu');
+var ClearFix = require('./clearfix');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var DropDownMenu = React.createClass({
+  displayName: 'DropDownMenu',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  // The nested styles for drop-down-menu are modified by toolbar and possibly
+  // other user components, so it will give full access to its js styles rather
+  // than just the parent.
+  propTypes: {
+    className: React.PropTypes.string,
+    displayMember: React.PropTypes.string,
+    valueMember: React.PropTypes.string,
+    autoWidth: React.PropTypes.bool,
+    disabled: React.PropTypes.bool,
+    onChange: React.PropTypes.func,
+    menuItems: React.PropTypes.array.isRequired,
+    menuItemStyle: React.PropTypes.object,
+    underlineStyle: React.PropTypes.object,
+    iconStyle: React.PropTypes.object,
+    labelStyle: React.PropTypes.object,
+    selectedIndex: React.PropTypes.number,
+    openImmediately: React.PropTypes.bool
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      autoWidth: true,
+      disabled: false,
+      valueMember: 'payload',
+      displayMember: 'text',
+      openImmediately: false
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      open: this.props.openImmediately,
+      selectedIndex: this._isControlled() ? null : this.props.selectedIndex || 0,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    if (this.props.autoWidth) this._setWidth();
+    if (this.props.hasOwnProperty('selectedIndex')) this._setSelectedIndex(this.props);
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+
+    if (this.props.autoWidth) this._setWidth();
+    if (nextProps.hasOwnProperty('value') || nextProps.hasOwnProperty('valueLink')) {
+      return;
+    } else if (nextProps.hasOwnProperty('selectedIndex')) {
+      this._setSelectedIndex(nextProps);
+    }
+  },
+
+  getStyles: function getStyles() {
+    var disabled = this.props.disabled;
+
+    var zIndex = 5; // As AppBar
+    var spacing = this.state.muiTheme.rawTheme.spacing;
+    var accentColor = this.state.muiTheme.dropDownMenu.accentColor;
+    var backgroundColor = this.state.muiTheme.menu.backgroundColor;
+    var styles = {
+      root: {
+        transition: Transitions.easeOut(),
+        position: 'relative',
+        display: 'inline-block',
+        height: spacing.desktopSubheaderHeight,
+        fontSize: spacing.desktopDropDownMenuFontSize,
+        outline: 'none'
+      },
+      control: {
+        cursor: disabled ? 'not-allowed' : 'pointer',
+        position: 'static',
+        height: '100%'
+      },
+      controlBg: {
+        transition: Transitions.easeOut(),
+        backgroundColor: backgroundColor,
+        height: '100%',
+        width: '100%',
+        opacity: 0
+      },
+      icon: {
+        position: 'absolute',
+        top: (spacing.desktopToolbarHeight - 24) / 2,
+        right: spacing.desktopGutterLess,
+        fill: this.state.muiTheme.dropDownMenu.accentColor
+      },
+      label: {
+        transition: Transitions.easeOut(),
+        lineHeight: spacing.desktopToolbarHeight + 'px',
+        position: 'absolute',
+        paddingLeft: spacing.desktopGutter,
+        top: 0,
+        opacity: 1,
+        color: disabled ? this.state.muiTheme.rawTheme.palette.disabledColor : this.state.muiTheme.rawTheme.palette.textColor
+      },
+      underline: {
+        borderTop: 'solid 1px ' + accentColor,
+        margin: '-1px ' + spacing.desktopGutter + 'px'
+      },
+      menu: {
+        zIndex: zIndex + 1
+      },
+      menuItem: {
+        paddingRight: spacing.iconSize + spacing.desktopGutterLess + spacing.desktopGutterMini,
+        height: spacing.desktopDropDownMenuItemHeight,
+        lineHeight: spacing.desktopDropDownMenuItemHeight + 'px',
+        whiteSpace: 'nowrap'
+      },
+      rootWhenOpen: {
+        opacity: 1
+      },
+      labelWhenOpen: {
+        opacity: 0,
+        top: spacing.desktopToolbarHeight / 2
+      },
+      overlay: {
+        height: '100%',
+        width: '100%',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        zIndex: zIndex
+      }
+    };
+
+    return styles;
+  },
+
+  getInputNode: function getInputNode() {
+    var root = this.refs.root;
+    var item = this.props.menuItems[this.state.selectedIndex];
+    if (item) {
+      root.value = item[this.props.displayMember];
+    }
+
+    return root;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var autoWidth = _props.autoWidth;
+    var className = _props.className;
+    var onFocus = _props.onFocus;
+    var onBlur = _props.onBlur;
+    var style = _props.style;
+    var displayMember = _props.displayMember;
+    var valueMember = _props.valueMember;
+    var valueLink = _props.valueLink;
+    var labelStyle = _props.labelStyle;
+    var iconStyle = _props.iconStyle;
+    var underlineStyle = _props.underlineStyle;
+    var menuItemStyle = _props.menuItemStyle;
+
+    var other = _objectWithoutProperties(_props, ['autoWidth', 'className', 'onFocus', 'onBlur', 'style', 'displayMember', 'valueMember', 'valueLink', 'labelStyle', 'iconStyle', 'underlineStyle', 'menuItemStyle']);
+
+    var styles = this.getStyles();
+    var selectedIndex = this._isControlled() ? null : this.state.selectedIndex;
+    var displayValue = "";
+    if (selectedIndex) {
+      if (process.env.NODE_ENV !== 'production') {
+        console.assert(!!this.props.menuItems[selectedIndex], 'SelectedIndex of ' + selectedIndex + ' does not exist in menuItems.');
+      }
+    } else if (valueMember && this._isControlled()) {
+      var value = this.props.hasOwnProperty('value') ? this.props.value : valueLink.value;
+      if (value !== null && value !== undefined) {
+        for (var i = 0; i < this.props.menuItems.length; i++) {
+          if (this.props.menuItems[i][valueMember] === value) {
+            selectedIndex = i;
+          }
+        }
+      }
+    }
+
+    var selectedItem = this.props.menuItems[selectedIndex];
+    if (selectedItem) {
+      displayValue = selectedItem[displayMember];
+    }
+
+    var menuItems = this.props.menuItems.map(function (item) {
+      item.text = item[displayMember];
+      item.payload = item[valueMember];
+      return item;
+    });
+
+    return React.createElement(
+      'div',
+      _extends({}, other, {
+        ref: 'root',
+        onKeyDown: this._onKeyDown,
+        onFocus: onFocus,
+        onBlur: onBlur,
+        className: className,
+        style: this.prepareStyles(styles.root, this.state.open && styles.rootWhenOpen, style) }),
+      React.createElement(
+        ClearFix,
+        { style: this.mergeStyles(styles.control), onTouchTap: this._onControlClick },
+        React.createElement(Paper, { style: this.mergeStyles(styles.controlBg), zDepth: 0 }),
+        React.createElement(
+          'div',
+          { style: this.prepareStyles(styles.label, this.state.open && styles.labelWhenOpen, labelStyle) },
+          displayValue
+        ),
+        React.createElement(DropDownArrow, { style: this.mergeStyles(styles.icon, iconStyle) }),
+        React.createElement('div', { style: this.prepareStyles(styles.underline, underlineStyle) })
+      ),
+      React.createElement(Menu, {
+        ref: 'menuItems',
+        autoWidth: autoWidth,
+        selectedIndex: selectedIndex,
+        menuItems: menuItems,
+        style: styles.menu,
+        menuItemStyle: this.mergeStyles(styles.menuItem, menuItemStyle),
+        hideable: true,
+        visible: this.state.open,
+        onRequestClose: this._onMenuRequestClose,
+        onItemTap: this._onMenuItemClick }),
+      this.state.open && React.createElement('div', { style: this.prepareStyles(styles.overlay), onTouchTap: this._handleOverlayTouchTap })
+    );
+  },
+
+  _setWidth: function _setWidth() {
+    var el = ReactDOM.findDOMNode(this);
+    var menuItemsDom = ReactDOM.findDOMNode(this.refs.menuItems);
+    if (!this.props.style || !this.props.style.hasOwnProperty('width')) {
+      el.style.width = 'auto';
+      el.style.width = menuItemsDom.offsetWidth + 'px';
+    }
+  },
+
+  _setSelectedIndex: function _setSelectedIndex(props) {
+    var selectedIndex = props.selectedIndex;
+
+    if (process.env.NODE_ENV !== 'production' && selectedIndex < 0) {
+      console.warn('Cannot set selectedIndex to a negative index.', selectedIndex);
+    }
+
+    this.setState({ selectedIndex: selectedIndex > -1 ? selectedIndex : 0 });
+  },
+
+  _onControlClick: function _onControlClick() {
+    if (!this.props.disabled) {
+      this.setState({ open: !this.state.open });
+    }
+  },
+
+  _onKeyDown: function _onKeyDown(e) {
+    switch (e.which) {
+      case KeyCode.UP:
+        if (!this.state.open) {
+          this._selectPreviousItem();
+        } else {
+          if (e.altKey) {
+            this.setState({ open: false });
+          }
+        }
+        break;
+      case KeyCode.DOWN:
+        if (!this.state.open) {
+          if (e.altKey) {
+            this.setState({ open: true });
+          } else {
+            this._selectNextItem();
+          }
+        }
+        break;
+      case KeyCode.ENTER:
+      case KeyCode.SPACE:
+        this.setState({ open: true });
+        break;
+      default:
+        return; //important
+    }
+    e.preventDefault();
+  },
+
+  _onMenuItemClick: function _onMenuItemClick(e, key, payload) {
+    if (this.props.onChange && this.state.selectedIndex !== key) {
+      var selectedItem = this.props.menuItems[key];
+      if (selectedItem) {
+        e.target.value = selectedItem[this.props.valueMember];
+      }
+
+      if (this.props.valueLink) {
+        this.props.valueLink.requestChange(e.target.value);
+      } else {
+        this.props.onChange(e, key, payload);
+      }
+    }
+
+    this.setState({
+      selectedIndex: key,
+      value: e.target.value,
+      open: false
+    });
+  },
+
+  _onMenuRequestClose: function _onMenuRequestClose() {
+    this.setState({ open: false });
+  },
+
+  _selectPreviousItem: function _selectPreviousItem() {
+    this.setState({ selectedIndex: Math.max(this.state.selectedIndex - 1, 0) });
+  },
+
+  _selectNextItem: function _selectNextItem() {
+    this.setState({ selectedIndex: Math.min(this.state.selectedIndex + 1, this.props.menuItems.length - 1) });
+  },
+
+  _handleOverlayTouchTap: function _handleOverlayTouchTap() {
+    this.setState({
+      open: false
+    });
+  },
+
+  _isControlled: function _isControlled() {
+    return this.props.hasOwnProperty('value') || this.props.hasOwnProperty('valueLink');
+  }
+
+});
+
+module.exports = DropDownMenu;
+}).call(this,require('_process'))
+},{"./clearfix":42,"./menu/menu":73,"./mixins/style-propable":81,"./paper":85,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./svg-icons/navigation/arrow-drop-down":110,"./utils/key-code":161,"_process":168,"react":"react","react-dom":"react-dom"}],55:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -1558,7 +6070,5078 @@ var EnhancedButton = React.createClass({
 });
 
 module.exports = EnhancedButton;
-},{"./mixins/style-propable":29,"./ripples/focus-ripple":32,"./ripples/touch-ripple":33,"./styles/colors":35,"./styles/raw-themes/light-raw-theme":36,"./styles/theme-manager":38,"./utils/children":43,"./utils/events":46,"./utils/key-code":50,"react":"react","react-addons-pure-render-mixin":56}],29:[function(require,module,exports){
+},{"./mixins/style-propable":81,"./ripples/focus-ripple":91,"./ripples/touch-ripple":93,"./styles/colors":98,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./utils/children":151,"./utils/events":156,"./utils/key-code":161,"react":"react","react-addons-pure-render-mixin":170}],56:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var KeyCode = require('./utils/key-code');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var UniqueId = require('./utils/unique-id');
+var WindowListenable = require('./mixins/window-listenable');
+var ClearFix = require('./clearfix');
+var FocusRipple = require('./ripples/focus-ripple');
+var TouchRipple = require('./ripples/touch-ripple');
+var Paper = require('./paper');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var EnhancedSwitch = React.createClass({
+  displayName: 'EnhancedSwitch',
+
+  mixins: [WindowListenable, StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    id: React.PropTypes.string,
+    inputType: React.PropTypes.string.isRequired,
+    switchElement: React.PropTypes.element.isRequired,
+    onParentShouldUpdate: React.PropTypes.func.isRequired,
+    switched: React.PropTypes.bool.isRequired,
+    rippleStyle: React.PropTypes.object,
+    rippleColor: React.PropTypes.string,
+    iconStyle: React.PropTypes.object,
+    thumbStyle: React.PropTypes.object,
+    trackStyle: React.PropTypes.object,
+    labelStyle: React.PropTypes.object,
+    name: React.PropTypes.string,
+    value: React.PropTypes.string,
+    label: React.PropTypes.string,
+    onSwitch: React.PropTypes.func,
+    required: React.PropTypes.bool,
+    disabled: React.PropTypes.bool,
+    defaultSwitched: React.PropTypes.bool,
+    labelPosition: React.PropTypes.oneOf(['left', 'right']),
+    disableFocusRipple: React.PropTypes.bool,
+    disableTouchRipple: React.PropTypes.bool
+  },
+
+  windowListeners: {
+    keydown: '_handleWindowKeydown',
+    keyup: '_handleWindowKeyup'
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      isKeyboardFocused: false,
+      parentWidth: 100,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  getEvenWidth: function getEvenWidth() {
+    return parseInt(window.getComputedStyle(ReactDOM.findDOMNode(this.refs.root)).getPropertyValue('width'), 10);
+  },
+
+  componentDidMount: function componentDidMount() {
+    var inputNode = ReactDOM.findDOMNode(this.refs.checkbox);
+    if (!this.props.switched || inputNode.checked !== this.props.switched) {
+      this.props.onParentShouldUpdate(inputNode.checked);
+    }
+
+    window.addEventListener("resize", this._handleResize);
+
+    this._handleResize();
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    window.removeEventListener("resize", this._handleResize);
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var hasCheckedLinkProp = nextProps.hasOwnProperty('checkedLink');
+    var hasCheckedProp = nextProps.hasOwnProperty('checked');
+    var hasToggledProp = nextProps.hasOwnProperty('toggled');
+    var hasNewDefaultProp = nextProps.hasOwnProperty('defaultSwitched') && nextProps.defaultSwitched !== this.props.defaultSwitched;
+    var newState = {};
+    newState.muiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+
+    if (hasCheckedProp) {
+      newState.switched = nextProps.checked;
+    } else if (hasToggledProp) {
+      newState.switched = nextProps.toggled;
+    } else if (hasCheckedLinkProp) {
+      newState.switched = nextProps.checkedLink.value;
+    } else if (hasNewDefaultProp) {
+      newState.switched = nextProps.defaultSwitched;
+    }
+
+    if (newState.switched !== undefined && newState.switched !== this.props.switched) {
+      this.props.onParentShouldUpdate(newState.switched);
+    }
+
+    this.setState(newState);
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.rawTheme.palette;
+  },
+
+  getStyles: function getStyles() {
+    var spacing = this.state.muiTheme.rawTheme.spacing;
+    var switchWidth = 60 - spacing.desktopGutterLess;
+    var labelWidth = 'calc(100% - 60px)';
+    var styles = {
+      root: {
+        position: 'relative',
+        cursor: this.props.disabled ? 'default' : 'pointer',
+        overflow: 'visible',
+        display: 'table',
+        height: 'auto',
+        width: '100%'
+      },
+      input: {
+        position: 'absolute',
+        cursor: this.props.disabled ? 'default' : 'pointer',
+        pointerEvents: 'all',
+        opacity: 0,
+        width: '100%',
+        height: '100%',
+        zIndex: 2,
+        left: 0,
+        boxSizing: 'border-box',
+        padding: 0,
+        margin: 0
+      },
+      controls: {
+        width: '100%',
+        height: '100%'
+      },
+      label: {
+        float: 'left',
+        position: 'relative',
+        display: 'block',
+        width: labelWidth,
+        lineHeight: '24px',
+        color: this.getTheme().textColor
+      },
+      wrap: {
+        transition: Transitions.easeOut(),
+        float: 'left',
+        position: 'relative',
+        display: 'block',
+        width: switchWidth,
+        marginRight: this.props.labelPosition === 'right' ? spacing.desktopGutterLess : 0,
+        marginLeft: this.props.labelPosition === 'left' ? spacing.desktopGutterLess : 0
+      },
+      ripple: {
+        height: '200%',
+        width: '200%',
+        top: -12,
+        left: -12
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var type = _props.type;
+    var name = _props.name;
+    var value = _props.value;
+    var label = _props.label;
+    var onSwitch = _props.onSwitch;
+    var defaultSwitched = _props.defaultSwitched;
+    var onBlur = _props.onBlur;
+    var onFocus = _props.onFocus;
+    var onMouseUp = _props.onMouseUp;
+    var onMouseDown = _props.onMouseDown;
+    var onMouseLeave = _props.onMouseLeave;
+    var onTouchStart = _props.onTouchStart;
+    var onTouchEnd = _props.onTouchEnd;
+    var disableTouchRipple = _props.disableTouchRipple;
+    var disableFocusRipple = _props.disableFocusRipple;
+    var className = _props.className;
+
+    var other = _objectWithoutProperties(_props, ['type', 'name', 'value', 'label', 'onSwitch', 'defaultSwitched', 'onBlur', 'onFocus', 'onMouseUp', 'onMouseDown', 'onMouseLeave', 'onTouchStart', 'onTouchEnd', 'disableTouchRipple', 'disableFocusRipple', 'className']);
+
+    var styles = this.getStyles();
+    var wrapStyles = this.prepareStyles(styles.wrap, this.props.iconStyle);
+    var rippleStyle = this.prepareStyles(styles.ripple, this.props.rippleStyle);
+    var rippleColor = this.props.hasOwnProperty('rippleColor') ? this.props.rippleColor : this.getTheme().primary1Color;
+
+    if (this.props.thumbStyle) {
+      wrapStyles.marginLeft /= 2;
+      wrapStyles.marginRight /= 2;
+    }
+
+    var inputId = this.props.id || UniqueId.generate();
+
+    var labelStyle = this.prepareStyles(styles.label, this.props.labelStyle);
+    var labelElement = this.props.label ? React.createElement(
+      'label',
+      { style: labelStyle, htmlFor: inputId },
+      this.props.label
+    ) : null;
+
+    var inputProps = {
+      ref: "checkbox",
+      type: this.props.inputType,
+      style: this.prepareStyles(styles.input),
+      name: this.props.name,
+      value: this.props.value,
+      defaultChecked: this.props.defaultSwitched,
+      onBlur: this._handleBlur,
+      onFocus: this._handleFocus
+    };
+
+    var hideTouchRipple = this.props.disabled || disableTouchRipple;
+
+    if (!hideTouchRipple) {
+      inputProps.onMouseUp = this._handleMouseUp;
+      inputProps.onMouseDown = this._handleMouseDown;
+      inputProps.onMouseLeave = this._handleMouseLeave;
+      inputProps.onTouchStart = this._handleTouchStart;
+      inputProps.onTouchEnd = this._handleTouchEnd;
+    }
+
+    if (!this.props.hasOwnProperty('checkedLink')) {
+      inputProps.onChange = this._handleChange;
+    }
+
+    var inputElement = React.createElement('input', _extends({}, other, inputProps));
+
+    var touchRipple = React.createElement(TouchRipple, {
+      ref: 'touchRipple',
+      key: 'touchRipple',
+      style: rippleStyle,
+      color: rippleColor,
+      centerRipple: true });
+
+    var focusRipple = React.createElement(FocusRipple, {
+      key: 'focusRipple',
+      innerStyle: rippleStyle,
+      color: rippleColor,
+      show: this.state.isKeyboardFocused });
+
+    var ripples = [hideTouchRipple ? null : touchRipple, this.props.disabled || disableFocusRipple ? null : focusRipple];
+
+    // If toggle component (indicated by whether the style includes thumb) manually lay out
+    // elements in order to nest ripple elements
+    var switchElement = !this.props.thumbStyle ? React.createElement(
+      'div',
+      { style: wrapStyles },
+      this.props.switchElement,
+      ripples
+    ) : React.createElement(
+      'div',
+      { style: wrapStyles },
+      React.createElement('div', { style: this.prepareStyles(this.props.trackStyle) }),
+      React.createElement(
+        Paper,
+        { style: this.props.thumbStyle, zDepth: 1, circle: true },
+        ' ',
+        ripples,
+        ' '
+      )
+    );
+
+    var labelPositionExist = this.props.labelPosition;
+
+    // Position is left if not defined or invalid.
+    var elementsInOrder = labelPositionExist && this.props.labelPosition.toUpperCase() === "RIGHT" ? React.createElement(
+      ClearFix,
+      { style: styles.controls },
+      switchElement,
+      labelElement
+    ) : React.createElement(
+      ClearFix,
+      { style: styles.controls },
+      labelElement,
+      switchElement
+    );
+
+    return React.createElement(
+      'div',
+      { ref: 'root', className: className, style: this.prepareStyles(styles.root, this.props.style) },
+      inputElement,
+      elementsInOrder
+    );
+  },
+
+  isSwitched: function isSwitched() {
+    return ReactDOM.findDOMNode(this.refs.checkbox).checked;
+  },
+
+  // no callback here because there is no event
+  setSwitched: function setSwitched(newSwitchedValue) {
+    if (!this.props.hasOwnProperty('checked') || this.props.checked === false) {
+      this.props.onParentShouldUpdate(newSwitchedValue);
+      ReactDOM.findDOMNode(this.refs.checkbox).checked = newSwitchedValue;
+    } else if (process.env.NODE_ENV !== 'production') {
+      var message = 'Cannot call set method while checked is defined as a property.';
+      console.error(message);
+    }
+  },
+
+  getValue: function getValue() {
+    return ReactDOM.findDOMNode(this.refs.checkbox).value;
+  },
+
+  isKeyboardFocused: function isKeyboardFocused() {
+    return this.state.isKeyboardFocused;
+  },
+
+  _handleChange: function _handleChange(e) {
+    this._tabPressed = false;
+    this.setState({
+      isKeyboardFocused: false
+    });
+
+    var isInputChecked = ReactDOM.findDOMNode(this.refs.checkbox).checked;
+
+    if (!this.props.hasOwnProperty('checked')) {
+      this.props.onParentShouldUpdate(isInputChecked);
+    }
+    if (this.props.onSwitch) {
+      this.props.onSwitch(e, isInputChecked);
+    }
+  },
+
+  // Checkbox inputs only use SPACE to change their state. Using ENTER will
+  // update the ui but not the input.
+  _handleWindowKeydown: function _handleWindowKeydown(e) {
+    if (e.keyCode === KeyCode.TAB) {
+      this._tabPressed = true;
+    }
+    if (e.keyCode === KeyCode.SPACE && this.state.isKeyboardFocused) {
+      this._handleChange(e);
+    }
+  },
+
+  _handleWindowKeyup: function _handleWindowKeyup(e) {
+    if (e.keyCode === KeyCode.SPACE && this.state.isKeyboardFocused) {
+      this._handleChange(e);
+    }
+  },
+
+  /**
+   * Because both the ripples and the checkbox input cannot share pointer
+   * events, the checkbox input takes control of pointer events and calls
+   * ripple animations manually.
+   */
+  _handleMouseDown: function _handleMouseDown(e) {
+    //only listen to left clicks
+    if (e.button === 0) {
+      this.refs.touchRipple.start(e);
+    }
+  },
+
+  _handleMouseUp: function _handleMouseUp() {
+    this.refs.touchRipple.end();
+  },
+
+  _handleMouseLeave: function _handleMouseLeave() {
+    this.refs.touchRipple.end();
+  },
+
+  _handleTouchStart: function _handleTouchStart(e) {
+    this.refs.touchRipple.start(e);
+  },
+
+  _handleTouchEnd: function _handleTouchEnd() {
+    this.refs.touchRipple.end();
+  },
+
+  _handleBlur: function _handleBlur(e) {
+    this.setState({
+      isKeyboardFocused: false
+    });
+
+    if (this.props.onBlur) {
+      this.props.onBlur(e);
+    }
+  },
+
+  _handleFocus: function _handleFocus(e) {
+    var _this = this;
+
+    //setTimeout is needed becuase the focus event fires first
+    //Wait so that we can capture if this was a keyboard focus
+    //or touch focus
+    setTimeout(function () {
+      if (_this._tabPressed) {
+        _this.setState({
+          isKeyboardFocused: true
+        });
+      }
+    }, 150);
+
+    if (this.props.onFocus) {
+      this.props.onFocus(e);
+    }
+  },
+
+  _handleResize: function _handleResize() {
+    this.setState({ parentWidth: this.getEvenWidth() });
+  }
+
+});
+
+module.exports = EnhancedSwitch;
+}).call(this,require('_process'))
+},{"./clearfix":42,"./mixins/style-propable":81,"./mixins/window-listenable":83,"./paper":85,"./ripples/focus-ripple":91,"./ripples/touch-ripple":93,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./utils/key-code":161,"./utils/unique-id":167,"_process":168,"react":"react","react-dom":"react-dom"}],57:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('./mixins/style-propable');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var rowsHeight = 24;
+
+var styles = {
+  textarea: {
+    width: '100%',
+    resize: 'none',
+    font: 'inherit',
+    padding: 0
+  },
+  shadow: {
+    width: '100%',
+    resize: 'none',
+    // Overflow also needed to here to remove the extra row
+    // added to textareas in Firefox.
+    overflow: 'hidden',
+    font: 'inherit',
+    padding: 0,
+    position: 'absolute',
+    opacity: 0
+  }
+};
+
+var EnhancedTextarea = React.createClass({
+  displayName: 'EnhancedTextarea',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    onChange: React.PropTypes.func,
+    onHeightChange: React.PropTypes.func,
+    textareaStyle: React.PropTypes.object,
+    rows: React.PropTypes.number,
+    rowsMax: React.PropTypes.number
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      rows: 1
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      height: this.props.rows * rowsHeight,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    this._syncHeightWithShadow();
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var onChange = _props.onChange;
+    var onHeightChange = _props.onHeightChange;
+    var rows = _props.rows;
+    var style = _props.style;
+    var textareaStyle = _props.textareaStyle;
+    var valueLink = _props.valueLink;
+
+    var other = _objectWithoutProperties(_props, ['onChange', 'onHeightChange', 'rows', 'style', 'textareaStyle', 'valueLink']);
+
+    var textareaStyles = this.mergeStyles(styles.textarea, textareaStyle, {
+      height: this.state.height
+    });
+
+    var shadowStyles = styles.shadow;
+
+    if (this.props.hasOwnProperty('valueLink')) {
+      other.value = this.props.valueLink.value;
+    }
+
+    if (this.props.disabled) {
+      style.cursor = 'default';
+    }
+
+    return React.createElement(
+      'div',
+      { style: this.prepareStyles(this.props.style) },
+      React.createElement('textarea', {
+        ref: 'shadow',
+        style: this.prepareStyles(shadowStyles),
+        tabIndex: '-1',
+        rows: this.props.rows,
+        defaultValue: this.props.defaultValue,
+        readOnly: true,
+        value: this.props.value,
+        valueLink: this.props.valueLink }),
+      React.createElement('textarea', _extends({}, other, {
+        ref: 'input',
+        rows: this.props.rows,
+        style: this.prepareStyles(textareaStyles),
+        onChange: this._handleChange }))
+    );
+  },
+
+  getInputNode: function getInputNode() {
+    return ReactDOM.findDOMNode(this.refs.input);
+  },
+
+  setValue: function setValue(value) {
+    this.getInputNode().value = value;
+    this._syncHeightWithShadow(value);
+  },
+
+  _syncHeightWithShadow: function _syncHeightWithShadow(newValue, e) {
+    var shadow = ReactDOM.findDOMNode(this.refs.shadow);
+
+    if (newValue !== undefined) {
+      shadow.value = newValue;
+    }
+
+    var newHeight = shadow.scrollHeight;
+
+    if (this.props.rowsMax > this.props.rows) {
+      newHeight = Math.min(this.props.rowsMax * rowsHeight, newHeight);
+    }
+
+    newHeight = Math.max(newHeight, rowsHeight);
+
+    if (this.state.height !== newHeight) {
+      this.setState({
+        height: newHeight
+      });
+
+      if (this.props.onHeightChange) {
+        this.props.onHeightChange(e, newHeight);
+      }
+    }
+  },
+
+  _handleChange: function _handleChange(e) {
+    this._syncHeightWithShadow(e.target.value);
+
+    if (this.props.hasOwnProperty('valueLink')) {
+      this.props.valueLink.requestChange(e.target.value);
+    }
+
+    if (this.props.onChange) {
+      this.props.onChange(e);
+    }
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    if (nextProps.value !== this.props.value) {
+      this._syncHeightWithShadow(nextProps.value);
+    }
+    var newState = {};
+    newState.muiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+  }
+});
+
+module.exports = EnhancedTextarea;
+},{"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"react":"react","react-dom":"react-dom"}],58:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ContextPure = require('./mixins/context-pure');
+var Transitions = require('./styles/transitions');
+var Children = require('./utils/children');
+var ColorManipulator = require('./utils/color-manipulator');
+var ImmutabilityHelper = require('./utils/immutability-helper');
+var Typography = require('./styles/typography');
+var EnhancedButton = require('./enhanced-button');
+var FlatButtonLabel = require('./buttons/flat-button-label');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+function validateLabel(props, propName, componentName) {
+  if (!props.children && !props.label) {
+    return new Error('Required prop label or children was not ' + 'specified in ' + componentName + '.');
+  }
+}
+
+var FlatButton = React.createClass({
+  displayName: 'FlatButton',
+
+  mixins: [ContextPure],
+
+  statics: {
+    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+      var buttonTheme = muiTheme.button;
+      var flatButtonTheme = muiTheme.flatButton;
+
+      return {
+        buttonColor: flatButtonTheme.color,
+        buttonHeight: buttonTheme.height,
+        buttonMinWidth: buttonTheme.minWidth,
+        disabledTextColor: flatButtonTheme.disabledTextColor,
+        primaryTextColor: flatButtonTheme.primaryTextColor,
+        secondaryTextColor: flatButtonTheme.secondaryTextColor,
+        textColor: flatButtonTheme.textColor,
+        textTransform: flatButtonTheme.textTransform ? flatButtonTheme.textTransform : buttonTheme.textTransform ? buttonTheme.textTransform : 'uppercase'
+      };
+    },
+    getChildrenClasses: function getChildrenClasses() {
+      return [EnhancedButton, FlatButtonLabel];
+    }
+  },
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    disabled: React.PropTypes.bool,
+    hoverColor: React.PropTypes.string,
+    label: validateLabel,
+    labelPosition: React.PropTypes.oneOf(['before', 'after']),
+    labelStyle: React.PropTypes.object,
+    onKeyboardFocus: React.PropTypes.func,
+    onMouseEnter: React.PropTypes.func,
+    onMouseLeave: React.PropTypes.func,
+    onTouchStart: React.PropTypes.func,
+    primary: React.PropTypes.bool,
+    rippleColor: React.PropTypes.string,
+    secondary: React.PropTypes.bool
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      labelStyle: {},
+      labelPosition: 'before',
+      onKeyboardFocus: function onKeyboardFocus() {},
+      onMouseEnter: function onMouseEnter() {},
+      onMouseLeave: function onMouseLeave() {},
+      onTouchStart: function onTouchStart() {}
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      hovered: false,
+      isKeyboardFocused: false,
+      touch: false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var children = _props.children;
+    var disabled = _props.disabled;
+    var hoverColor = _props.hoverColor;
+    var backgroundColor = _props.backgroundColor;
+    var label = _props.label;
+    var labelStyle = _props.labelStyle;
+    var labelPosition = _props.labelPosition;
+    var onKeyboardFocus = _props.onKeyboardFocus;
+    var onMouseLeave = _props.onMouseLeave;
+    var onMouseEnter = _props.onMouseEnter;
+    var onTouchStart = _props.onTouchStart;
+    var primary = _props.primary;
+    var rippleColor = _props.rippleColor;
+    var secondary = _props.secondary;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['children', 'disabled', 'hoverColor', 'backgroundColor', 'label', 'labelStyle', 'labelPosition', 'onKeyboardFocus', 'onMouseLeave', 'onMouseEnter', 'onTouchStart', 'primary', 'rippleColor', 'secondary', 'style']);
+
+    var _constructor$getRelevantContextKeys = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+    var buttonColor = _constructor$getRelevantContextKeys.buttonColor;
+    var buttonHeight = _constructor$getRelevantContextKeys.buttonHeight;
+    var buttonMinWidth = _constructor$getRelevantContextKeys.buttonMinWidth;
+    var disabledTextColor = _constructor$getRelevantContextKeys.disabledTextColor;
+    var primaryTextColor = _constructor$getRelevantContextKeys.primaryTextColor;
+    var secondaryTextColor = _constructor$getRelevantContextKeys.secondaryTextColor;
+    var textColor = _constructor$getRelevantContextKeys.textColor;
+    var textTransform = _constructor$getRelevantContextKeys.textTransform;
+
+    var defaultColor = disabled ? disabledTextColor : primary ? primaryTextColor : secondary ? secondaryTextColor : textColor;
+
+    var defaultHoverColor = ColorManipulator.fade(ColorManipulator.lighten(defaultColor, 0.4), 0.15);
+    var defaultRippleColor = ColorManipulator.fade(defaultColor, 0.8);
+    var buttonHoverColor = hoverColor || defaultHoverColor;
+    var buttonRippleColor = rippleColor || defaultRippleColor;
+    var hovered = (this.state.hovered || this.state.isKeyboardFocused) && !disabled;
+    var buttonBackgroundColor = backgroundColor || buttonColor;
+
+    var mergedRootStyles = ImmutabilityHelper.merge({
+      color: defaultColor,
+      transition: Transitions.easeOut(),
+      fontSize: Typography.fontStyleButtonFontSize,
+      letterSpacing: 0,
+      textTransform: textTransform,
+      fontWeight: Typography.fontWeightMedium,
+      borderRadius: 2,
+      userSelect: 'none',
+      position: 'relative',
+      overflow: 'hidden',
+      backgroundColor: hovered ? buttonHoverColor : buttonBackgroundColor,
+      lineHeight: buttonHeight + 'px',
+      minWidth: buttonMinWidth,
+      padding: 0,
+      margin: 0,
+      //This is need so that ripples do not bleed past border radius.
+      //See: http://stackoverflow.com/questions/17298739
+      transform: 'translate3d(0, 0, 0)'
+    }, style);
+
+    var labelElement = label ? React.createElement(FlatButtonLabel, { label: label, style: labelStyle }) : undefined;
+    // Place label before or after children.
+    var childrenFragment = labelPosition === 'before' ? { labelElement: labelElement, children: children } : { children: children, labelElement: labelElement };
+    var enhancedButtonChildren = Children.create(childrenFragment);
+
+    return React.createElement(
+      EnhancedButton,
+      _extends({}, other, {
+        disabled: disabled,
+        focusRippleColor: buttonRippleColor,
+        onKeyboardFocus: this._handleKeyboardFocus,
+        onMouseLeave: this._handleMouseLeave,
+        onMouseEnter: this._handleMouseEnter,
+        onTouchStart: this._handleTouchStart,
+        style: mergedRootStyles,
+        touchRippleColor: buttonRippleColor }),
+      enhancedButtonChildren
+    );
+  },
+
+  _handleKeyboardFocus: function _handleKeyboardFocus(e, isKeyboardFocused) {
+    this.setState({ isKeyboardFocused: isKeyboardFocused });
+    this.props.onKeyboardFocus(e, isKeyboardFocused);
+  },
+
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    //Cancel hover styles for touch devices
+    if (!this.state.touch) this.setState({ hovered: true });
+    this.props.onMouseEnter(e);
+  },
+
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    this.setState({ hovered: false });
+    this.props.onMouseLeave(e);
+  },
+
+  _handleTouchStart: function _handleTouchStart(e) {
+    this.setState({ touch: true });
+    this.props.onTouchStart(e);
+  }
+
+});
+
+module.exports = FlatButton;
+},{"./buttons/flat-button-label":32,"./enhanced-button":55,"./mixins/context-pure":78,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./styles/typography":106,"./utils/children":151,"./utils/color-manipulator":152,"./utils/immutability-helper":158,"react":"react"}],59:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var ColorManipulator = require('./utils/color-manipulator');
+var EnhancedButton = require('./enhanced-button');
+var FontIcon = require('./font-icon');
+var Paper = require('./paper');
+var Children = require('./utils/children');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var getZDepth = function getZDepth(disabled) {
+  var zDepth = disabled ? 0 : 2;
+  return {
+    zDepth: zDepth,
+    initialZDepth: zDepth
+  };
+};
+
+var FloatingActionButton = React.createClass({
+  displayName: 'FloatingActionButton',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    backgroundColor: React.PropTypes.string,
+    disabled: React.PropTypes.bool,
+    disabledColor: React.PropTypes.string,
+    iconClassName: React.PropTypes.string,
+    iconStyle: React.PropTypes.object,
+    mini: React.PropTypes.bool,
+    onMouseDown: React.PropTypes.func,
+    onMouseUp: React.PropTypes.func,
+    onMouseLeave: React.PropTypes.func,
+    onTouchEnd: React.PropTypes.func,
+    onTouchStart: React.PropTypes.func,
+    secondary: React.PropTypes.bool
+  },
+
+  getInitialState: function getInitialState() {
+    var zDepth = this.props.disabled ? 0 : 2;
+    return {
+      hovered: false,
+      initialZDepth: zDepth,
+      touch: false,
+      zDepth: zDepth,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  componentWillMount: function componentWillMount() {
+    this.setState(getZDepth(this.props.disabled));
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(newProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+
+    if (newProps.disabled !== this.props.disabled) {
+      this.setState(getZDepth(newProps.disabled));
+    }
+  },
+
+  componentDidMount: function componentDidMount() {
+    if (process.env.NODE_ENV !== 'production') {
+      if (this.props.iconClassName && this.props.children) {
+        var warning = 'You have set both an iconClassName and a child icon. ' + 'It is recommended you use only one method when adding ' + 'icons to FloatingActionButtons.';
+        console.warn(warning);
+      }
+    }
+  },
+
+  _getBackgroundColor: function _getBackgroundColor() {
+    return this.props.disabled ? this.props.disabledColor || this.getTheme().disabledColor : this.props.backgroundColor ? this.props.backgroundColor : this.props.secondary ? this.getTheme().secondaryColor : this.getTheme().color;
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.floatingActionButton;
+  },
+
+  _getIconColor: function _getIconColor() {
+    return this.props.disabled ? this.getTheme().disabledTextColor : this.props.secondary ? this.getTheme().secondaryIconColor : this.getTheme().iconColor;
+  },
+
+  getStyles: function getStyles() {
+    var themeVariables = this.state.muiTheme.floatingActionButton;
+
+    var styles = {
+      root: {
+        transition: Transitions.easeOut(),
+        display: 'inline-block'
+      },
+      container: {
+        transition: Transitions.easeOut(),
+        position: 'relative',
+        height: themeVariables.buttonSize,
+        width: themeVariables.buttonSize,
+        padding: 0,
+        overflow: 'hidden',
+        backgroundColor: this._getBackgroundColor(),
+        borderRadius: '50%',
+        textAlign: 'center',
+        verticalAlign: 'bottom',
+        //This is need so that ripples do not bleed
+        //past border radius.
+        //See: http://stackoverflow.com/questions/17298739/css-overflow-hidden-not-working-in-chrome-when-parent-has-border-radius-and-chil
+        transform: 'translate3d(0, 0, 0)'
+      },
+      containerWhenMini: {
+        height: themeVariables.miniSize,
+        width: themeVariables.miniSize
+      },
+      overlay: {
+        transition: Transitions.easeOut(),
+        top: 0
+      },
+      overlayWhenHovered: {
+        backgroundColor: ColorManipulator.fade(this._getIconColor(), 0.4)
+      },
+      icon: {
+        height: themeVariables.buttonSize,
+        lineHeight: themeVariables.buttonSize + 'px',
+        fill: themeVariables.iconColor,
+        color: this._getIconColor()
+      },
+      iconWhenMini: {
+        height: themeVariables.miniSize,
+        lineHeight: themeVariables.miniSize + 'px'
+      }
+    };
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var disabled = _props.disabled;
+    var mini = _props.mini;
+    var secondary = _props.secondary;
+    var iconStyle = _props.iconStyle;
+    var iconClassName = _props.iconClassName;
+
+    var other = _objectWithoutProperties(_props, ['disabled', 'mini', 'secondary', 'iconStyle', 'iconClassName']);
+
+    var styles = this.getStyles();
+
+    var iconElement = undefined;
+    if (iconClassName) {
+      iconElement = React.createElement(FontIcon, {
+        className: iconClassName,
+        style: this.mergeStyles(styles.icon, mini && styles.iconWhenMini, iconStyle) });
+    }
+
+    var children = Children.extend(this.props.children, {
+      style: this.mergeStyles(styles.icon, mini && styles.iconWhenMini, iconStyle)
+    });
+
+    var buttonEventHandlers = disabled ? null : {
+      onMouseDown: this._handleMouseDown,
+      onMouseUp: this._handleMouseUp,
+      onMouseLeave: this._handleMouseLeave,
+      onMouseEnter: this._handleMouseEnter,
+      onTouchStart: this._handleTouchStart,
+      onTouchEnd: this._handleTouchEnd,
+      onKeyboardFocus: this._handleKeyboardFocus
+    };
+
+    return React.createElement(
+      Paper,
+      {
+        style: this.mergeStyles(styles.root, this.props.style),
+        zDepth: this.state.zDepth,
+        circle: true },
+      React.createElement(
+        EnhancedButton,
+        _extends({}, other, buttonEventHandlers, {
+          ref: 'container',
+          disabled: disabled,
+          style: this.mergeStyles(styles.container, this.props.mini && styles.containerWhenMini, iconStyle),
+          focusRippleColor: styles.icon.color,
+          touchRippleColor: styles.icon.color }),
+        React.createElement(
+          'div',
+          {
+            ref: 'overlay',
+            style: this.prepareStyles(styles.overlay, this.state.hovered && !this.props.disabled && styles.overlayWhenHovered) },
+          iconElement,
+          children
+        )
+      )
+    );
+  },
+
+  _handleMouseDown: function _handleMouseDown(e) {
+    //only listen to left clicks
+    if (e.button === 0) {
+      this.setState({ zDepth: this.state.initialZDepth + 1 });
+    }
+    if (this.props.onMouseDown) this.props.onMouseDown(e);
+  },
+
+  _handleMouseUp: function _handleMouseUp(e) {
+    this.setState({ zDepth: this.state.initialZDepth });
+    if (this.props.onMouseUp) this.props.onMouseUp(e);
+  },
+
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    if (!this.refs.container.isKeyboardFocused()) this.setState({ zDepth: this.state.initialZDepth, hovered: false });
+    if (this.props.onMouseLeave) this.props.onMouseLeave(e);
+  },
+
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    if (!this.refs.container.isKeyboardFocused() && !this.state.touch) {
+      this.setState({ hovered: true });
+    }
+    if (this.props.onMouseEnter) this.props.onMouseEnter(e);
+  },
+
+  _handleTouchStart: function _handleTouchStart(e) {
+    this.setState({
+      touch: true,
+      zDepth: this.state.initialZDepth + 1
+    });
+    if (this.props.onTouchStart) this.props.onTouchStart(e);
+  },
+
+  _handleTouchEnd: function _handleTouchEnd(e) {
+    this.setState({ zDepth: this.state.initialZDepth });
+    if (this.props.onTouchEnd) this.props.onTouchEnd(e);
+  },
+
+  _handleKeyboardFocus: function _handleKeyboardFocus(e, keyboardFocused) {
+    if (keyboardFocused && !this.props.disabled) {
+      this.setState({ zDepth: this.state.initialZDepth + 1 });
+      ReactDOM.findDOMNode(this.refs.overlay).style.backgroundColor = ColorManipulator.fade(this.getStyles().icon.color, 0.4);
+    } else if (!this.state.hovered) {
+      this.setState({ zDepth: this.state.initialZDepth });
+      ReactDOM.findDOMNode(this.refs.overlay).style.backgroundColor = 'transparent';
+    }
+  }
+
+});
+
+module.exports = FloatingActionButton;
+}).call(this,require('_process'))
+},{"./enhanced-button":55,"./font-icon":60,"./mixins/style-propable":81,"./paper":85,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./utils/children":151,"./utils/color-manipulator":152,"_process":168,"react":"react","react-dom":"react-dom"}],60:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var FontIcon = React.createClass({
+  displayName: 'FontIcon',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    color: React.PropTypes.string,
+    hoverColor: React.PropTypes.string,
+    onMouseLeave: React.PropTypes.func,
+    onMouseEnter: React.PropTypes.func
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      hovered: false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var color = _props.color;
+    var hoverColor = _props.hoverColor;
+    var onMouseLeave = _props.onMouseLeave;
+    var onMouseEnter = _props.onMouseEnter;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['color', 'hoverColor', 'onMouseLeave', 'onMouseEnter', 'style']);
+
+    var spacing = this.state.muiTheme.rawTheme.spacing;
+    var offColor = color ? color : style && style.color ? style.color : this.state.muiTheme.rawTheme.palette.textColor;
+    var onColor = hoverColor ? hoverColor : offColor;
+
+    var mergedStyles = this.prepareStyles({
+      position: 'relative',
+      fontSize: spacing.iconSize,
+      display: 'inline-block',
+      userSelect: 'none',
+      transition: Transitions.easeOut()
+    }, style, {
+      color: this.state.hovered ? onColor : offColor
+    });
+
+    return React.createElement('span', _extends({}, other, {
+      onMouseLeave: this._handleMouseLeave,
+      onMouseEnter: this._handleMouseEnter,
+      style: mergedStyles }));
+  },
+
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    // hover is needed only when a hoverColor is defined
+    if (this.props.hoverColor !== undefined) this.setState({ hovered: false });
+    if (this.props.onMouseLeave) {
+      this.props.onMouseLeave(e);
+    }
+  },
+
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    // hover is needed only when a hoverColor is defined
+    if (this.props.hoverColor !== undefined) this.setState({ hovered: true });
+    if (this.props.onMouseEnter) {
+      this.props.onMouseEnter(e);
+    }
+  }
+});
+
+module.exports = FontIcon;
+},{"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react"}],61:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var GridList = React.createClass({
+  displayName: 'GridList',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    cols: React.PropTypes.number,
+    padding: React.PropTypes.number,
+    cellHeight: React.PropTypes.number
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      cols: 2,
+      padding: 4,
+      cellHeight: 180
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getStyles: function getStyles() {
+    return {
+      root: {
+        display: '-webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex',
+        flexWrap: 'wrap',
+        margin: '-' + this.props.padding / 2 + 'px'
+      },
+      item: {
+        boxSizing: 'border-box',
+        padding: this.props.padding / 2 + 'px'
+      }
+    };
+  },
+
+  render: function render() {
+    var _this = this;
+
+    var _props = this.props;
+    var cols = _props.cols;
+    var padding = _props.padding;
+    var cellHeight = _props.cellHeight;
+    var children = _props.children;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['cols', 'padding', 'cellHeight', 'children', 'style']);
+
+    var styles = this.getStyles();
+
+    var mergedRootStyles = this.mergeStyles(styles.root, style);
+
+    var wrappedChildren = React.Children.map(children, function (currentChild) {
+      var childCols = currentChild.props.cols || 1;
+      var childRows = currentChild.props.rows || 1;
+      var itemStyle = _this.mergeStyles(styles.item, {
+        width: 100 / cols * childCols + '%',
+        height: cellHeight * childRows + padding
+      });
+
+      return React.createElement(
+        'div',
+        { style: _this.prepareStyles(itemStyle) },
+        currentChild
+      );
+    });
+
+    return React.createElement(
+      'div',
+      _extends({ style: this.prepareStyles(mergedRootStyles) }, other),
+      wrappedChildren
+    );
+  }
+});
+
+module.exports = GridList;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],62:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var GridTile = React.createClass({
+  displayName: 'GridTile',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    title: React.PropTypes.string,
+    subtitle: React.PropTypes.node,
+    titlePosition: React.PropTypes.oneOf(['top', 'bottom']),
+    titleBackground: React.PropTypes.string,
+    actionIcon: React.PropTypes.element,
+    actionPosition: React.PropTypes.oneOf(['left', 'right']),
+    cols: React.PropTypes.number,
+    rows: React.PropTypes.number,
+    rootClass: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.object])
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      titlePosition: 'bottom',
+      titleBackground: 'rgba(0, 0, 0, 0.4)',
+      actionPosition: 'right',
+      cols: 1,
+      rows: 1,
+      rootClass: 'div'
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getStyles: function getStyles() {
+    var _titleBar;
+
+    var spacing = this.state.muiTheme.rawTheme.spacing;
+    var themeVariables = this.state.muiTheme.gridTile;
+    var actionPos = this.props.actionIcon ? this.props.actionPosition : null;
+    var gutterLess = spacing.desktopGutterLess;
+
+    var styles = {
+      root: {
+        position: 'relative',
+        display: 'block',
+        height: '100%',
+        overflow: 'hidden'
+      },
+      titleBar: (_titleBar = {
+        position: 'absolute',
+        left: 0,
+        right: 0
+      }, _defineProperty(_titleBar, this.props.titlePosition, 0), _defineProperty(_titleBar, 'height', this.props.subtitle ? 68 : 48), _defineProperty(_titleBar, 'background', this.props.titleBackground), _defineProperty(_titleBar, 'display', '-webkit-box; display: -moz-box; display: -ms-flexbox; display: -webkit-flex; display: flex'), _defineProperty(_titleBar, 'alignItems', 'center'), _titleBar),
+      titleWrap: {
+        flexGrow: 1,
+        marginLeft: actionPos === 'right' ? gutterLess : 0,
+        marginRight: actionPos === 'left' ? gutterLess : 0,
+        color: themeVariables.textColor,
+        overflow: 'hidden'
+      },
+      title: {
+        fontSize: '16px',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap'
+      },
+      subtitle: {
+        fontSize: '12px',
+        textOverflow: 'ellipsis',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap'
+      },
+      actionIcon: {
+        order: actionPos === 'left' ? -1 : 1
+      },
+      childImg: {
+        height: '100%',
+        transform: 'translateX(-50%)',
+        position: 'relative',
+        left: '50%'
+      }
+    };
+    return styles;
+  },
+
+  componentDidMount: function componentDidMount() {
+    this._ensureImageCover();
+  },
+
+  componeneDidUpdate: function componeneDidUpdate() {
+    this._ensureImageCover();
+  },
+
+  _ensureImageCover: function _ensureImageCover() {
+    var imgEl = ReactDOM.findDOMNode(this.refs.img);
+
+    if (imgEl) {
+      (function () {
+        var fit = function fit() {
+          if (imgEl.offsetWidth < imgEl.parentNode.offsetWidth) {
+            imgEl.style.height = 'auto';
+            imgEl.style.left = '0';
+            imgEl.style.width = '100%';
+            imgEl.style.top = '50%';
+            imgEl.style.transform = imgEl.style.WebkitTransform = 'translateY(-50%)';
+          }
+          imgEl.removeEventListener('load', fit);
+          imgEl = null; // prevent closure memory leak
+        };
+        if (imgEl.complete) {
+          fit();
+        } else {
+          imgEl.addEventListener('load', fit);
+        }
+      })();
+    }
+  },
+
+  render: function render() {
+    var _this = this;
+
+    var _props = this.props;
+    var title = _props.title;
+    var subtitle = _props.subtitle;
+    var titlePosition = _props.titlePosition;
+    var titleBackground = _props.titleBackground;
+    var actionIcon = _props.actionIcon;
+    var actionPosition = _props.actionPosition;
+    var style = _props.style;
+    var children = _props.children;
+    var rootClass = _props.rootClass;
+
+    var other = _objectWithoutProperties(_props, ['title', 'subtitle', 'titlePosition', 'titleBackground', 'actionIcon', 'actionPosition', 'style', 'children', 'rootClass']);
+
+    var styles = this.getStyles();
+
+    var mergedRootStyles = this.prepareStyles(styles.root, style);
+
+    var titleBar = null;
+
+    if (title) {
+      titleBar = React.createElement(
+        'div',
+        { style: this.prepareStyles(styles.titleBar) },
+        React.createElement(
+          'div',
+          { style: this.prepareStyles(styles.titleWrap) },
+          React.createElement(
+            'div',
+            { style: this.prepareStyles(styles.title) },
+            title
+          ),
+          subtitle ? React.createElement(
+            'div',
+            { style: this.prepareStyles(styles.subtitle) },
+            subtitle
+          ) : null
+        ),
+        actionIcon ? React.createElement(
+          'div',
+          { style: this.prepareStyles(styles.actionIcon) },
+          actionIcon
+        ) : null
+      );
+    }
+
+    var newChildren = children;
+
+    // if there is an image passed as children
+    // clone it an put our styles
+    if (React.Children.count(children) === 1) {
+      newChildren = React.Children.map(children, function (child) {
+        if (child.type === 'img') {
+          return React.cloneElement(child, {
+            ref: 'img',
+            style: _this.prepareStyles(styles.childImg, child.props.style)
+          });
+        } else {
+          return child;
+        }
+      });
+    }
+
+    var RootTag = rootClass;
+    return React.createElement(
+      RootTag,
+      _extends({ style: mergedRootStyles }, other),
+      newChildren,
+      titleBar
+    );
+  }
+});
+
+module.exports = GridTile;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react","react-dom":"react-dom"}],63:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var ContextPure = require('./mixins/context-pure');
+var Transitions = require('./styles/transitions');
+var PropTypes = require('./utils/prop-types');
+var EnhancedButton = require('./enhanced-button');
+var FontIcon = require('./font-icon');
+var Tooltip = require('./tooltip');
+var Children = require('./utils/children');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var IconButton = React.createClass({
+  displayName: 'IconButton',
+
+  mixins: [StylePropable, ContextPure],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  statics: {
+    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+      var spacing = muiTheme.rawTheme.spacing;
+      var palette = muiTheme.rawTheme.palette;
+
+      return {
+        iconSize: spacing.iconSize,
+        textColor: palette.textColor,
+        disabledColor: palette.disabledColor
+      };
+    },
+
+    getChildrenClasses: function getChildrenClasses() {
+      return [EnhancedButton, FontIcon, Tooltip];
+    }
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    className: React.PropTypes.string,
+    disabled: React.PropTypes.bool,
+    iconClassName: React.PropTypes.string,
+    iconStyle: React.PropTypes.object,
+    onBlur: React.PropTypes.func,
+    onFocus: React.PropTypes.func,
+    onKeyboardFocus: React.PropTypes.func,
+    tooltip: React.PropTypes.node,
+    tooltipStyles: React.PropTypes.object,
+    tooltipPosition: PropTypes.cornersAndCenter,
+    touch: React.PropTypes.bool
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      tooltipShown: false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      iconStyle: {},
+      tooltipPosition: 'bottom-center'
+    };
+  },
+
+  getStyles: function getStyles() {
+    var _constructor$getRelevantContextKeys = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+    var iconSize = _constructor$getRelevantContextKeys.iconSize;
+    var textColor = _constructor$getRelevantContextKeys.textColor;
+    var disabledColor = _constructor$getRelevantContextKeys.disabledColor;
+
+    var styles = {
+      root: {
+        position: 'relative',
+        boxSizing: 'border-box',
+        transition: Transitions.easeOut(),
+        padding: iconSize / 2,
+        width: iconSize * 2,
+        height: iconSize * 2,
+        fontSize: 0
+      },
+      tooltip: {
+        boxSizing: 'border-box'
+      },
+      icon: {
+        color: textColor,
+        fill: textColor
+      },
+      overlay: {
+        position: 'relative',
+        top: 0,
+        width: '100%',
+        height: '100%',
+        background: disabledColor
+      },
+      disabled: {
+        color: disabledColor,
+        fill: disabledColor
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var disabled = _props.disabled;
+    var iconClassName = _props.iconClassName;
+    var tooltip = _props.tooltip;
+    var touch = _props.touch;
+    var iconStyle = _props.iconStyle;
+
+    var other = _objectWithoutProperties(_props, ['disabled', 'iconClassName', 'tooltip', 'touch', 'iconStyle']);
+
+    var fonticon = undefined;
+
+    var styles = this.getStyles();
+    var tooltipPosition = this.props.tooltipPosition.split('-');
+
+    var tooltipElement = tooltip ? React.createElement(Tooltip, {
+      ref: 'tooltip',
+      label: tooltip,
+      show: this.state.tooltipShown,
+      touch: touch,
+      style: this.mergeStyles(styles.tooltip, this.props.tooltipStyles),
+      verticalPosition: tooltipPosition[0],
+      horizontalPosition: tooltipPosition[1] }) : null;
+
+    if (iconClassName) {
+      var iconHoverColor = iconStyle.iconHoverColor;
+
+      var iconStyleFontIcon = _objectWithoutProperties(iconStyle, ['iconHoverColor']);
+
+      fonticon = React.createElement(
+        FontIcon,
+        {
+          className: iconClassName,
+          hoverColor: disabled ? null : iconHoverColor,
+          style: this.mergeStyles(styles.icon, disabled ? styles.disabled : {}, iconStyleFontIcon) },
+        this.props.children
+      );
+    }
+
+    var childrenStyle = disabled ? this.mergeStyles(iconStyle, styles.disabled) : iconStyle;
+
+    return React.createElement(
+      EnhancedButton,
+      _extends({}, other, {
+        ref: 'button',
+        centerRipple: true,
+        disabled: disabled,
+        style: this.mergeStyles(styles.root, this.props.style),
+        onBlur: this._handleBlur,
+        onFocus: this._handleFocus,
+        onMouseLeave: this._handleMouseLeave,
+        onMouseEnter: this._handleMouseEnter,
+        onKeyboardFocus: this._handleKeyboardFocus }),
+      tooltipElement,
+      fonticon,
+      Children.extend(this.props.children, {
+        style: childrenStyle
+      })
+    );
+  },
+
+  setKeyboardFocus: function setKeyboardFocus() {
+    this.refs.button.setKeyboardFocus();
+  },
+
+  _showTooltip: function _showTooltip() {
+    if (!this.props.disabled && this.props.tooltip) {
+      this.setState({ tooltipShown: true });
+    }
+  },
+
+  _hideTooltip: function _hideTooltip() {
+    if (this.props.tooltip) this.setState({ tooltipShown: false });
+  },
+
+  _handleBlur: function _handleBlur(e) {
+    this._hideTooltip();
+    if (this.props.onBlur) this.props.onBlur(e);
+  },
+
+  _handleFocus: function _handleFocus(e) {
+    this._showTooltip();
+    if (this.props.onFocus) this.props.onFocus(e);
+  },
+
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    if (!this.refs.button.isKeyboardFocused()) this._hideTooltip();
+    if (this.props.onMouseLeave) this.props.onMouseLeave(e);
+  },
+
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    this._showTooltip();
+    if (this.props.onMouseEnter) this.props.onMouseEnter(e);
+  },
+
+  _handleKeyboardFocus: function _handleKeyboardFocus(e, keyboardFocused) {
+    if (keyboardFocused && !this.props.disabled) {
+      this._showTooltip();
+      if (this.props.onFocus) this.props.onFocus(e);
+    } else if (!this.state.hovered) {
+      this._hideTooltip();
+      if (this.props.onBlur) this.props.onBlur(e);
+    }
+
+    if (this.props.onKeyboardFocus) this.props.onKeyboardFocus(e, keyboardFocused);
+  }
+
+});
+
+module.exports = IconButton;
+},{"./enhanced-button":55,"./font-icon":60,"./mixins/context-pure":78,"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./tooltip":146,"./utils/children":151,"./utils/prop-types":164,"react":"react"}],64:[function(require,module,exports){
+'use strict';
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var Transitions = require('./styles/transitions');
+var StylePropable = require('./mixins/style-propable');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var InkBar = React.createClass({
+  displayName: 'InkBar',
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    color: React.PropTypes.string,
+    left: React.PropTypes.string.isRequired,
+    width: React.PropTypes.string.isRequired
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  mixins: [StylePropable],
+
+  render: function render() {
+    var _props = this.props;
+    var color = _props.color;
+    var left = _props.left;
+    var width = _props.width;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['color', 'left', 'width', 'style']);
+
+    var colorStyle = color ? { backgroundColor: color } : undefined;
+    var styles = this.prepareStyles({
+      left: left,
+      width: width,
+      bottom: 0,
+      display: 'block',
+      backgroundColor: this.state.muiTheme.inkBar.backgroundColor,
+      height: 2,
+      marginTop: -2,
+      position: 'relative',
+      transition: Transitions.easeOut('1s', 'left')
+    }, this.props.style, colorStyle);
+
+    return React.createElement(
+      'div',
+      { style: styles },
+      ' '
+    );
+  }
+
+});
+
+module.exports = InkBar;
+},{"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react"}],65:[function(require,module,exports){
+'use strict';
+
+var isBrowser = require('./utils/is-browser');
+
+var Modernizr = isBrowser ? require('./utils/modernizr.custom') : undefined;
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var KeyCode = require('./utils/key-code');
+var StylePropable = require('./mixins/style-propable');
+var AutoPrefix = require('./styles/auto-prefix');
+var Transitions = require('./styles/transitions');
+var WindowListenable = require('./mixins/window-listenable');
+var Overlay = require('./overlay');
+var Paper = require('./paper');
+var Menu = require('./menu/menu');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var openNavEventHandler = null;
+
+var LeftNav = React.createClass({
+  displayName: 'LeftNav',
+
+  mixins: [StylePropable, WindowListenable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    className: React.PropTypes.string,
+    disableSwipeToOpen: React.PropTypes.bool,
+    docked: React.PropTypes.bool,
+    header: React.PropTypes.element,
+    menuItems: React.PropTypes.array,
+    onChange: React.PropTypes.func,
+    onNavOpen: React.PropTypes.func,
+    onNavClose: React.PropTypes.func,
+    openRight: React.PropTypes.bool,
+    selectedIndex: React.PropTypes.number,
+    menuItemClassName: React.PropTypes.string,
+    menuItemClassNameSubheader: React.PropTypes.string,
+    menuItemClassNameLink: React.PropTypes.string
+  },
+
+  windowListeners: {
+    'keyup': '_onWindowKeyUp',
+    'resize': '_onWindowResize'
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      disableSwipeToOpen: false,
+      docked: true
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    this._maybeSwiping = false;
+    this._touchStartX = null;
+    this._touchStartY = null;
+    this._swipeStartX = null;
+
+    return {
+      open: this.props.docked,
+      swiping: null,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  componentDidMount: function componentDidMount() {
+    this._updateMenuHeight();
+    this._enableSwipeHandling();
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    this._updateMenuHeight();
+    this._enableSwipeHandling();
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    this._disableSwipeHandling();
+  },
+
+  toggle: function toggle() {
+    this.setState({ open: !this.state.open });
+    return this;
+  },
+
+  close: function close() {
+    this.setState({ open: false });
+    if (this.props.onNavClose) this.props.onNavClose();
+    return this;
+  },
+
+  open: function open() {
+    this.setState({ open: true });
+    if (this.props.onNavOpen) this.props.onNavOpen();
+    return this;
+  },
+
+  getThemePalette: function getThemePalette() {
+    return this.state.muiTheme.rawTheme.palette;
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.leftNav;
+  },
+
+  getStyles: function getStyles() {
+    var x = this._getTranslateMultiplier() * (this.state.open ? 0 : this._getMaxTranslateX());
+    var styles = {
+      root: {
+        height: '100%',
+        width: this.getTheme().width,
+        position: 'fixed',
+        zIndex: 10,
+        left: isBrowser && Modernizr.csstransforms3d ? 0 : x,
+        top: 0,
+        transform: 'translate3d(' + x + 'px, 0, 0)',
+        transition: !this.state.swiping && Transitions.easeOut(),
+        backgroundColor: this.getTheme().color,
+        overflow: 'hidden'
+      },
+      menu: {
+        overflowY: 'auto',
+        overflowX: 'hidden',
+        height: '100%',
+        borderRadius: '0'
+      },
+      menuItem: {
+        height: this.state.muiTheme.rawTheme.spacing.desktopLeftNavMenuItemHeight,
+        lineHeight: this.state.muiTheme.rawTheme.spacing.desktopLeftNavMenuItemHeight + 'px'
+      },
+      rootWhenOpenRight: {
+        left: 'auto',
+        right: 0
+      }
+    };
+
+    styles.menuItemLink = this.mergeStyles(styles.menuItem, {
+      display: 'block',
+      textDecoration: 'none',
+      color: this.getThemePalette().textColor
+    });
+    styles.menuItemSubheader = this.mergeStyles(styles.menuItem, {
+      overflow: 'hidden'
+    });
+
+    return styles;
+  },
+
+  render: function render() {
+    var selectedIndex = this.props.selectedIndex;
+    var overlay = undefined;
+
+    var styles = this.getStyles();
+    if (!this.props.docked) {
+      overlay = React.createElement(Overlay, {
+        ref: 'overlay',
+        show: this.state.open || !!this.state.swiping,
+        transitionEnabled: !this.state.swiping,
+        onTouchTap: this._onOverlayTouchTap });
+    }
+    var children = undefined;
+    if (this.props.menuItems === undefined) {
+      children = this.props.children;
+    } else {
+      children = React.createElement(Menu, {
+        ref: 'menuItems',
+        style: this.mergeStyles(styles.menu),
+        zDepth: 0,
+        menuItems: this.props.menuItems,
+        menuItemStyle: this.mergeStyles(styles.menuItem),
+        menuItemStyleLink: this.mergeStyles(styles.menuItemLink),
+        menuItemStyleSubheader: this.mergeStyles(styles.menuItemSubheader),
+        menuItemClassName: this.props.menuItemClassName,
+        menuItemClassNameSubheader: this.props.menuItemClassNameSubheader,
+        menuItemClassNameLink: this.props.menuItemClassNameLink,
+        selectedIndex: selectedIndex,
+        onItemTap: this._onMenuItemClick });
+    }
+    return React.createElement(
+      'div',
+      { className: this.props.className },
+      overlay,
+      React.createElement(
+        Paper,
+        {
+          ref: 'clickAwayableElement',
+          zDepth: 2,
+          rounded: false,
+          transitionEnabled: !this.state.swiping,
+          style: this.mergeStyles(styles.root, this.props.openRight && styles.rootWhenOpenRight, this.props.style) },
+        this.props.header,
+        children
+      )
+    );
+  },
+
+  _updateMenuHeight: function _updateMenuHeight() {
+    if (this.props.header) {
+      var container = ReactDOM.findDOMNode(this.refs.clickAwayableElement);
+      var menu = ReactDOM.findDOMNode(this.refs.menuItems);
+      var menuHeight = container.clientHeight - menu.offsetTop;
+      menu.style.height = menuHeight + 'px';
+    }
+  },
+
+  _onMenuItemClick: function _onMenuItemClick(e, key, payload) {
+    if (this.props.onChange && this.props.selectedIndex !== key) {
+      this.props.onChange(e, key, payload);
+    }
+    if (!this.props.docked) this.close();
+  },
+
+  _onOverlayTouchTap: function _onOverlayTouchTap() {
+    this.close();
+  },
+
+  _onWindowKeyUp: function _onWindowKeyUp(e) {
+    if (e.keyCode === KeyCode.ESC && !this.props.docked && this.state.open) {
+      this.close();
+    }
+  },
+
+  _onWindowResize: function _onWindowResize() {
+    this._updateMenuHeight();
+  },
+
+  _getMaxTranslateX: function _getMaxTranslateX() {
+    return this.getTheme().width + 10;
+  },
+
+  _getTranslateMultiplier: function _getTranslateMultiplier() {
+    return this.props.openRight ? 1 : -1;
+  },
+
+  _enableSwipeHandling: function _enableSwipeHandling() {
+    if (!this.props.docked) {
+      document.body.addEventListener('touchstart', this._onBodyTouchStart);
+      if (!openNavEventHandler) {
+        openNavEventHandler = this._onBodyTouchStart;
+      }
+    } else {
+      this._disableSwipeHandling();
+    }
+  },
+
+  _disableSwipeHandling: function _disableSwipeHandling() {
+    document.body.removeEventListener('touchstart', this._onBodyTouchStart);
+    if (openNavEventHandler === this._onBodyTouchStart) {
+      openNavEventHandler = null;
+    }
+  },
+
+  _onBodyTouchStart: function _onBodyTouchStart(e) {
+    if (!this.state.open && (openNavEventHandler !== this._onBodyTouchStart || this.props.disableSwipeToOpen)) {
+      return;
+    }
+
+    var touchStartX = e.touches[0].pageX;
+    var touchStartY = e.touches[0].pageY;
+
+    this._maybeSwiping = true;
+    this._touchStartX = touchStartX;
+    this._touchStartY = touchStartY;
+
+    document.body.addEventListener('touchmove', this._onBodyTouchMove);
+    document.body.addEventListener('touchend', this._onBodyTouchEnd);
+    document.body.addEventListener('touchcancel', this._onBodyTouchEnd);
+  },
+
+  _setPosition: function _setPosition(translateX) {
+    var leftNav = ReactDOM.findDOMNode(this.refs.clickAwayableElement);
+    leftNav.style[AutoPrefix.single('transform')] = 'translate3d(' + this._getTranslateMultiplier() * translateX + 'px, 0, 0)';
+    this.refs.overlay.setOpacity(1 - translateX / this._getMaxTranslateX());
+  },
+
+  _getTranslateX: function _getTranslateX(currentX) {
+    return Math.min(Math.max(this.state.swiping === 'closing' ? this._getTranslateMultiplier() * (currentX - this._swipeStartX) : this._getMaxTranslateX() - this._getTranslateMultiplier() * (this._swipeStartX - currentX), 0), this._getMaxTranslateX());
+  },
+
+  _onBodyTouchMove: function _onBodyTouchMove(e) {
+    var currentX = e.touches[0].pageX;
+    var currentY = e.touches[0].pageY;
+
+    if (this.state.swiping) {
+      e.preventDefault();
+      this._setPosition(this._getTranslateX(currentX));
+    } else if (this._maybeSwiping) {
+      var dXAbs = Math.abs(currentX - this._touchStartX);
+      var dYAbs = Math.abs(currentY - this._touchStartY);
+      // If the user has moved his thumb ten pixels in either direction,
+      // we can safely make an assumption about whether he was intending
+      // to swipe or scroll.
+      var threshold = 10;
+
+      if (dXAbs > threshold && dYAbs <= threshold) {
+        this._swipeStartX = currentX;
+        this.setState({
+          swiping: this.state.open ? 'closing' : 'opening'
+        });
+        this._setPosition(this._getTranslateX(currentX));
+      } else if (dXAbs <= threshold && dYAbs > threshold) {
+        this._onBodyTouchEnd();
+      }
+    }
+  },
+
+  _onBodyTouchEnd: function _onBodyTouchEnd(e) {
+    if (this.state.swiping) {
+      var currentX = e.changedTouches[0].pageX;
+      var translateRatio = this._getTranslateX(currentX) / this._getMaxTranslateX();
+
+      this._maybeSwiping = false;
+      var swiping = this.state.swiping;
+      this.setState({
+        swiping: null
+      });
+
+      // We have to open or close after setting swiping to null,
+      // because only then CSS transition is enabled.
+      if (translateRatio > 0.5) {
+        if (swiping === 'opening') {
+          this._setPosition(this._getMaxTranslateX());
+        } else {
+          this.close();
+        }
+      } else {
+        if (swiping === 'opening') {
+          this.open();
+        } else {
+          this._setPosition(0);
+        }
+      }
+    } else {
+      this._maybeSwiping = false;
+    }
+
+    document.body.removeEventListener('touchmove', this._onBodyTouchMove);
+    document.body.removeEventListener('touchend', this._onBodyTouchEnd);
+    document.body.removeEventListener('touchcancel', this._onBodyTouchEnd);
+  }
+
+});
+
+module.exports = LeftNav;
+},{"./menu/menu":73,"./mixins/style-propable":81,"./mixins/window-listenable":83,"./overlay":84,"./paper":85,"./styles/auto-prefix":97,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./utils/is-browser":160,"./utils/key-code":161,"./utils/modernizr.custom":163,"react":"react","react-dom":"react-dom"}],66:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require("./styles/transitions");
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var LinearProgress = React.createClass({
+  displayName: 'LinearProgress',
+
+  mixins: [StylePropable],
+
+  propTypes: {
+    mode: React.PropTypes.oneOf(["determinate", "indeterminate"]),
+    value: React.PropTypes.number,
+    min: React.PropTypes.number,
+    max: React.PropTypes.number
+  },
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  _getRelativeValue: function _getRelativeValue() {
+    var value = this.props.value;
+    var min = this.props.min;
+    var max = this.props.max;
+
+    var clampedValue = Math.min(Math.max(min, value), max);
+    var rangeValue = max - min;
+    var relValue = Math.round(clampedValue / rangeValue * 10000) / 10000;
+    return relValue * 100;
+  },
+
+  componentDidMount: function componentDidMount() {
+    var _this = this;
+
+    var bar1 = ReactDOM.findDOMNode(this.refs.bar1);
+    var bar2 = ReactDOM.findDOMNode(this.refs.bar2);
+
+    this._barUpdate(0, bar1, [[-35, 100], [100, -90]]);
+
+    setTimeout(function () {
+      _this._barUpdate(0, bar2, [[-200, 100], [107, -8]]);
+    }, 850);
+  },
+
+  _barUpdate: function _barUpdate(step, barElement, stepValues) {
+    step = step || 0;
+    step %= 4;
+    setTimeout(this._barUpdate.bind(this, step + 1, barElement, stepValues), 420);
+    if (!this.isMounted()) return;
+    if (this.props.mode !== "indeterminate") return;
+
+    var right = this.state.muiTheme.isRtl ? 'left' : 'right';
+    var left = this.state.muiTheme.isRtl ? 'right' : 'left';
+
+    if (step === 0) {
+      barElement.style[left] = stepValues[0][0] + "%";
+      barElement.style[right] = stepValues[0][1] + "%";
+    } else if (step === 1) {
+      barElement.style.transitionDuration = "840ms";
+    } else if (step === 2) {
+      barElement.style[left] = stepValues[1][0] + "%";
+      barElement.style[right] = stepValues[1][1] + "%";
+    } else if (step === 3) {
+      barElement.style.transitionDuration = "0ms";
+    }
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      mode: "indeterminate",
+      value: 0,
+      min: 0,
+      max: 100
+    };
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.rawTheme.palette;
+  },
+
+  getStyles: function getStyles() {
+    var styles = {
+      root: {
+        position: "relative",
+        height: 4,
+        display: "block",
+        width: "100%",
+        backgroundColor: this.getTheme().primary3Color,
+        borderRadius: 2,
+        margin: 0,
+        overflow: "hidden"
+      },
+      bar: {
+        height: "100%"
+      },
+      barFragment1: {},
+      barFragment2: {}
+    };
+
+    if (this.props.mode === "indeterminate") {
+      styles.barFragment1 = {
+        position: "absolute",
+        backgroundColor: this.getTheme().primary1Color,
+        top: 0,
+        left: 0,
+        bottom: 0,
+        transition: Transitions.create("all", "840ms", null, "cubic-bezier(0.650, 0.815, 0.735, 0.395)")
+      };
+
+      styles.barFragment2 = {
+        position: "absolute",
+        backgroundColor: this.getTheme().primary1Color,
+        top: 0,
+        left: 0,
+        bottom: 0,
+        transition: Transitions.create("all", "840ms", null, "cubic-bezier(0.165, 0.840, 0.440, 1.000)")
+      };
+    } else {
+      styles.bar.backgroundColor = this.getTheme().primary1Color;
+      styles.bar.transition = Transitions.create("width", ".3s", null, "linear");
+      styles.bar.width = this._getRelativeValue() + "%";
+    }
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['style']);
+
+    var styles = this.getStyles();
+
+    return React.createElement(
+      'div',
+      _extends({}, other, { style: this.prepareStyles(styles.root, style) }),
+      React.createElement(
+        'div',
+        { style: this.prepareStyles(styles.bar) },
+        React.createElement('div', { ref: 'bar1', style: this.prepareStyles(styles.barFragment1) }),
+        React.createElement('div', { ref: 'bar2', style: this.prepareStyles(styles.barFragment2) })
+      )
+    );
+  }
+});
+
+module.exports = LinearProgress;
+},{"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react","react-dom":"react-dom"}],67:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var ListDivider = React.createClass({
+  displayName: 'ListDivider',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    inset: React.PropTypes.bool
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var inset = _props.inset;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['inset', 'style']);
+
+    var mergedStyles = this.mergeStyles({
+      margin: 0,
+      marginTop: -1,
+      marginLeft: inset ? 72 : 0,
+      height: 1,
+      border: 'none',
+      backgroundColor: this.state.muiTheme.rawTheme.palette.borderColor
+    }, style);
+
+    return React.createElement('hr', _extends({}, other, { style: this.prepareStyles(mergedStyles) }));
+  }
+});
+
+module.exports = ListDivider;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],68:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var ColorManipulator = require('../utils/color-manipulator');
+var StylePropable = require('../mixins/style-propable');
+var Colors = require('../styles/colors');
+var Transitions = require('../styles/transitions');
+var Typography = require('../styles/typography');
+var EnhancedButton = require('../enhanced-button');
+var IconButton = require('../icon-button');
+var OpenIcon = require('../svg-icons/navigation/arrow-drop-up');
+var CloseIcon = require('../svg-icons/navigation/arrow-drop-down');
+var NestedList = require('./nested-list');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var ListItem = React.createClass({
+  displayName: 'ListItem',
+
+  mixins: [PureRenderMixin, StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    autoGenerateNestedIndicator: React.PropTypes.bool,
+    disabled: React.PropTypes.bool,
+    disableKeyboardFocus: React.PropTypes.bool,
+    initiallyOpen: React.PropTypes.bool,
+    innerDivStyle: React.PropTypes.object,
+    insetChildren: React.PropTypes.bool,
+    innerStyle: React.PropTypes.object,
+    leftAvatar: React.PropTypes.element,
+    leftCheckbox: React.PropTypes.element,
+    leftIcon: React.PropTypes.element,
+    nestedLevel: React.PropTypes.number,
+    nestedItems: React.PropTypes.arrayOf(React.PropTypes.element),
+    onKeyboardFocus: React.PropTypes.func,
+    onMouseEnter: React.PropTypes.func,
+    onMouseLeave: React.PropTypes.func,
+    onNestedListToggle: React.PropTypes.func,
+    onTouchStart: React.PropTypes.func,
+    onTouchTap: React.PropTypes.func,
+    rightAvatar: React.PropTypes.element,
+    rightIcon: React.PropTypes.element,
+    rightIconButton: React.PropTypes.element,
+    rightToggle: React.PropTypes.element,
+    primaryText: React.PropTypes.node,
+    secondaryText: React.PropTypes.node,
+    secondaryTextLines: React.PropTypes.oneOf([1, 2])
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      autoGenerateNestedIndicator: true,
+      initiallyOpen: false,
+      nestedItems: [],
+      nestedLevel: 0,
+      onKeyboardFocus: function onKeyboardFocus() {},
+      onMouseEnter: function onMouseEnter() {},
+      onMouseLeave: function onMouseLeave() {},
+      onNestedListToggle: function onNestedListToggle() {},
+      onTouchStart: function onTouchStart() {},
+      secondaryTextLines: 1
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      hovered: false,
+      isKeyboardFocused: false,
+      open: this.props.initiallyOpen,
+      rightIconButtonHovered: false,
+      rightIconButtonKeyboardFocused: false,
+      touch: false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var autoGenerateNestedIndicator = _props.autoGenerateNestedIndicator;
+    var children = _props.children;
+    var disabled = _props.disabled;
+    var disableKeyboardFocus = _props.disableKeyboardFocus;
+    var innerDivStyle = _props.innerDivStyle;
+    var insetChildren = _props.insetChildren;
+    var leftAvatar = _props.leftAvatar;
+    var leftCheckbox = _props.leftCheckbox;
+    var leftIcon = _props.leftIcon;
+    var nestedItems = _props.nestedItems;
+    var nestedLevel = _props.nestedLevel;
+    var onKeyboardFocus = _props.onKeyboardFocus;
+    var onMouseLeave = _props.onMouseLeave;
+    var onMouseEnter = _props.onMouseEnter;
+    var onTouchStart = _props.onTouchStart;
+    var onTouchTap = _props.onTouchTap;
+    var rightAvatar = _props.rightAvatar;
+    var rightIcon = _props.rightIcon;
+    var rightIconButton = _props.rightIconButton;
+    var rightToggle = _props.rightToggle;
+    var primaryText = _props.primaryText;
+    var secondaryText = _props.secondaryText;
+    var secondaryTextLines = _props.secondaryTextLines;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['autoGenerateNestedIndicator', 'children', 'disabled', 'disableKeyboardFocus', 'innerDivStyle', 'insetChildren', 'leftAvatar', 'leftCheckbox', 'leftIcon', 'nestedItems', 'nestedLevel', 'onKeyboardFocus', 'onMouseLeave', 'onMouseEnter', 'onTouchStart', 'onTouchTap', 'rightAvatar', 'rightIcon', 'rightIconButton', 'rightToggle', 'primaryText', 'secondaryText', 'secondaryTextLines', 'style']);
+
+    var textColor = this.state.muiTheme.rawTheme.palette.textColor;
+    var hoverColor = ColorManipulator.fade(textColor, 0.1);
+    var singleAvatar = !secondaryText && (leftAvatar || rightAvatar);
+    var singleNoAvatar = !secondaryText && !(leftAvatar || rightAvatar);
+    var twoLine = secondaryText && secondaryTextLines === 1;
+    var threeLine = secondaryText && secondaryTextLines > 1;
+    var hasCheckbox = leftCheckbox || rightToggle;
+
+    var styles = {
+      root: {
+        backgroundColor: (this.state.isKeyboardFocused || this.state.hovered) && !this.state.rightIconButtonHovered && !this.state.rightIconButtonKeyboardFocused ? hoverColor : null,
+        color: textColor,
+        display: 'block',
+        fontSize: 16,
+        lineHeight: '16px',
+        position: 'relative',
+        transition: Transitions.easeOut()
+      },
+
+      //This inner div is needed so that ripples will span the entire container
+      innerDiv: {
+        marginLeft: nestedLevel * this.state.muiTheme.listItem.nestedLevelDepth,
+        paddingLeft: leftIcon || leftAvatar || leftCheckbox || insetChildren ? 72 : 16,
+        paddingRight: rightIcon || rightAvatar || rightIconButton ? 56 : rightToggle ? 72 : 16,
+        paddingBottom: singleAvatar ? 20 : 16,
+        paddingTop: singleNoAvatar || threeLine ? 16 : 20,
+        position: 'relative'
+      },
+
+      icons: {
+        height: 24,
+        width: 24,
+        display: 'block',
+        position: 'absolute',
+        top: twoLine ? 12 : singleAvatar ? 4 : 0,
+        padding: 12
+      },
+
+      leftIcon: {
+        color: Colors.grey600,
+        fill: Colors.grey600,
+        left: 4
+      },
+
+      rightIcon: {
+        color: Colors.grey400,
+        fill: Colors.grey400,
+        right: 4
+      },
+
+      avatars: {
+        position: 'absolute',
+        top: singleAvatar ? 8 : 16
+      },
+
+      label: {
+        cursor: 'pointer'
+      },
+
+      leftAvatar: {
+        left: 16
+      },
+
+      rightAvatar: {
+        right: 16
+      },
+
+      leftCheckbox: {
+        position: 'absolute',
+        display: 'block',
+        width: 24,
+        top: twoLine ? 24 : singleAvatar ? 16 : 12,
+        left: 16
+      },
+
+      primaryText: {},
+
+      rightIconButton: {
+        position: 'absolute',
+        display: 'block',
+        top: twoLine ? 12 : singleAvatar ? 4 : 0,
+        right: 4
+      },
+
+      rightToggle: {
+        position: 'absolute',
+        display: 'block',
+        width: 54,
+        top: twoLine ? 25 : singleAvatar ? 17 : 13,
+        right: 8
+      },
+
+      secondaryText: {
+        fontSize: 14,
+        lineHeight: threeLine ? '18px' : '16px',
+        height: threeLine ? 36 : 16,
+        margin: 0,
+        marginTop: 4,
+        color: Typography.textLightBlack,
+
+        //needed for 2 and 3 line ellipsis
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: threeLine ? null : 'nowrap',
+        display: threeLine ? '-webkit-box' : null,
+        WebkitLineClamp: threeLine ? 2 : null,
+        WebkitBoxOrient: threeLine ? 'vertical' : null
+      }
+    };
+
+    var contentChildren = [children];
+
+    if (leftIcon) {
+      this._pushElement(contentChildren, leftIcon, this.mergeStyles(styles.icons, styles.leftIcon));
+    }
+
+    if (rightIcon) {
+      this._pushElement(contentChildren, rightIcon, this.mergeStyles(styles.icons, styles.rightIcon));
+    }
+
+    if (leftAvatar) {
+      this._pushElement(contentChildren, leftAvatar, this.mergeStyles(styles.avatars, styles.leftAvatar));
+    }
+
+    if (rightAvatar) {
+      this._pushElement(contentChildren, rightAvatar, this.mergeStyles(styles.avatars, styles.rightAvatar));
+    }
+
+    if (leftCheckbox) {
+      this._pushElement(contentChildren, leftCheckbox, this.mergeStyles(styles.leftCheckbox));
+    }
+
+    //RightIconButtonElement
+    var hasNestListItems = nestedItems.length;
+    var hasRightElement = rightAvatar || rightIcon || rightIconButton || rightToggle;
+    var needsNestedIndicator = hasNestListItems && autoGenerateNestedIndicator && !hasRightElement;
+
+    if (rightIconButton || needsNestedIndicator) {
+      var rightIconButtonElement = rightIconButton;
+      var rightIconButtonHandlers = {
+        onKeyboardFocus: this._handleRightIconButtonKeyboardFocus,
+        onMouseEnter: this._handleRightIconButtonMouseEnter,
+        onMouseLeave: this._handleRightIconButtonMouseLeave,
+        onTouchTap: this._handleRightIconButtonTouchTap,
+        onMouseDown: this._handleRightIconButtonMouseUp,
+        onMouseUp: this._handleRightIconButtonMouseUp
+      };
+
+      // Create a nested list indicator icon if we don't have an icon on the right
+      if (needsNestedIndicator) {
+        rightIconButtonElement = this.state.open ? React.createElement(
+          IconButton,
+          null,
+          React.createElement(OpenIcon, null)
+        ) : React.createElement(
+          IconButton,
+          null,
+          React.createElement(CloseIcon, null)
+        );
+        rightIconButtonHandlers.onTouchTap = this._handleNestedListToggle;
+      }
+
+      this._pushElement(contentChildren, rightIconButtonElement, this.mergeStyles(styles.rightIconButton), rightIconButtonHandlers);
+    }
+
+    if (rightToggle) {
+      this._pushElement(contentChildren, rightToggle, this.mergeStyles(styles.rightToggle));
+    }
+
+    if (primaryText) {
+      var secondaryTextElement = this._createTextElement(styles.primaryText, primaryText, 'primaryText');
+      contentChildren.push(secondaryTextElement);
+    }
+
+    if (secondaryText) {
+      var secondaryTextElement = this._createTextElement(styles.secondaryText, secondaryText, 'secondaryText');
+      contentChildren.push(secondaryTextElement);
+    }
+
+    var nestedList = nestedItems.length ? React.createElement(
+      NestedList,
+      { nestedLevel: nestedLevel + 1, open: this.state.open },
+      nestedItems
+    ) : undefined;
+
+    return hasCheckbox ? this._createLabelElement(styles, contentChildren) : disabled ? this._createDisabledElement(styles, contentChildren) : React.createElement(
+      'div',
+      null,
+      React.createElement(
+        EnhancedButton,
+        _extends({}, other, {
+          disabled: disabled,
+          disableKeyboardFocus: disableKeyboardFocus || this.state.rightIconButtonKeyboardFocused,
+          linkButton: true,
+          onKeyboardFocus: this._handleKeyboardFocus,
+          onMouseLeave: this._handleMouseLeave,
+          onMouseEnter: this._handleMouseEnter,
+          onTouchStart: this._handleTouchStart,
+          onTouchTap: onTouchTap,
+          ref: 'enhancedButton',
+          style: this.mergeStyles(styles.root, style) }),
+        React.createElement(
+          'div',
+          { style: this.prepareStyles(styles.innerDiv, innerDivStyle) },
+          contentChildren
+        )
+      ),
+      nestedList
+    );
+  },
+
+  applyFocusState: function applyFocusState(focusState) {
+    var button = this.refs.enhancedButton;
+    var buttonEl = ReactDOM.findDOMNode(button);
+
+    if (button) {
+      switch (focusState) {
+        case 'none':
+          buttonEl.blur();
+          break;
+        case 'focused':
+          buttonEl.focus();
+          break;
+        case 'keyboard-focused':
+          button.setKeyboardFocus();
+          buttonEl.focus();
+          break;
+      }
+    }
+  },
+
+  _createDisabledElement: function _createDisabledElement(styles, contentChildren) {
+    var _props2 = this.props;
+    var innerDivStyle = _props2.innerDivStyle;
+    var style = _props2.style;
+
+    var mergedDivStyles = this.prepareStyles(styles.root, styles.innerDiv, innerDivStyle, style);
+
+    return React.createElement('div', { style: mergedDivStyles }, contentChildren);
+  },
+
+  _createLabelElement: function _createLabelElement(styles, contentChildren) {
+    var _props3 = this.props;
+    var innerDivStyle = _props3.innerDivStyle;
+    var style = _props3.style;
+
+    var mergedLabelStyles = this.prepareStyles(styles.root, styles.innerDiv, innerDivStyle, styles.label, style);
+
+    return React.createElement('label', { style: mergedLabelStyles }, contentChildren);
+  },
+
+  _createTextElement: function _createTextElement(styles, data, key) {
+    var isAnElement = React.isValidElement(data);
+    var mergedStyles = isAnElement ? this.prepareStyles(styles, data.props.style) : null;
+
+    return isAnElement ? React.cloneElement(data, {
+      key: key,
+      style: mergedStyles
+    }) : React.createElement(
+      'div',
+      { key: key, style: this.prepareStyles(styles) },
+      data
+    );
+  },
+
+  _handleKeyboardFocus: function _handleKeyboardFocus(e, isKeyboardFocused) {
+    this.setState({ isKeyboardFocused: isKeyboardFocused });
+    this.props.onKeyboardFocus(e, isKeyboardFocused);
+  },
+
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    if (!this.state.touch) this.setState({ hovered: true });
+    this.props.onMouseEnter(e);
+  },
+
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    this.setState({ hovered: false });
+    this.props.onMouseLeave(e);
+  },
+
+  _handleNestedListToggle: function _handleNestedListToggle(e) {
+    e.stopPropagation();
+    this.setState({ open: !this.state.open });
+    this.props.onNestedListToggle(this);
+  },
+
+  _handleRightIconButtonKeyboardFocus: function _handleRightIconButtonKeyboardFocus(e, isKeyboardFocused) {
+    var iconButton = this.props.rightIconButton;
+    var newState = {};
+
+    newState.rightIconButtonKeyboardFocused = isKeyboardFocused;
+    if (isKeyboardFocused) newState.isKeyboardFocused = false;
+    this.setState(newState);
+
+    if (iconButton && iconButton.props.onKeyboardFocus) iconButton.props.onKeyboardFocus(e, isKeyboardFocused);
+  },
+
+  _handleRightIconButtonMouseDown: function _handleRightIconButtonMouseDown(e) {
+    var iconButton = this.props.rightIconButton;
+    e.stopPropagation();
+    if (iconButton && iconButton.props.onMouseDown) iconButton.props.onMouseDown(e);
+  },
+
+  _handleRightIconButtonMouseLeave: function _handleRightIconButtonMouseLeave(e) {
+    var iconButton = this.props.rightIconButton;
+    this.setState({ rightIconButtonHovered: false });
+    if (iconButton && iconButton.props.onMouseLeave) iconButton.props.onMouseLeave(e);
+  },
+
+  _handleRightIconButtonMouseEnter: function _handleRightIconButtonMouseEnter(e) {
+    var iconButton = this.props.rightIconButton;
+    this.setState({ rightIconButtonHovered: true });
+    if (iconButton && iconButton.props.onMouseEnter) iconButton.props.onMouseEnter(e);
+  },
+
+  _handleRightIconButtonMouseUp: function _handleRightIconButtonMouseUp(e) {
+    var iconButton = this.props.rightIconButton;
+    e.stopPropagation();
+    if (iconButton && iconButton.props.onMouseUp) iconButton.props.onMouseUp(e);
+  },
+
+  _handleRightIconButtonTouchTap: function _handleRightIconButtonTouchTap(e) {
+    var iconButton = this.props.rightIconButton;
+
+    //Stop the event from bubbling up to the list-item
+    e.stopPropagation();
+    if (iconButton && iconButton.props.onTouchTap) iconButton.props.onTouchTap(e);
+  },
+
+  _handleTouchStart: function _handleTouchStart(e) {
+    this.setState({ touch: true });
+    this.props.onTouchStart(e);
+  },
+
+  _pushElement: function _pushElement(children, element, baseStyles, additionalProps) {
+    if (element) {
+      var styles = this.mergeStyles(baseStyles, element.props.style);
+      children.push(React.cloneElement(element, _extends({
+        key: children.length,
+        style: styles
+      }, additionalProps)));
+    }
+  }
+
+});
+
+module.exports = ListItem;
+},{"../enhanced-button":55,"../icon-button":63,"../mixins/style-propable":81,"../styles/colors":98,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/transitions":105,"../styles/typography":106,"../svg-icons/navigation/arrow-drop-down":110,"../svg-icons/navigation/arrow-drop-up":111,"../utils/color-manipulator":152,"./nested-list":70,"react":"react","react-addons-pure-render-mixin":170,"react-dom":"react-dom"}],69:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var PropTypes = require('../utils/prop-types');
+var StylePropable = require('../mixins/style-propable');
+var Typography = require('../styles/typography');
+var Paper = require('../paper');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var List = React.createClass({
+  displayName: 'List',
+
+  mixins: [PureRenderMixin, StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    insetSubheader: React.PropTypes.bool,
+    subheader: React.PropTypes.string,
+    subheaderStyle: React.PropTypes.object,
+    zDepth: PropTypes.zDepth
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      zDepth: 0
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var children = _props.children;
+    var insetSubheader = _props.insetSubheader;
+    var style = _props.style;
+    var subheader = _props.subheader;
+    var subheaderStyle = _props.subheaderStyle;
+    var zDepth = _props.zDepth;
+
+    var other = _objectWithoutProperties(_props, ['children', 'insetSubheader', 'style', 'subheader', 'subheaderStyle', 'zDepth']);
+
+    var styles = {
+      root: {
+        padding: 0,
+        paddingBottom: 8,
+        paddingTop: subheader ? 0 : 8
+      },
+
+      subheader: {
+        color: Typography.textLightBlack,
+        fontSize: 14,
+        fontWeight: Typography.fontWeightMedium,
+        lineHeight: '48px',
+        paddingLeft: insetSubheader ? 72 : 16
+      }
+    };
+
+    var subheaderElement = undefined;
+    if (subheader) {
+      var mergedSubheaderStyles = this.prepareStyles(styles.subheader, subheaderStyle);
+      subheaderElement = React.createElement(
+        'div',
+        { style: mergedSubheaderStyles },
+        subheader
+      );
+    }
+
+    return React.createElement(
+      Paper,
+      _extends({}, other, {
+        style: this.mergeStyles(styles.root, style),
+        zDepth: zDepth }),
+      subheaderElement,
+      children
+    );
+  }
+});
+
+module.exports = List;
+},{"../mixins/style-propable":81,"../paper":85,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/typography":106,"../utils/prop-types":164,"react":"react","react-addons-pure-render-mixin":170}],70:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var ImmutabilityHelper = require('../utils/immutability-helper');
+var List = require('./list');
+
+var NestedList = React.createClass({
+  displayName: 'NestedList',
+
+  propTypes: {
+    nestedLevel: React.PropTypes.number,
+    open: React.PropTypes.bool
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      nestedLevel: 1,
+      open: false
+    };
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var children = _props.children;
+    var open = _props.open;
+    var nestedLevel = _props.nestedLevel;
+    var style = _props.style;
+
+    var styles = {
+      root: {
+        display: open ? null : 'none'
+      }
+    };
+
+    return React.createElement(
+      List,
+      { style: ImmutabilityHelper.merge(styles.root, style) },
+      React.Children.map(children, function (child) {
+        return React.isValidElement(child) ? React.cloneElement(child, {
+          nestedLevel: nestedLevel + 1
+        }) : child;
+      })
+    );
+  }
+
+});
+
+module.exports = NestedList;
+},{"../utils/immutability-helper":158,"./list":69,"react":"react"}],71:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var LinkMenuItem = React.createClass({
+  displayName: 'LinkMenuItem',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    index: React.PropTypes.number.isRequired,
+    payload: React.PropTypes.string.isRequired,
+    text: React.PropTypes.string.isRequired,
+    target: React.PropTypes.string,
+    active: React.PropTypes.bool,
+    disabled: React.PropTypes.bool,
+    className: React.PropTypes.string
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      active: false,
+      disabled: false
+    };
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      hovered: false
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.menuItem;
+  },
+
+  getStyles: function getStyles() {
+    var style = {
+      root: {
+        userSelect: 'none',
+        cursor: 'pointer',
+        display: 'block',
+        lineHeight: this.getTheme().height + 'px',
+        paddingLeft: this.getTheme().padding,
+        paddingRight: this.getTheme().padding
+      },
+      rootWhenHovered: {
+        backgroundColor: this.getTheme().hoverColor
+      },
+      rootWhenSelected: {
+        color: this.getTheme().selectedTextColor
+      },
+      rootWhenDisabled: {
+        cursor: 'default',
+        color: this.state.muiTheme.rawTheme.palette.disabledColor
+      }
+    };
+
+    return style;
+  },
+
+  render: function render() {
+    var onClickHandler = this.props.disabled ? this._stopLink : undefined;
+    // Prevent context menu 'Open In New Tab/Window'
+    var linkAttribute = this.props.disabled ? 'data-href' : 'href';
+    var link = {};
+    link[linkAttribute] = this.props.payload;
+
+    var styles = this.getStyles();
+
+    var linkStyles = this.prepareStyles(styles.root, this.props.selected && styles.rootWhenSelected, this.props.selected && styles.rootWhenSelected, this.props.active && !this.props.disabled && styles.rootWhenHovered, this.props.style, this.props.disabled && styles.rootWhenDisabled);
+
+    return React.createElement(
+      'a',
+      _extends({
+        key: this.props.index,
+        target: this.props.target,
+        style: linkStyles }, link, {
+        className: this.props.className,
+        onClick: onClickHandler,
+        onMouseEnter: this._handleMouseEnter,
+        onMouseLeave: this._handleMouseLeave }),
+      this.props.text
+    );
+  },
+
+  _stopLink: function _stopLink(event) {
+    event.preventDefault();
+  },
+
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    this.setState({ hovered: true });
+    if (!this.props.disabled && this.props.onMouseEnter) this.props.onMouseEnter(e);
+  },
+
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    this.setState({ hovered: false });
+    if (!this.props.disabled && this.props.onMouseLeave) this.props.onMouseLeave(e);
+  }
+});
+
+module.exports = LinkMenuItem;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],72:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var FontIcon = require('../font-icon');
+var Toggle = require('../toggle');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var Types = {
+  LINK: 'LINK',
+  SUBHEADER: 'SUBHEADER',
+  NESTED: 'NESTED'
+};
+
+var MenuItem = React.createClass({
+  displayName: 'MenuItem',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    index: React.PropTypes.number.isRequired,
+    className: React.PropTypes.string,
+    iconClassName: React.PropTypes.string,
+    iconRightClassName: React.PropTypes.string,
+    iconStyle: React.PropTypes.object,
+    iconRightStyle: React.PropTypes.object,
+    attribute: React.PropTypes.string,
+    number: React.PropTypes.string,
+    data: React.PropTypes.string,
+    toggle: React.PropTypes.bool,
+    disabled: React.PropTypes.bool,
+    onTouchTap: React.PropTypes.func,
+    onToggle: React.PropTypes.func,
+    selected: React.PropTypes.bool,
+    active: React.PropTypes.bool
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  statics: {
+    Types: Types
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      toggle: false,
+      disabled: false,
+      active: false
+    };
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.menuItem;
+  },
+
+  getSpacing: function getSpacing() {
+    return this.state.muiTheme.rawTheme.spacing;
+  },
+
+  getStyles: function getStyles() {
+    var _data;
+
+    var isRtl = this.context.muiTheme.isRtl;
+
+    var right = isRtl ? 'left' : 'right';
+    var left = isRtl ? 'right' : 'left';
+
+    var marginRight = isRtl ? 'marginLeft' : 'marginRight';
+    var paddingLeft = isRtl ? 'paddingRight' : 'paddingLeft';
+
+    var styles = {
+      root: {
+        userSelect: 'none',
+        cursor: 'pointer',
+        lineHeight: this.getTheme().height + 'px',
+        paddingLeft: this.getTheme().padding,
+        paddingRight: this.getTheme().padding,
+        color: this.state.muiTheme.rawTheme.palette.textColor
+      },
+      number: {
+        float: right,
+        width: 24,
+        textAlign: 'center'
+      },
+      attribute: {
+        float: right
+      },
+      iconRight: {
+        lineHeight: this.getTheme().height + 'px',
+        float: right
+      },
+      icon: _defineProperty({
+        float: left,
+        lineHeight: this.getTheme().height + 'px'
+      }, marginRight, this.getSpacing().desktopGutter),
+      data: (_data = {
+        display: 'block'
+      }, _defineProperty(_data, paddingLeft, this.getSpacing().desktopGutter * 2), _defineProperty(_data, 'lineHeight', this.getTheme().dataHeight + 'px'), _defineProperty(_data, 'height', this.getTheme().dataHeight + 'px'), _defineProperty(_data, 'verticalAlign', 'top'), _defineProperty(_data, 'top', -12), _defineProperty(_data, 'position', 'relative'), _defineProperty(_data, 'fontWeight', 300), _defineProperty(_data, 'color', this.state.muiTheme.rawTheme.palette.textColor), _data),
+      toggle: {
+        marginTop: (this.getTheme().height - this.state.muiTheme.radioButton.size) / 2,
+        float: right,
+        width: 42
+      },
+      rootWhenHovered: {
+        backgroundColor: this.getTheme().hoverColor
+      },
+      rootWhenSelected: {
+        color: this.getTheme().selectedTextColor
+      },
+      rootWhenDisabled: {
+        cursor: 'default',
+        color: this.state.muiTheme.rawTheme.palette.disabledColor
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var icon = undefined;
+    var data = undefined;
+    var iconRight = undefined;
+    var attribute = undefined;
+    var number = undefined;
+    var toggleElement = undefined;
+    var styles = this.getStyles();
+
+    if (this.props.iconClassName) icon = React.createElement(FontIcon, { style: this.mergeStyles(styles.icon, this.props.iconStyle, this.props.selected && styles.rootWhenSelected), className: this.props.iconClassName });
+    if (this.props.iconRightClassName) iconRight = React.createElement(FontIcon, { style: this.mergeStyles(styles.iconRight, this.props.iconRightStyle), className: this.props.iconRightClassName });
+    if (this.props.data) data = React.createElement(
+      'span',
+      { style: this.prepareStyles(styles.data) },
+      this.props.data
+    );
+    if (this.props.number !== undefined) number = React.createElement(
+      'span',
+      { style: this.prepareStyles(styles.number) },
+      this.props.number
+    );
+    if (this.props.attribute !== undefined) attribute = React.createElement(
+      'span',
+      { style: this.prepareStyles(styles.style) },
+      this.props.attribute
+    );
+    if (this.props.icon) icon = this.props.icon;
+
+    if (this.props.toggle) {
+      var _props = this.props;
+      var toggle = _props.toggle;
+      var onTouchTap = _props.onTouchTap;
+      var onToggle = _props.onToggle;
+      var onMouseEnter = _props.onMouseEnter;
+      var onMouseLeave = _props.onMouseLeave;
+      var children = _props.children;
+      var label = _props.label;
+      var style = _props.style;
+
+      var other = _objectWithoutProperties(_props, ['toggle', 'onTouchTap', 'onToggle', 'onMouseEnter', 'onMouseLeave', 'children', 'label', 'style']);
+
+      toggleElement = React.createElement(Toggle, _extends({}, other, { onToggle: this._handleToggle, style: styles.toggle }));
+    }
+
+    return React.createElement(
+      'div',
+      {
+        key: this.props.index,
+        className: this.props.className,
+        onTouchTap: this._handleTouchTap,
+        onMouseEnter: this._handleMouseEnter,
+        onMouseLeave: this._handleMouseLeave,
+        style: this.prepareStyles(styles.root, this.props.selected && styles.rootWhenSelected, this.props.active && !this.props.disabled && styles.rootWhenHovered, this.props.style, this.props.disabled && styles.rootWhenDisabled) },
+      icon,
+      this.props.children,
+      number,
+      attribute,
+      data,
+      toggleElement,
+      iconRight
+    );
+  },
+
+  _handleTouchTap: function _handleTouchTap(e) {
+    if (!this.props.disabled && this.props.onTouchTap) this.props.onTouchTap(e, this.props.index);
+  },
+
+  _handleToggle: function _handleToggle(e, toggled) {
+    if (!this.props.disabled && this.props.onToggle) this.props.onToggle(e, this.props.index, toggled);
+  },
+
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    if (!this.props.disabled && this.props.onMouseEnter) this.props.onMouseEnter(e, this.props.index);
+  },
+
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    if (!this.props.disabled && this.props.onMouseLeave) this.props.onMouseLeave(e, this.props.index);
+  }
+});
+
+module.exports = MenuItem;
+},{"../font-icon":60,"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../toggle":141,"react":"react"}],73:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var CssEvent = require('../utils/css-event');
+var KeyLine = require('../utils/key-line');
+var KeyCode = require('../utils/key-code');
+var StylePropable = require('../mixins/style-propable');
+var Transitions = require('../styles/transitions');
+var ClickAwayable = require('../mixins/click-awayable');
+var Paper = require('../paper');
+var MenuItem = require('./menu-item');
+var LinkMenuItem = require('./link-menu-item');
+var SubheaderMenuItem = require('./subheader-menu-item');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+/***********************
+* Nested Menu Component
+***********************/
+var NestedMenuItem = React.createClass({
+  displayName: 'NestedMenuItem',
+
+  mixins: [ClickAwayable, StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    index: React.PropTypes.number.isRequired,
+    text: React.PropTypes.string,
+    menuItems: React.PropTypes.array.isRequired,
+    zDepth: React.PropTypes.number,
+    disabled: React.PropTypes.bool,
+    active: React.PropTypes.bool,
+    onItemTap: React.PropTypes.func,
+    menuItemStyle: React.PropTypes.object
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      disabled: false
+    };
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      open: false,
+      activeIndex: 0
+    };
+  },
+
+  componentClickAway: function componentClickAway() {
+    this._closeNestedMenu();
+  },
+
+  componentDidMount: function componentDidMount() {
+    this._positionNestedMenu();
+    ReactDOM.findDOMNode(this).focus();
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    this._positionNestedMenu();
+  },
+
+  getSpacing: function getSpacing() {
+    return this.state.muiTheme.rawTheme.spacing;
+  },
+
+  getStyles: function getStyles() {
+    var styles = {
+      root: {
+        userSelect: 'none',
+        cursor: 'pointer',
+        lineHeight: this.getTheme().height + 'px',
+        color: this.state.muiTheme.rawTheme.palette.textColor
+      },
+      icon: {
+        float: 'left',
+        lineHeight: this.getTheme().height + 'px',
+        marginRight: this.getSpacing().desktopGutter
+      },
+      toggle: {
+        marginTop: (this.getTheme().height - this.state.muiTheme.radioButton.size) / 2,
+        float: 'right',
+        width: 42
+      },
+      rootWhenHovered: {
+        backgroundColor: this.getTheme().hoverColor
+      },
+      rootWhenSelected: {
+        color: this.getTheme().selectedTextColor
+      },
+      rootWhenDisabled: {
+        cursor: 'default',
+        color: this.state.muiTheme.rawTheme.palette.disabledColor
+      }
+    };
+
+    return styles;
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.menuItem;
+  },
+
+  render: function render() {
+    var styles = this.getStyles();
+    styles = this.prepareStyles(styles.root, this.props.active && !this.props.disabled && styles.rootWhenHovered, {
+      position: 'relative'
+    }, this.props.style);
+
+    var iconCustomArrowDropRight = {
+      marginRight: this.getSpacing().desktopGutterMini * -1,
+      color: this.state.muiTheme.dropDownMenu.accentColor
+    };
+
+    var _props = this.props;
+    var index = _props.index;
+    var menuItemStyle = _props.menuItemStyle;
+
+    var other = _objectWithoutProperties(_props, ['index', 'menuItemStyle']);
+
+    return React.createElement(
+      'div',
+      {
+        ref: 'root',
+        style: styles,
+        onMouseEnter: this._openNestedMenu,
+        onMouseLeave: this._closeNestedMenu,
+        onMouseOver: this._handleMouseOver,
+        onMouseOut: this._handleMouseOut },
+      React.createElement(
+        MenuItem,
+        {
+          index: index,
+          style: menuItemStyle,
+          disabled: this.props.disabled,
+          iconRightStyle: iconCustomArrowDropRight,
+          iconRightClassName: 'muidocs-icon-custom-arrow-drop-right',
+          onTouchTap: this._onParentItemTap },
+        this.props.text
+      ),
+      React.createElement(Menu, _extends({}, other, {
+        ref: 'nestedMenu',
+        menuItems: this.props.menuItems,
+        menuItemStyle: menuItemStyle,
+        onItemTap: this._onMenuItemTap,
+        hideable: true,
+        visible: this.state.open,
+        onRequestClose: this._closeNestedMenu,
+        zDepth: this.props.zDepth + 1 }))
+    );
+  },
+
+  toggleNestedMenu: function toggleNestedMenu() {
+    if (!this.props.disabled) this.setState({ open: !this.state.open });
+  },
+
+  isOpen: function isOpen() {
+    return this.state.open;
+  },
+
+  _positionNestedMenu: function _positionNestedMenu() {
+    var el = ReactDOM.findDOMNode(this);
+    var nestedMenu = ReactDOM.findDOMNode(this.refs.nestedMenu);
+    nestedMenu.style.left = el.offsetWidth + 'px';
+  },
+
+  _openNestedMenu: function _openNestedMenu() {
+    if (!this.props.disabled) this.setState({ open: true });
+  },
+
+  _closeNestedMenu: function _closeNestedMenu() {
+    this.setState({ open: false });
+    ReactDOM.findDOMNode(this).focus();
+  },
+
+  _onParentItemTap: function _onParentItemTap() {
+    this.toggleNestedMenu();
+  },
+
+  _onMenuItemTap: function _onMenuItemTap(e, index, menuItem) {
+    if (this.props.onItemTap) this.props.onItemTap(e, index, menuItem);
+    this._closeNestedMenu();
+  },
+  _handleMouseOver: function _handleMouseOver(e) {
+    if (!this.props.disabled && this.props.onMouseOver) this.props.onMouseOver(e, this.props.index);
+  },
+
+  _handleMouseOut: function _handleMouseOut(e) {
+    if (!this.props.disabled && this.props.onMouseOut) this.props.onMouseOut(e, this.props.index);
+  }
+
+});
+
+/****************
+* Menu Component
+****************/
+var Menu = React.createClass({
+  displayName: 'Menu',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    autoWidth: React.PropTypes.bool,
+    onItemTap: React.PropTypes.func,
+    onToggle: React.PropTypes.func,
+    onRequestClose: React.PropTypes.func,
+    menuItems: React.PropTypes.array.isRequired,
+    selectedIndex: React.PropTypes.number,
+    hideable: React.PropTypes.bool,
+    visible: React.PropTypes.bool,
+    zDepth: React.PropTypes.number,
+    menuItemStyle: React.PropTypes.object,
+    menuItemStyleSubheader: React.PropTypes.object,
+    menuItemStyleLink: React.PropTypes.object,
+    menuItemClassName: React.PropTypes.string,
+    menuItemClassNameSubheader: React.PropTypes.string,
+    menuItemClassNameLink: React.PropTypes.string
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      nestedMenuShown: false,
+      activeIndex: 0
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      autoWidth: true,
+      hideable: false,
+      visible: true,
+      zDepth: 1,
+      onRequestClose: function onRequestClose() {}
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    var el = ReactDOM.findDOMNode(this);
+
+    //Set the menu width
+    this._setKeyWidth(el);
+
+    //Show or Hide the menu according to visibility
+    this._renderVisibility();
+  },
+
+  componentDidUpdate: function componentDidUpdate(prevProps) {
+    if (this.props.visible !== prevProps.visible || this.props.menuItems.length !== prevProps.menuItems.length) {
+      this._renderVisibility();
+    }
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+
+    //Set the menu width
+    this._setKeyWidth(ReactDOM.findDOMNode(this));
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.menu;
+  },
+
+  getSpacing: function getSpacing() {
+    return this.state.muiTheme.rawTheme.spacing;
+  },
+
+  getStyles: function getStyles() {
+    var styles = {
+      root: {
+        backgroundColor: this.getTheme().containerBackgroundColor,
+        paddingTop: this.getSpacing().desktopGutterMini,
+        paddingBottom: this.getSpacing().desktopGutterMini,
+        transition: Transitions.easeOut(null, 'height'),
+        outline: 'none !important'
+      },
+      subheader: {
+        paddingLeft: this.state.muiTheme.menuSubheader.padding,
+        paddingRight: this.state.muiTheme.menuSubheader.padding
+      },
+      hideable: {
+        overflow: 'hidden',
+        position: 'absolute',
+        top: 0,
+        zIndex: 1
+      },
+      item: {
+        height: 34
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var styles = this.getStyles();
+    return React.createElement(
+      Paper,
+      {
+        ref: 'paperContainer',
+        tabIndex: '0',
+        onKeyDown: this._onKeyDown,
+        zDepth: this.props.zDepth,
+        style: this.mergeStyles(styles.root, this.props.hideable && styles.hideable, this.props.style) },
+      this._getChildren()
+    );
+  },
+
+  _getChildren: function _getChildren() {
+    var menuItem = undefined,
+        itemComponent = undefined,
+        isDisabled = undefined;
+
+    var styles = this.getStyles();
+
+    this._children = [];
+    //This array is used to keep track of all nested menu refs
+    this._nestedChildren = [];
+
+    for (var i = 0; i < this.props.menuItems.length; i++) {
+      menuItem = this.props.menuItems[i];
+      isDisabled = menuItem.disabled === undefined ? false : menuItem.disabled;
+
+      var _menuItem = menuItem;
+      var icon = _menuItem.icon;
+      var data = _menuItem.data;
+      var attribute = _menuItem.attribute;
+      var number = _menuItem.number;
+      var toggle = _menuItem.toggle;
+      var onTouchTap = _menuItem.onTouchTap;
+
+      var other = _objectWithoutProperties(_menuItem, ['icon', 'data', 'attribute', 'number', 'toggle', 'onTouchTap']);
+
+      switch (menuItem.type) {
+
+        case MenuItem.Types.LINK:
+          itemComponent = React.createElement(LinkMenuItem, {
+            key: i,
+            index: i,
+            active: this.state.activeIndex === i,
+            text: menuItem.text,
+            disabled: isDisabled,
+            className: this.props.menuItemClassNameLink,
+            style: this.props.menuItemStyleLink,
+            payload: menuItem.payload,
+            target: menuItem.target });
+          break;
+
+        case MenuItem.Types.SUBHEADER:
+          itemComponent = React.createElement(SubheaderMenuItem, {
+            key: i,
+            index: i,
+            className: this.props.menuItemClassNameSubheader,
+            style: this.mergeStyles(styles.subheader, this.props.menuItemStyleSubheader),
+            firstChild: i === 0,
+            text: menuItem.text });
+          break;
+
+        case MenuItem.Types.NESTED:
+          var _props2 = this.props,
+              ref = _props2.ref,
+              key = _props2.key,
+              index = _props2.index,
+              zDepth = _props2.zDepth,
+              other = _objectWithoutProperties(_props2, ['ref', 'key', 'index', 'zDepth']);
+
+          itemComponent = React.createElement(NestedMenuItem, _extends({}, other, {
+            ref: i,
+            key: i,
+            index: i,
+            nested: true,
+            active: this.state.activeIndex === i,
+            text: menuItem.text,
+            disabled: isDisabled,
+            menuItems: menuItem.items,
+            menuItemStyle: this.props.menuItemStyle,
+            zDepth: this.props.zDepth,
+            onMouseEnter: this._onItemActivated,
+            onMouseLeave: this._onItemDeactivated,
+            onItemTap: this._onNestedItemTap }));
+          this._nestedChildren.push(i);
+          break;
+
+        default:
+          itemComponent = React.createElement(
+            MenuItem,
+            _extends({}, other, {
+              selected: this.props.selectedIndex === i,
+              key: i,
+              index: i,
+              active: this.state.activeIndex === i,
+              icon: menuItem.icon,
+              data: menuItem.data,
+              className: this.props.menuItemClassName,
+              style: this.props.menuItemStyle,
+              attribute: menuItem.attribute,
+              number: menuItem.number,
+              toggle: menuItem.toggle,
+              onToggle: this.props.onToggle,
+              disabled: isDisabled,
+              onTouchTap: this._onItemTap,
+              onMouseEnter: this._onItemActivated,
+              onMouseLeave: this._onItemDeactivated
+            }),
+            menuItem.text
+          );
+      }
+      this._children.push(itemComponent);
+    }
+
+    return this._children;
+  },
+
+  _setKeyWidth: function _setKeyWidth(el) {
+    //Update the menu width
+    var menuWidth = '100%';
+
+    if (this.props.autoWidth) {
+      el.style.width = 'auto';
+      menuWidth = KeyLine.getIncrementalDim(el.offsetWidth) + 'px';
+    }
+
+    el.style.width = menuWidth;
+  },
+
+  _renderVisibility: function _renderVisibility() {
+    if (this.props.hideable) {
+      if (this.props.visible) this._expandHideableMenu();else this._collapseHideableMenu();
+    }
+  },
+
+  _expandHideableMenu: function _expandHideableMenu() {
+    var _this = this;
+
+    var el = ReactDOM.findDOMNode(this);
+    var container = ReactDOM.findDOMNode(this.refs.paperContainer);
+    var padding = this.getSpacing().desktopGutterMini;
+    var height = this._getHiddenMenuHeight(el, padding);
+
+    //Add transition
+    if (!el.style.transition) {
+      el.style.transition = Transitions.easeOut();
+    }
+
+    this._nextAnimationFrame(function () {
+      container.style.overflow = 'hidden';
+
+      // Yeild to the DOM, then apply height and padding. This makes the transition smoother.
+      el.style.paddingTop = padding + 'px';
+      el.style.paddingBottom = padding + 'px';
+      el.style.height = height + 'px';
+      el.style.opacity = 1;
+
+      //Set the overflow to visible after the animation is done so
+      //that other nested menus can be shown
+      CssEvent.onTransitionEnd(el, function () {
+        //Make sure the menu is open before setting the overflow.
+        //This is to accout for fast clicks
+        if (_this.props.visible) container.style.overflow = 'visible';
+        el.style.transition = null;
+        el.focus();
+      });
+    });
+  },
+
+  _getHiddenMenuHeight: function _getHiddenMenuHeight(el, padding) {
+    //Add padding to the offset height, because it is not yet set in the style.
+    var height = padding * 2;
+
+    //Hide the element and allow the browser to automatically resize it.
+    el.style.visibility = 'hidden';
+    el.style.height = 'auto';
+
+    //Determine the height of the menu.
+    height += el.offsetHeight;
+
+    //Unhide the menu with the height set back to zero.
+    el.style.height = '0px';
+    el.style.visibility = 'visible';
+
+    return height;
+  },
+
+  _collapseHideableMenu: function _collapseHideableMenu() {
+    var el = ReactDOM.findDOMNode(this);
+    var container = ReactDOM.findDOMNode(this.refs.paperContainer);
+    var originalOpacity = el.style.opacity;
+
+    //Add transition
+    if (!el.style.transition && originalOpacity !== '') {
+      el.style.transition = Transitions.easeOut();
+    }
+
+    this._nextAnimationFrame(function () {
+      //Set the overflow to hidden so that animation works properly
+      container.style.overflow = 'hidden';
+
+      //Close the menu
+      el.style.opacity = 0;
+      el.style.height = '0px';
+      el.style.paddingTop = '0px';
+      el.style.paddingBottom = '0px';
+
+      var end = function end() {
+        el.style.transition = null;
+      };
+
+      if (originalOpacity === '') end();else CssEvent.onTransitionEnd(el, end);
+    });
+  },
+
+  _nextAnimationFrame: function _nextAnimationFrame(func) {
+    if (window.requestAnimationFrame) {
+      return window.requestAnimationFrame(func);
+    }
+    return setTimeout(func, 16);
+  },
+
+  _onNestedItemTap: function _onNestedItemTap(e, index, menuItem) {
+    if (this.props.onItemTap) this.props.onItemTap(e, index, menuItem);
+  },
+
+  _onItemTap: function _onItemTap(e, index) {
+    if (this.props.onItemTap) this.props.onItemTap(e, index, this.props.menuItems[index]);
+  },
+
+  _onItemToggle: function _onItemToggle(e, index, toggled) {
+    if (this.props.onItemToggle) this.props.onItemToggle(e, index, this.props.menuItems[index], toggled);
+  },
+  _onItemActivated: function _onItemActivated(e, index) {
+    this.setState({ activeIndex: index });
+  },
+  _onItemDeactivated: function _onItemDeactivated(e, index) {
+    if (this.state.activeKey === index) this.setState({ activeIndex: 0 });
+  },
+
+  _onKeyDown: function _onKeyDown(e) {
+    if (!(this.state.open || this.props.visible)) return;
+
+    var nested = this._children[this.state.activeIndex];
+    if (nested && nested.props.nested && this.refs[this.state.activeIndex].isOpen()) return;
+
+    switch (e.which) {
+      case KeyCode.UP:
+        this._activatePreviousItem();
+        break;
+      case KeyCode.DOWN:
+        this._activateNextItem();
+        break;
+      case KeyCode.RIGHT:
+        this._tryToggleNested(this.state.activeIndex);
+        break;
+      case KeyCode.LEFT:
+        this._close();
+        break;
+      case KeyCode.ESC:
+        this._close();
+        break;
+      case KeyCode.TAB:
+        this._close();
+        return; // so the tab key can propagate
+      case KeyCode.ENTER:
+      case KeyCode.SPACE:
+        e.stopPropagation(); // needs called before the close
+        this._triggerSelection(e);
+        break;
+      default:
+        return; //important
+    }
+    e.preventDefault();
+    e.stopPropagation();
+  },
+
+  _activatePreviousItem: function _activatePreviousItem() {
+    var active = this.state.activeIndex || 0;
+    active = Math.max(active - 1, 0);
+    this.setState({ activeIndex: active });
+  },
+
+  _activateNextItem: function _activateNextItem() {
+    var active = this.state.activeIndex || 0;
+    active = Math.min(active + 1, this._children.length - 1);
+    this.setState({ activeIndex: active });
+  },
+
+  _triggerSelection: function _triggerSelection(e) {
+    var index = this.state.activeIndex || 0;
+    this._onItemTap(e, index);
+  },
+
+  _close: function _close() {
+    this.props.onRequestClose();
+  },
+
+  _tryToggleNested: function _tryToggleNested(index) {
+    var item = this.refs[index];
+    if (item && item.toggleNestedMenu) item.toggleNestedMenu();
+  }
+
+});
+
+module.exports = Menu;
+},{"../mixins/click-awayable":77,"../mixins/style-propable":81,"../paper":85,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/transitions":105,"../utils/css-event":153,"../utils/key-code":161,"../utils/key-line":162,"./link-menu-item":71,"./menu-item":72,"./subheader-menu-item":74,"react":"react","react-dom":"react-dom"}],74:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var Typography = require('../styles/typography');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var SubheaderMenuItem = React.createClass({
+  displayName: 'SubheaderMenuItem',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    index: React.PropTypes.number.isRequired,
+    text: React.PropTypes.string.isRequired,
+    firstChild: React.PropTypes.bool,
+    className: React.PropTypes.string
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.menuSubheader;
+  },
+
+  getSpacing: function getSpacing() {
+    return this.state.muiTheme.rawTheme.spacing;
+  },
+
+  getStyles: function getStyles() {
+    var gutterMini = this.getSpacing().desktopGutterMini;
+    var subheaderHeight = this.getSpacing().desktopSubheaderHeight;
+    var styles = {
+      root: {
+        boxSizing: 'border-box',
+        fontSize: '13px',
+        letterSpacing: 0,
+        fontWeight: Typography.fontWeightMedium,
+        margin: 0,
+        height: subheaderHeight + gutterMini,
+        lineHeight: subheaderHeight + 'px',
+        color: this.getTheme().textColor,
+        borderTop: 'solid 1px ' + this.getTheme().borderColor,
+        paddingTop: gutterMini,
+        marginTop: gutterMini
+      },
+      rootWhenFirstChild: {
+        height: subheaderHeight,
+        borderTop: 'none',
+        paddingTop: 0,
+        marginTop: 0
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    return React.createElement(
+      'div',
+      {
+        key: this.props.index,
+        className: this.props.className,
+        style: this.prepareStyles(this.getStyles().root, this.props.firstChild && this.getStyles().rootWhenFirstChild, this.props.style) },
+      this.props.text
+    );
+  }
+
+});
+
+module.exports = SubheaderMenuItem;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/typography":106,"react":"react"}],75:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var ReactTransitionGroup = require('react-addons-transition-group');
+var ClickAwayable = require('../mixins/click-awayable');
+var StylePropable = require('../mixins/style-propable');
+var Events = require('../utils/events');
+var PropTypes = require('../utils/prop-types');
+var Menu = require('../menus/menu');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var IconMenu = React.createClass({
+  displayName: 'IconMenu',
+
+  mixins: [StylePropable, ClickAwayable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    closeOnItemTouchTap: React.PropTypes.bool,
+    iconButtonElement: React.PropTypes.element.isRequired,
+    iconStyle: React.PropTypes.object,
+    openDirection: PropTypes.corners,
+    onItemTouchTap: React.PropTypes.func,
+    onKeyboardFocus: React.PropTypes.func,
+    onMouseDown: React.PropTypes.func,
+    onMouseLeave: React.PropTypes.func,
+    onMouseEnter: React.PropTypes.func,
+    onMouseUp: React.PropTypes.func,
+    onTouchTap: React.PropTypes.func,
+    menuStyle: React.PropTypes.object,
+    touchTapCloseDelay: React.PropTypes.number
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      closeOnItemTouchTap: true,
+      openDirection: 'bottom-left',
+      onItemTouchTap: function onItemTouchTap() {},
+      onKeyboardFocus: function onKeyboardFocus() {},
+      onMouseDown: function onMouseDown() {},
+      onMouseLeave: function onMouseLeave() {},
+      onMouseEnter: function onMouseEnter() {},
+      onMouseUp: function onMouseUp() {},
+      onTouchTap: function onTouchTap() {},
+      touchTapCloseDelay: 200
+    };
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      iconButtonRef: this.props.iconButtonElement.props.ref || 'iconButton',
+      menuInitiallyKeyboardFocused: false,
+      open: false
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    if (this._timeout) clearTimeout(this._timeout);
+  },
+
+  componentClickAway: function componentClickAway() {
+    this.close();
+  },
+
+  render: function render() {
+    var _this = this;
+
+    var _props = this.props;
+    var className = _props.className;
+    var closeOnItemTouchTap = _props.closeOnItemTouchTap;
+    var iconButtonElement = _props.iconButtonElement;
+    var iconStyle = _props.iconStyle;
+    var openDirection = _props.openDirection;
+    var onItemTouchTap = _props.onItemTouchTap;
+    var onKeyboardFocus = _props.onKeyboardFocus;
+    var onMouseDown = _props.onMouseDown;
+    var onMouseLeave = _props.onMouseLeave;
+    var onMouseEnter = _props.onMouseEnter;
+    var onMouseUp = _props.onMouseUp;
+    var onTouchTap = _props.onTouchTap;
+    var menuStyle = _props.menuStyle;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['className', 'closeOnItemTouchTap', 'iconButtonElement', 'iconStyle', 'openDirection', 'onItemTouchTap', 'onKeyboardFocus', 'onMouseDown', 'onMouseLeave', 'onMouseEnter', 'onMouseUp', 'onTouchTap', 'menuStyle', 'style']);
+
+    var open = this.state.open;
+    var openDown = openDirection.split('-')[0] === 'bottom';
+    var openLeft = openDirection.split('-')[1] === 'left';
+
+    var styles = {
+      root: {
+        display: 'inline-block',
+        position: 'relative'
+      },
+
+      menu: {
+        top: openDown ? 12 : null,
+        bottom: !openDown ? 12 : null,
+        left: !openLeft ? 12 : null,
+        right: openLeft ? 12 : null
+      }
+    };
+
+    var mergedRootStyles = this.prepareStyles(styles.root, style);
+    var mergedMenuStyles = this.mergeStyles(styles.menu, menuStyle);
+
+    var iconButton = React.cloneElement(iconButtonElement, {
+      onKeyboardFocus: this.props.onKeyboardFocus,
+      iconStyle: this.mergeStyles(iconStyle, iconButtonElement.props.iconStyle),
+      onTouchTap: function onTouchTap(e) {
+        _this.open(Events.isKeyboard(e));
+        if (iconButtonElement.props.onTouchTap) iconButtonElement.props.onTouchTap(e);
+      },
+      ref: this.state.iconButtonRef
+    });
+
+    var menu = open ? React.createElement(
+      Menu,
+      _extends({}, other, {
+        animated: true,
+        initiallyKeyboardFocused: this.state.menuInitiallyKeyboardFocused,
+        onEscKeyDown: this._handleMenuEscKeyDown,
+        onItemTouchTap: this._handleItemTouchTap,
+        openDirection: openDirection,
+        style: mergedMenuStyles }),
+      this.props.children
+    ) : null;
+
+    return React.createElement(
+      'div',
+      {
+        className: className,
+        onMouseDown: onMouseDown,
+        onMouseLeave: onMouseLeave,
+        onMouseEnter: onMouseEnter,
+        onMouseUp: onMouseUp,
+        onTouchTap: onTouchTap,
+        style: mergedRootStyles },
+      iconButton,
+      React.createElement(
+        ReactTransitionGroup,
+        null,
+        menu
+      )
+    );
+  },
+
+  isOpen: function isOpen() {
+    return this.state.open;
+  },
+
+  close: function close(isKeyboard) {
+    var _this2 = this;
+
+    if (this.state.open) {
+      this.setState({ open: false }, function () {
+        //Set focus on the icon button when the menu close
+        if (isKeyboard) {
+          var iconButton = _this2.refs[_this2.state.iconButtonRef];
+          ReactDOM.findDOMNode(iconButton).focus();
+          iconButton.setKeyboardFocus();
+        }
+      });
+    }
+  },
+
+  open: function open(menuInitiallyKeyboardFocused) {
+    if (!this.state.open) {
+      this.setState({
+        open: true,
+        menuInitiallyKeyboardFocused: menuInitiallyKeyboardFocused
+      });
+    }
+  },
+
+  _handleItemTouchTap: function _handleItemTouchTap(e, child) {
+    var _this3 = this;
+
+    if (this.props.closeOnItemTouchTap) {
+      (function () {
+        var isKeyboard = Events.isKeyboard(e);
+
+        _this3._timeout = setTimeout(function () {
+          _this3.close(isKeyboard);
+        }, _this3.props.touchTapCloseDelay);
+      })();
+    }
+
+    this.props.onItemTouchTap(e, child);
+  },
+
+  _handleMenuEscKeyDown: function _handleMenuEscKeyDown() {
+    this.close(true);
+  }
+
+});
+
+module.exports = IconMenu;
+},{"../menus/menu":76,"../mixins/click-awayable":77,"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../utils/events":156,"../utils/prop-types":164,"react":"react","react-addons-transition-group":171,"react-dom":"react-dom"}],76:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var update = require('react-addons-update');
+var Controllable = require('../mixins/controllable');
+var StylePropable = require('../mixins/style-propable');
+var AutoPrefix = require('../styles/auto-prefix');
+var Transitions = require('../styles/transitions');
+var KeyCode = require('../utils/key-code');
+var PropTypes = require('../utils/prop-types');
+var List = require('../lists/list');
+var Paper = require('../paper');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var Menu = React.createClass({
+  displayName: 'Menu',
+
+  mixins: [StylePropable, Controllable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    animated: React.PropTypes.bool,
+    autoWidth: React.PropTypes.bool,
+    desktop: React.PropTypes.bool,
+    initiallyKeyboardFocused: React.PropTypes.bool,
+    listStyle: React.PropTypes.object,
+    maxHeight: React.PropTypes.number,
+    multiple: React.PropTypes.bool,
+    onEscKeyDown: React.PropTypes.func,
+    onItemTouchTap: React.PropTypes.func,
+    onKeyDown: React.PropTypes.func,
+    openDirection: PropTypes.corners,
+    selectedMenuItemStyle: React.PropTypes.object,
+    width: PropTypes.stringOrNumber,
+    zDepth: PropTypes.zDepth
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      animated: false,
+      autoWidth: true,
+      maxHeight: null,
+      onEscKeyDown: function onEscKeyDown() {},
+      onItemTouchTap: function onItemTouchTap() {},
+      onKeyDown: function onKeyDown() {},
+      openDirection: 'bottom-left',
+      zDepth: 1
+    };
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    var selectedIndex = this._getSelectedIndex(this.props);
+
+    return {
+      focusIndex: selectedIndex >= 0 ? selectedIndex : 0,
+      isKeyboardFocused: this.props.initiallyKeyboardFocused,
+      keyWidth: this.props.desktop ? 64 : 56,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  componentDidEnter: function componentDidEnter() {
+    this._animateOpen();
+  },
+
+  componentDidMount: function componentDidMount() {
+    if (this.props.autoWidth) this._setWidth();
+    if (!this.props.animated) this._animateOpen();
+    this._setScollPosition();
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    if (this.props.autoWidth) this._setWidth();
+  },
+
+  componentWillLeave: function componentWillLeave(callback) {
+    var _this = this;
+
+    var rootStyle = ReactDOM.findDOMNode(this).style;
+
+    AutoPrefix.set(rootStyle, 'transition', Transitions.easeOut('250ms', ['opacity', 'transform']));
+    AutoPrefix.set(rootStyle, 'transform', 'translate3d(0,-8px,0)');
+    rootStyle.opacity = 0;
+
+    setTimeout(function () {
+      if (_this.isMounted()) callback();
+    }, 250);
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var selectedIndex = this._getSelectedIndex(nextProps);
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+
+    this.setState({
+      focusIndex: selectedIndex >= 0 ? selectedIndex : 0,
+      keyWidth: nextProps.desktop ? 64 : 56,
+      muiTheme: newMuiTheme
+    });
+  },
+
+  render: function render() {
+    var _this2 = this;
+
+    var _props = this.props;
+    var animated = _props.animated;
+    var autoWidth = _props.autoWidth;
+    var children = _props.children;
+    var desktop = _props.desktop;
+    var initiallyKeyboardFocused = _props.initiallyKeyboardFocused;
+    var listStyle = _props.listStyle;
+    var maxHeight = _props.maxHeight;
+    var multiple = _props.multiple;
+    var openDirection = _props.openDirection;
+    var selectedMenuItemStyle = _props.selectedMenuItemStyle;
+    var style = _props.style;
+    var value = _props.value;
+    var valueLink = _props.valueLink;
+    var width = _props.width;
+    var zDepth = _props.zDepth;
+
+    var other = _objectWithoutProperties(_props, ['animated', 'autoWidth', 'children', 'desktop', 'initiallyKeyboardFocused', 'listStyle', 'maxHeight', 'multiple', 'openDirection', 'selectedMenuItemStyle', 'style', 'value', 'valueLink', 'width', 'zDepth']);
+
+    var openDown = openDirection.split('-')[0] === 'bottom';
+    var openLeft = openDirection.split('-')[1] === 'left';
+
+    var styles = {
+      root: {
+        //Nested div bacause the List scales x faster than
+        //it scales y
+        transition: animated ? Transitions.easeOut('250ms', 'transform') : null,
+        position: 'absolute',
+        zIndex: 10,
+        top: openDown ? 0 : null,
+        bottom: !openDown ? 0 : null,
+        left: !openLeft ? 0 : null,
+        right: openLeft ? 0 : null,
+        transform: 'scaleX(0)',
+        transformOrigin: openLeft ? 'right' : 'left'
+      },
+
+      list: {
+        display: 'table-cell',
+        paddingBottom: desktop ? 16 : 8,
+        paddingTop: desktop ? 16 : 8,
+        userSelect: 'none',
+        width: width
+      },
+
+      menuItemContainer: {
+        transition: animated ? Transitions.easeOut(null, 'opacity') : null,
+        opacity: 0
+      },
+
+      paper: {
+        transition: animated ? Transitions.easeOut('500ms', ['transform', 'opacity']) : null,
+        transform: 'scaleY(0)',
+        transformOrigin: openDown ? 'top' : 'bottom',
+        opacity: 0,
+        maxHeight: maxHeight,
+        overflowY: maxHeight ? 'scroll' : null
+      },
+
+      selectedMenuItem: {
+        color: this.state.muiTheme.rawTheme.palette.accent1Color
+      }
+    };
+
+    var mergedRootStyles = this.prepareStyles(styles.root, style);
+    var mergedListStyles = this.mergeStyles(styles.list, listStyle);
+
+    //Cascade children opacity
+    var cumulativeDelay = openDown ? 175 : 325;
+    var cascadeChildrenCount = this._getCascadeChildrenCount();
+    var cumulativeDelayIncrement = Math.ceil(150 / cascadeChildrenCount);
+
+    var menuItemIndex = 0;
+    var newChildren = React.Children.map(children, function (child) {
+
+      var childIsADivider = child.type.displayName === 'MenuDivider';
+      var childIsDisabled = child.props.disabled;
+      var childrenContainerStyles = {};
+
+      if (animated) {
+        var focusIndex = _this2.state.focusIndex;
+        var transitionDelay = 0;
+
+        //Only cascade the visible menu items
+        if (menuItemIndex >= focusIndex - 1 && menuItemIndex <= focusIndex + cascadeChildrenCount - 1) {
+          cumulativeDelay = openDown ? cumulativeDelay + cumulativeDelayIncrement : cumulativeDelay - cumulativeDelayIncrement;
+          transitionDelay = cumulativeDelay;
+        }
+
+        childrenContainerStyles = _this2.prepareStyles(styles.menuItemContainer, {
+          transitionDelay: transitionDelay + 'ms'
+        });
+      }
+
+      var clonedChild = childIsADivider ? child : childIsDisabled ? React.cloneElement(child, { desktop: desktop }) : _this2._cloneMenuItem(child, menuItemIndex, styles);
+
+      if (!childIsADivider && !childIsDisabled) menuItemIndex++;
+
+      return animated ? React.createElement(
+        'div',
+        { style: childrenContainerStyles },
+        clonedChild
+      ) : clonedChild;
+    });
+
+    return React.createElement(
+      'div',
+      {
+        onKeyDown: this._handleKeyDown,
+        style: mergedRootStyles },
+      React.createElement(
+        Paper,
+        {
+          ref: 'scrollContainer',
+          style: styles.paper,
+          zDepth: zDepth },
+        React.createElement(
+          List,
+          _extends({}, other, {
+            ref: 'list',
+            style: mergedListStyles }),
+          newChildren
+        )
+      )
+    );
+  },
+
+  setKeyboardFocused: function setKeyboardFocused(keyboardFocused) {
+    this.setState({
+      isKeyboardFocused: keyboardFocused
+    });
+  },
+
+  _animateOpen: function _animateOpen() {
+    var rootStyle = ReactDOM.findDOMNode(this).style;
+    var scrollContainerStyle = ReactDOM.findDOMNode(this.refs.scrollContainer).style;
+    var menuContainers = ReactDOM.findDOMNode(this.refs.list).childNodes;
+
+    AutoPrefix.set(rootStyle, 'transform', 'scaleX(1)');
+    AutoPrefix.set(scrollContainerStyle, 'transform', 'scaleY(1)');
+    scrollContainerStyle.opacity = 1;
+
+    for (var i = 0; i < menuContainers.length; ++i) {
+      menuContainers[i].style.opacity = 1;
+    }
+  },
+
+  _cloneMenuItem: function _cloneMenuItem(child, childIndex, styles) {
+    var _this3 = this;
+
+    var _props2 = this.props;
+    var desktop = _props2.desktop;
+    var selectedMenuItemStyle = _props2.selectedMenuItemStyle;
+
+    var selected = this._isChildSelected(child, this.props);
+    var selectedChildrenStyles = {};
+
+    if (selected) {
+      selectedChildrenStyles = this.mergeStyles(styles.selectedMenuItem, selectedMenuItemStyle);
+    }
+
+    var mergedChildrenStyles = this.mergeStyles(child.props.style || {}, selectedChildrenStyles);
+
+    var isFocused = childIndex === this.state.focusIndex;
+    var focusState = 'none';
+    if (isFocused) {
+      focusState = this.state.isKeyboardFocused ? 'keyboard-focused' : 'focused';
+    }
+
+    return React.cloneElement(child, {
+      desktop: desktop,
+      focusState: focusState,
+      onTouchTap: function onTouchTap(e) {
+        _this3._handleMenuItemTouchTap(e, child);
+        if (child.props.onTouchTap) child.props.onTouchTap(e);
+      },
+      ref: isFocused ? 'focusedMenuItem' : null,
+      style: mergedChildrenStyles
+    });
+  },
+
+  _decrementKeyboardFocusIndex: function _decrementKeyboardFocusIndex() {
+    var index = this.state.focusIndex;
+
+    index--;
+    if (index < 0) index = 0;
+
+    this._setFocusIndex(index, true);
+  },
+
+  _getCascadeChildrenCount: function _getCascadeChildrenCount() {
+    var _props3 = this.props;
+    var children = _props3.children;
+    var desktop = _props3.desktop;
+    var maxHeight = _props3.maxHeight;
+
+    var count = 1;
+    var currentHeight = desktop ? 16 : 8;
+    var menuItemHeight = desktop ? 32 : 48;
+
+    //MaxHeight isn't set - cascade all of the children
+    if (!maxHeight) return React.Children.count(children);
+
+    //Count all the children that will fit inside the
+    //max menu height
+    React.Children.forEach(children, function (child) {
+      if (currentHeight < maxHeight) {
+        var childIsADivider = child.type.displayName === 'MenuDivider';
+
+        currentHeight += childIsADivider ? 16 : menuItemHeight;
+        count++;
+      }
+    });
+
+    return count;
+  },
+
+  _getMenuItemCount: function _getMenuItemCount() {
+    var menuItemCount = 0;
+    React.Children.forEach(this.props.children, function (child) {
+      var childIsADivider = child.type.displayName === 'MenuDivider';
+      var childIsDisabled = child.props.disabled;
+      if (!childIsADivider && !childIsDisabled) menuItemCount++;
+    });
+    return menuItemCount;
+  },
+
+  _getSelectedIndex: function _getSelectedIndex(props) {
+    var _this4 = this;
+
+    var children = props.children;
+
+    var selectedIndex = -1;
+    var menuItemIndex = 0;
+
+    React.Children.forEach(children, function (child) {
+      var childIsADivider = child.type.displayName === 'MenuDivider';
+
+      if (_this4._isChildSelected(child, props)) selectedIndex = menuItemIndex;
+      if (!childIsADivider) menuItemIndex++;
+    });
+
+    return selectedIndex;
+  },
+
+  _handleKeyDown: function _handleKeyDown(e) {
+    switch (e.keyCode) {
+      case KeyCode.DOWN:
+        e.preventDefault();
+        this._incrementKeyboardFocusIndex();
+        break;
+      case KeyCode.ESC:
+        this.props.onEscKeyDown(e);
+        break;
+      case KeyCode.TAB:
+        e.preventDefault();
+        if (e.shiftKey) {
+          this._decrementKeyboardFocusIndex();
+        } else {
+          this._incrementKeyboardFocusIndex();
+        }
+        break;
+      case KeyCode.UP:
+        e.preventDefault();
+        this._decrementKeyboardFocusIndex();
+        break;
+    }
+    this.props.onKeyDown(e);
+  },
+
+  _handleMenuItemTouchTap: function _handleMenuItemTouchTap(e, item) {
+    var multiple = this.props.multiple;
+    var valueLink = this.getValueLink(this.props);
+    var menuValue = valueLink.value;
+    var itemValue = item.props.value;
+
+    if (multiple) {
+      var index = menuValue.indexOf(itemValue);
+      var newMenuValue = index === -1 ? update(menuValue, { $push: [itemValue] }) : update(menuValue, { $splice: [[index, 1]] });
+
+      valueLink.requestChange(e, newMenuValue);
+    } else if (!multiple && itemValue !== menuValue) {
+      valueLink.requestChange(e, itemValue);
+    }
+
+    this.props.onItemTouchTap(e, item);
+  },
+
+  _incrementKeyboardFocusIndex: function _incrementKeyboardFocusIndex() {
+    var index = this.state.focusIndex;
+    var maxIndex = this._getMenuItemCount() - 1;
+
+    index++;
+    if (index > maxIndex) index = maxIndex;
+
+    this._setFocusIndex(index, true);
+  },
+
+  _isChildSelected: function _isChildSelected(child, props) {
+    var multiple = props.multiple;
+    var menuValue = this.getValueLink(props).value;
+    var childValue = child.props.value;
+
+    return multiple && menuValue.length && menuValue.indexOf(childValue) !== -1 || !multiple && menuValue && menuValue === childValue;
+  },
+
+  _setFocusIndex: function _setFocusIndex(newIndex, isKeyboardFocused) {
+    this.setState({
+      focusIndex: newIndex,
+      isKeyboardFocused: isKeyboardFocused
+    });
+  },
+
+  _setScollPosition: function _setScollPosition() {
+    var desktop = this.props.desktop;
+    var focusedMenuItem = this.refs.focusedMenuItem;
+    var menuItemHeight = desktop ? 32 : 48;
+
+    if (focusedMenuItem) {
+      var selectedOffSet = ReactDOM.findDOMNode(focusedMenuItem).offsetTop;
+
+      //Make the focused item be the 2nd item in the list the
+      //user sees
+      var scrollTop = selectedOffSet - menuItemHeight;
+      if (scrollTop < menuItemHeight) scrollTop = 0;
+
+      ReactDOM.findDOMNode(this.refs.scrollContainer).scrollTop = scrollTop;
+    }
+  },
+
+  _setWidth: function _setWidth() {
+    var el = ReactDOM.findDOMNode(this);
+    var listEl = ReactDOM.findDOMNode(this.refs.list);
+    var elWidth = el.offsetWidth;
+    var keyWidth = this.state.keyWidth;
+    var minWidth = keyWidth * 1.5;
+    var keyIncrements = elWidth / keyWidth;
+    var newWidth = undefined;
+
+    keyIncrements = keyIncrements <= 1.5 ? 1.5 : Math.ceil(keyIncrements);
+    newWidth = keyIncrements * keyWidth;
+
+    if (newWidth < minWidth) newWidth = minWidth;
+
+    el.style.width = newWidth + 'px';
+    listEl.style.width = newWidth + 'px';
+  }
+
+});
+
+module.exports = Menu;
+},{"../lists/list":69,"../mixins/controllable":79,"../mixins/style-propable":81,"../paper":85,"../styles/auto-prefix":97,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/transitions":105,"../utils/key-code":161,"../utils/prop-types":164,"react":"react","react-addons-update":172,"react-dom":"react-dom"}],77:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var Events = require('../utils/events');
+var Dom = require('../utils/dom');
+
+module.exports = {
+
+  //When the component mounts, listen to click events and check if we need to
+  //Call the componentClickAway function.
+  componentDidMount: function componentDidMount() {
+    if (!this.manuallyBindClickAway) this._bindClickAway();
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    this._unbindClickAway();
+  },
+
+  _checkClickAway: function _checkClickAway(event) {
+    var el = ReactDOM.findDOMNode(this);
+
+    // Check if the target is inside the current component
+    if (event.target !== el && !Dom.isDescendant(el, event.target) && document.documentElement.contains(event.target)) {
+      if (this.componentClickAway) this.componentClickAway(event);
+    }
+  },
+
+  _bindClickAway: function _bindClickAway() {
+    // On touch-enabled devices, both events fire, and the handler is called twice,
+    // but it's fine since all operations for which the mixin is used
+    // are idempotent.
+    Events.on(document, 'mouseup', this._checkClickAway);
+    Events.on(document, 'touchend', this._checkClickAway);
+  },
+
+  _unbindClickAway: function _unbindClickAway() {
+    Events.off(document, 'mouseup', this._checkClickAway);
+    Events.off(document, 'touchend', this._checkClickAway);
+  }
+
+};
+},{"../utils/dom":155,"../utils/events":156,"react":"react","react-dom":"react-dom"}],78:[function(require,module,exports){
+'use strict';
+
+var shallowEqual = require('../utils/shallow-equal');
+
+function relevantContextKeysEqual(classObject, currentContext, nextContext) {
+
+  //Get those keys from current object's context that we care
+  //about and check whether those keys have changed or not
+  if (classObject.getRelevantContextKeys) {
+    var currentContextKeys = classObject.getRelevantContextKeys(currentContext);
+    var nextContextKeys = classObject.getRelevantContextKeys(nextContext);
+
+    if (!shallowEqual(currentContextKeys, nextContextKeys)) {
+      return false;
+    }
+  }
+
+  //Check if children context keys changed
+  if (classObject.getChildrenClasses) {
+    var childrenArray = classObject.getChildrenClasses();
+    for (var i = 0; i < childrenArray.length; i++) {
+      if (!relevantContextKeysEqual(childrenArray[i], currentContext, nextContext)) {
+        return false;
+      }
+    }
+  }
+
+  //context keys are equal
+  return true;
+}
+
+module.exports = {
+
+  //Don't update if state, prop, and context are equal
+  shouldComponentUpdate: function shouldComponentUpdate(nextProps, nextState, nextContext) {
+
+    //If either the props or state have changed, component should update
+    if (!shallowEqual(this.props, nextProps) || !shallowEqual(this.state, nextState)) {
+      return true;
+    }
+
+    //If current theme and next theme are both undefined, do not update
+    if (!this.context.muiTheme && !nextContext.muiTheme) {
+      return false;
+    }
+
+    //If both themes exist, compare keys only if current theme is not static
+    if (this.context.muiTheme && nextContext.muiTheme) {
+      return !this.context.muiTheme['static'] && !relevantContextKeysEqual(this.constructor, this.context.muiTheme, nextContext.muiTheme);
+    }
+
+    //At this point it is guaranteed that exactly one theme is undefined so simply update
+    return true;
+  }
+
+};
+},{"../utils/shallow-equal":165}],79:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+
+module.exports = {
+
+  propTypes: {
+    onChange: React.PropTypes.func,
+    value: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.array]),
+    valueLink: React.PropTypes.shape({
+      value: React.PropTypes.string.isRequired,
+      requestChange: React.PropTypes.func.isRequired
+    })
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      onChange: function onChange() {}
+    };
+  },
+
+  getValueLink: function getValueLink(props) {
+    return props.valueLink || {
+      value: props.value,
+      requestChange: props.onChange
+    };
+  }
+
+};
+},{"react":"react"}],80:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  ClickAwayable: require('./click-awayable'),
+  WindowListenable: require('./window-listenable'),
+  StylePropable: require('./style-propable'),
+  StyleResizable: require('./style-resizable')
+};
+},{"./click-awayable":77,"./style-propable":81,"./style-resizable":82,"./window-listenable":83}],81:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1599,7 +11182,229 @@ module.exports = {
     return Styles.prepareStyles.apply(Styles, [this.state && this.state.muiTheme || this.context.muiTheme].concat([].slice.apply(arguments)));
   }
 };
-},{"../utils/immutability-helper":48,"../utils/styles":53,"react":"react"}],30:[function(require,module,exports){
+},{"../utils/immutability-helper":158,"../utils/styles":166,"react":"react"}],82:[function(require,module,exports){
+'use strict';
+
+var Events = require('../utils/events');
+
+var Sizes = {
+  SMALL: 1,
+  MEDIUM: 2,
+  LARGE: 3
+};
+
+module.exports = {
+
+  statics: {
+    Sizes: Sizes
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      deviceSize: Sizes.SMALL
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    this._updateDeviceSize();
+    if (!this.manuallyBindResize) this._bindResize();
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    this._unbindResize();
+  },
+
+  isDeviceSize: function isDeviceSize(desiredSize) {
+    return this.state.deviceSize >= desiredSize;
+  },
+
+  _updateDeviceSize: function _updateDeviceSize() {
+    var width = window.innerWidth;
+    if (width >= 992) this.setState({ deviceSize: Sizes.LARGE });else if (width >= 768) this.setState({ deviceSize: Sizes.MEDIUM });else this.setState({ deviceSize: Sizes.SMALL }); // width < 768
+  },
+
+  _bindResize: function _bindResize() {
+    Events.on(window, 'resize', this._updateDeviceSize);
+  },
+
+  _unbindResize: function _unbindResize() {
+    Events.off(window, 'resize', this._updateDeviceSize);
+  }
+};
+},{"../utils/events":156}],83:[function(require,module,exports){
+'use strict';
+
+var Events = require('../utils/events');
+
+module.exports = {
+
+  componentDidMount: function componentDidMount() {
+    var listeners = this.windowListeners;
+
+    for (var eventName in listeners) {
+      var callbackName = listeners[eventName];
+      Events.on(window, eventName, this[callbackName]);
+    }
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    var listeners = this.windowListeners;
+
+    for (var eventName in listeners) {
+      var callbackName = listeners[eventName];
+      Events.off(window, eventName, this[callbackName]);
+    }
+  }
+
+};
+},{"../utils/events":156}],84:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var Colors = require('./styles/colors');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var Overlay = React.createClass({
+  displayName: 'Overlay',
+
+  _originalBodyOverflow: '',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  propTypes: {
+    autoLockScrolling: React.PropTypes.bool,
+    show: React.PropTypes.bool,
+    transitionEnabled: React.PropTypes.bool
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      autoLockScrolling: true,
+      transitionEnabled: true
+    };
+  },
+
+  componentWillMount: function componentWillMount() {
+    this._originalBodyOverflow = document.getElementsByTagName('body')[0].style.overflow;
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    if (this.props.autoLockScrolling) {
+      if (this.props.show) {
+        this._preventScrolling();
+      } else {
+        this._allowScrolling();
+      }
+    }
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    this._allowScrolling();
+  },
+
+  setOpacity: function setOpacity(opacity) {
+    var overlay = ReactDOM.findDOMNode(this);
+    overlay.style.opacity = opacity;
+  },
+
+  getStyles: function getStyles() {
+    var styles = {
+      root: {
+        position: 'fixed',
+        height: '100%',
+        width: '100%',
+        zIndex: 9,
+        top: 0,
+        left: '-100%',
+        opacity: 0,
+        backgroundColor: Colors.lightBlack,
+        WebkitTapHighlightColor: 'rgba(0, 0, 0, 0)',
+
+        // Two ways to promote overlay to its own render layer
+        willChange: 'opacity',
+        transform: 'translateZ(0)',
+
+        transition: this.props.transitionEnabled && Transitions.easeOut('0ms', 'left', '400ms') + ',' + Transitions.easeOut('400ms', 'opacity')
+      },
+      rootWhenShown: {
+        left: '0',
+        opacity: 1,
+        transition: this.props.transitionEnabled && Transitions.easeOut('0ms', 'left') + ',' + Transitions.easeOut('400ms', 'opacity')
+      }
+    };
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var show = _props.show;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['show', 'style']);
+
+    var styles = this.prepareStyles(this.getStyles().root, this.props.style, this.props.show && this.getStyles().rootWhenShown);
+
+    return React.createElement('div', _extends({}, other, { style: styles }));
+  },
+
+  preventScrolling: function preventScrolling() {
+    if (!this.props.autoLockScrolling) this._preventScrolling();
+  },
+
+  allowScrolling: function allowScrolling() {
+    if (!this.props.autoLockScrolling) this._allowScrolling();
+  },
+
+  _preventScrolling: function _preventScrolling() {
+    var body = document.getElementsByTagName('body')[0];
+    body.style.overflow = 'hidden';
+  },
+
+  _allowScrolling: function _allowScrolling() {
+    var body = document.getElementsByTagName('body')[0];
+    body.style.overflow = this._originalBodyOverflow || '';
+  }
+
+});
+
+module.exports = Overlay;
+},{"./mixins/style-propable":81,"./styles/colors":98,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react","react-dom":"react-dom"}],85:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -1700,7 +11505,901 @@ var Paper = React.createClass({
 });
 
 module.exports = Paper;
-},{"./mixins/style-propable":29,"./styles/raw-themes/light-raw-theme":36,"./styles/theme-manager":38,"./styles/transitions":39,"./utils/prop-types":52,"react":"react","react-addons-pure-render-mixin":56}],31:[function(require,module,exports){
+},{"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./utils/prop-types":164,"react":"react","react-addons-pure-render-mixin":170}],86:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var RadioButton = require('./radio-button');
+var StylePropable = require('./mixins/style-propable');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var RadioButtonGroup = React.createClass({
+  displayName: 'RadioButtonGroup',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    name: React.PropTypes.string.isRequired,
+    valueSelected: React.PropTypes.string,
+    defaultSelected: React.PropTypes.string,
+    labelPosition: React.PropTypes.oneOf(['left', 'right']),
+    onChange: React.PropTypes.func
+  },
+
+  _hasCheckAttribute: function _hasCheckAttribute(radioButton) {
+    return radioButton.props.hasOwnProperty('checked') && radioButton.props.checked;
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      numberCheckedRadioButtons: 0,
+      selected: this.props.valueSelected || this.props.defaultSelected || '',
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      style: {}
+    };
+  },
+
+  componentWillMount: function componentWillMount() {
+    var _this = this;
+
+    var cnt = 0;
+
+    React.Children.forEach(this.props.children, function (option) {
+      if (_this._hasCheckAttribute(option)) cnt++;
+    }, this);
+
+    this.setState({ numberCheckedRadioButtons: cnt });
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    var newState = { muiTheme: newMuiTheme };
+
+    if (nextProps.hasOwnProperty('valueSelected')) {
+      newState.selected = nextProps.valueSelected;
+    }
+
+    this.setState(newState);
+  },
+
+  render: function render() {
+    var _this2 = this;
+
+    var options = React.Children.map(this.props.children, function (option) {
+      var _option$props = option.props;
+      var name = _option$props.name;
+      var value = _option$props.value;
+      var label = _option$props.label;
+      var onCheck = _option$props.onCheck;
+
+      var other = _objectWithoutProperties(_option$props, ['name', 'value', 'label', 'onCheck']);
+
+      return React.createElement(RadioButton, _extends({}, other, {
+        ref: option.props.value,
+        name: _this2.props.name,
+        key: option.props.value,
+        value: option.props.value,
+        label: option.props.label,
+        labelPosition: _this2.props.labelPosition,
+        onCheck: _this2._onChange,
+        checked: option.props.value === _this2.state.selected }));
+    }, this);
+
+    return React.createElement(
+      'div',
+      {
+        style: this.prepareStyles(this.props.style),
+        className: this.props.className || '' },
+      options
+    );
+  },
+
+  _updateRadioButtons: function _updateRadioButtons(newSelection) {
+    if (this.state.numberCheckedRadioButtons === 0) {
+      this.setState({ selected: newSelection });
+    } else if (process.env.NODE_ENV !== 'production') {
+      var message = "Cannot select a different radio button while another radio button " + "has the 'checked' property set to true.";
+      console.error(message);
+    }
+  },
+
+  _onChange: function _onChange(e, newSelection) {
+    this._updateRadioButtons(newSelection);
+
+    // Successful update
+    if (this.state.numberCheckedRadioButtons === 0) {
+      if (this.props.onChange) this.props.onChange(e, newSelection);
+    }
+  },
+
+  getSelectedValue: function getSelectedValue() {
+    return this.state.selected;
+  },
+
+  setSelectedValue: function setSelectedValue(newSelectionValue) {
+    this._updateRadioButtons(newSelectionValue);
+  },
+
+  clearValue: function clearValue() {
+    this.setSelectedValue('');
+  }
+
+});
+
+module.exports = RadioButtonGroup;
+}).call(this,require('_process'))
+},{"./mixins/style-propable":81,"./radio-button":87,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"_process":168,"react":"react"}],87:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var EnhancedSwitch = require('./enhanced-switch');
+var RadioButtonOff = require('./svg-icons/toggle/radio-button-unchecked');
+var RadioButtonOn = require('./svg-icons/toggle/radio-button-checked');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var RadioButton = React.createClass({
+  displayName: 'RadioButton',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  propTypes: {
+    iconStyle: React.PropTypes.object,
+    labelStyle: React.PropTypes.object,
+    onCheck: React.PropTypes.func
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.radioButton;
+  },
+
+  getStyles: function getStyles() {
+    var styles = {
+      icon: {
+        height: this.getTheme().size,
+        width: this.getTheme().size
+      },
+      target: {
+        transition: Transitions.easeOut(),
+        position: 'absolute',
+        opacity: 1,
+        transform: 'scale(1)',
+        fill: this.getTheme().borderColor
+      },
+      fill: {
+        position: 'absolute',
+        opacity: 1,
+        transform: 'scale(0)',
+        transformOrigin: '50% 50%',
+        transition: Transitions.easeOut(),
+        fill: this.getTheme().checkedColor
+      },
+      targetWhenChecked: {
+        opacity: 0,
+        transform: 'scale(0)'
+      },
+      fillWhenChecked: {
+        opacity: 1,
+        transform: 'scale(1)'
+      },
+      targetWhenDisabled: {
+        fill: this.getTheme().disabledColor
+      },
+      fillWhenDisabled: {
+        fill: this.getTheme().disabledColor
+      },
+      label: {
+        color: this.props.disabled ? this.getTheme().labelDisabledColor : this.getTheme().labelColor
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var onCheck = _props.onCheck;
+
+    var other = _objectWithoutProperties(_props, ['onCheck']);
+
+    var styles = this.getStyles();
+    var onStyles = this.mergeStyles(styles.target, this.props.checked && styles.targetWhenChecked, this.props.iconStyle, this.props.disabled && styles.targetWhenDisabled);
+    var offStyles = this.mergeStyles(styles.fill, this.props.checked && styles.fillWhenChecked, this.props.iconStyle, this.props.disabled && styles.fillWhenDisabled);
+
+    var radioButtonElement = React.createElement(
+      'div',
+      null,
+      React.createElement(RadioButtonOff, { style: onStyles }),
+      React.createElement(RadioButtonOn, { style: offStyles })
+    );
+
+    var rippleColor = this.props.checked ? this.getTheme().checkedColor : this.getTheme().borderColor;
+
+    var iconStyle = this.mergeStyles(styles.icon, this.props.iconStyle);
+
+    var labelStyle = this.mergeStyles(styles.label, this.props.labelStyle);
+
+    var enhancedSwitchProps = {
+      ref: "enhancedSwitch",
+      inputType: "radio",
+      switched: this.props.checked || false,
+      switchElement: radioButtonElement,
+      rippleColor: rippleColor,
+      iconStyle: iconStyle,
+      labelStyle: labelStyle,
+      onSwitch: this._handleCheck,
+      onParentShouldUpdate: this._handleStateChange,
+      labelPosition: this.props.labelPosition ? this.props.labelPosition : "right"
+    };
+
+    return React.createElement(EnhancedSwitch, _extends({}, other, enhancedSwitchProps));
+  },
+
+  // Only called when selected, not when unselected.
+  _handleCheck: function _handleCheck(e) {
+    if (this.props.onCheck) this.props.onCheck(e, this.props.value);
+  },
+
+  _handleStateChange: function _handleStateChange() {},
+
+  isChecked: function isChecked() {
+    return this.refs.enhancedSwitch.isSwitched();
+  },
+
+  // Use RadioButtonGroup.setSelectedValue(newSelectionValue) to set a
+  // RadioButton's checked value.
+  setChecked: function setChecked(newCheckedValue) {
+    this.refs.enhancedSwitch.setSwitched(newCheckedValue);
+  },
+
+  getValue: function getValue() {
+    return this.refs.enhancedSwitch.getValue();
+  }
+
+});
+
+module.exports = RadioButton;
+},{"./enhanced-switch":56,"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./svg-icons/toggle/radio-button-checked":117,"./svg-icons/toggle/radio-button-unchecked":118,"react":"react"}],88:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var ColorManipulator = require('./utils/color-manipulator');
+var Typography = require('./styles/typography');
+var EnhancedButton = require('./enhanced-button');
+var Paper = require('./paper');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+function validateLabel(props, propName, componentName) {
+  if (!props.children && !props.label) {
+    return new Error('Required prop label or children was not ' + 'specified in ' + componentName + '.');
+  }
+}
+
+var RaisedButton = React.createClass({
+  displayName: 'RaisedButton',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    className: React.PropTypes.string,
+    disabled: React.PropTypes.bool,
+    label: validateLabel,
+    onMouseDown: React.PropTypes.func,
+    onMouseUp: React.PropTypes.func,
+    onMouseLeave: React.PropTypes.func,
+    onTouchEnd: React.PropTypes.func,
+    onTouchStart: React.PropTypes.func,
+    primary: React.PropTypes.bool,
+    secondary: React.PropTypes.bool,
+    labelStyle: React.PropTypes.object,
+    backgroundColor: React.PropTypes.string,
+    labelColor: React.PropTypes.string,
+    disabledBackgroundColor: React.PropTypes.string,
+    disabledLabelColor: React.PropTypes.string,
+    fullWidth: React.PropTypes.bool
+  },
+
+  getInitialState: function getInitialState() {
+    var zDepth = this.props.disabled ? 0 : 1;
+    return {
+      hovered: false,
+      touched: false,
+      initialZDepth: zDepth,
+      zDepth: zDepth,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var zDepth = nextProps.disabled ? 0 : 1;
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({
+      zDepth: zDepth,
+      initialZDepth: zDepth,
+      muiTheme: newMuiTheme
+    });
+  },
+
+  _getBackgroundColor: function _getBackgroundColor() {
+    var disabledColor = this.props.disabledBackgroundColor ? this.props.disabledBackgroundColor : this.getTheme().disabledColor;
+
+    return this.props.disabled ? disabledColor : this.props.backgroundColor ? this.props.backgroundColor : this.props.primary ? this.getTheme().primaryColor : this.props.secondary ? this.getTheme().secondaryColor : this.getTheme().color;
+  },
+
+  _getLabelColor: function _getLabelColor() {
+    var disabledColor = this.props.disabledLabelColor ? this.props.disabledLabelColor : this.getTheme().disabledTextColor;
+
+    return this.props.disabled ? disabledColor : this.props.labelColor ? this.props.labelColor : this.props.primary ? this.getTheme().primaryTextColor : this.props.secondary ? this.getTheme().secondaryTextColor : this.getTheme().textColor;
+  },
+
+  getThemeButton: function getThemeButton() {
+    return this.state.muiTheme.button;
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.raisedButton;
+  },
+
+  getStyles: function getStyles() {
+
+    var amount = this.props.primary || this.props.secondary ? 0.4 : 0.08;
+    var styles = {
+      root: {
+        backgroundColor: 'none',
+        display: 'inline-block',
+        minWidth: this.props.fullWidth ? '100%' : this.getThemeButton().minWidth,
+        height: this.getThemeButton().height,
+        transition: Transitions.easeOut()
+      },
+      container: {
+        position: 'relative',
+        height: '100%',
+        width: '100%',
+        padding: 0,
+        overflow: 'hidden',
+        borderRadius: 2,
+        transition: Transitions.easeOut(),
+        backgroundColor: this._getBackgroundColor(),
+
+        //This is need so that ripples do not bleed
+        //past border radius.
+        //See: http://stackoverflow.com/questions/17298739/css-overflow-hidden-not-working-in-chrome-when-parent-has-border-radius-and-chil
+        transform: 'translate3d(0, 0, 0)'
+      },
+      label: {
+        position: 'relative',
+        opacity: 1,
+        fontSize: '14px',
+        letterSpacing: 0,
+        textTransform: this.getTheme().textTransform ? this.getTheme().textTransform : this.getThemeButton().textTransform ? this.getThemeButton().textTransform : 'uppercase',
+        fontWeight: Typography.fontWeightMedium,
+        margin: 0,
+        padding: '0px ' + this.state.muiTheme.rawTheme.spacing.desktopGutterLess + 'px',
+        userSelect: 'none',
+        lineHeight: this.props.style && this.props.style.height ? this.props.style.height : this.getThemeButton().height + 'px',
+        color: this._getLabelColor()
+      },
+      overlay: {
+        transition: Transitions.easeOut(),
+        top: 0
+      },
+      overlayWhenHovered: {
+        backgroundColor: ColorManipulator.fade(this._getLabelColor(), amount)
+      }
+    };
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var disabled = _props.disabled;
+    var label = _props.label;
+    var primary = _props.primary;
+    var secondary = _props.secondary;
+
+    var other = _objectWithoutProperties(_props, ['disabled', 'label', 'primary', 'secondary']);
+
+    var styles = this.getStyles();
+
+    var labelElement = undefined;
+    if (label) {
+      labelElement = React.createElement(
+        'span',
+        { style: this.prepareStyles(styles.label, this.props.labelStyle) },
+        label
+      );
+    }
+
+    var rippleColor = styles.label.color;
+    var rippleOpacity = !(primary || secondary) ? 0.1 : 0.16;
+
+    var buttonEventHandlers = disabled ? null : {
+      onMouseDown: this._handleMouseDown,
+      onMouseUp: this._handleMouseUp,
+      onMouseLeave: this._handleMouseLeave,
+      onMouseEnter: this._handleMouseEnter,
+      onTouchStart: this._handleTouchStart,
+      onTouchEnd: this._handleTouchEnd,
+      onKeyboardFocus: this._handleKeyboardFocus
+    };
+
+    return React.createElement(
+      Paper,
+      {
+        style: this.mergeStyles(styles.root, this.props.style),
+        zDepth: this.state.zDepth },
+      React.createElement(
+        EnhancedButton,
+        _extends({}, other, buttonEventHandlers, {
+          ref: 'container',
+          disabled: disabled,
+          style: this.mergeStyles(styles.container),
+          focusRippleColor: rippleColor,
+          touchRippleColor: rippleColor,
+          focusRippleOpacity: rippleOpacity,
+          touchRippleOpacity: rippleOpacity }),
+        React.createElement(
+          'div',
+          { ref: 'overlay', style: this.prepareStyles(styles.overlay, this.state.hovered && !this.props.disabled && styles.overlayWhenHovered) },
+          labelElement,
+          this.props.children
+        )
+      )
+    );
+  },
+
+  _handleMouseDown: function _handleMouseDown(e) {
+    //only listen to left clicks
+    if (e.button === 0) {
+      this.setState({ zDepth: this.state.initialZDepth + 1 });
+    }
+    if (this.props.onMouseDown) this.props.onMouseDown(e);
+  },
+
+  _handleMouseUp: function _handleMouseUp(e) {
+    this.setState({ zDepth: this.state.initialZDepth });
+    if (this.props.onMouseUp) this.props.onMouseUp(e);
+  },
+
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    if (!this.refs.container.isKeyboardFocused()) this.setState({ zDepth: this.state.initialZDepth, hovered: false });
+    if (this.props.onMouseLeave) this.props.onMouseLeave(e);
+  },
+
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    if (!this.refs.container.isKeyboardFocused() && !this.state.touch) {
+      this.setState({ hovered: true });
+    }
+    if (this.props.onMouseEnter) this.props.onMouseEnter(e);
+  },
+
+  _handleTouchStart: function _handleTouchStart(e) {
+    this.setState({
+      touch: true,
+      zDepth: this.state.initialZDepth + 1
+    });
+    if (this.props.onTouchStart) this.props.onTouchStart(e);
+  },
+
+  _handleTouchEnd: function _handleTouchEnd(e) {
+    this.setState({ zDepth: this.state.initialZDepth });
+    if (this.props.onTouchEnd) this.props.onTouchEnd(e);
+  },
+
+  _handleKeyboardFocus: function _handleKeyboardFocus(e, keyboardFocused) {
+    if (keyboardFocused && !this.props.disabled) {
+      this.setState({ zDepth: this.state.initialZDepth + 1 });
+      var amount = this.props.primary || this.props.secondary ? 0.4 : 0.08;
+      ReactDOM.findDOMNode(this.refs.overlay).style.backgroundColor = ColorManipulator.fade(this.prepareStyles(this.getStyles().label, this.props.labelStyle).color, amount);
+    } else if (!this.state.hovered) {
+      this.setState({ zDepth: this.state.initialZDepth });
+      ReactDOM.findDOMNode(this.refs.overlay).style.backgroundColor = 'transparent';
+    }
+  }
+});
+
+module.exports = RaisedButton;
+},{"./enhanced-button":55,"./mixins/style-propable":81,"./paper":85,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./styles/typography":106,"./utils/color-manipulator":152,"react":"react","react-dom":"react-dom"}],89:[function(require,module,exports){
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var ReactDOM = require('react-dom');
+var StylePropable = require('./mixins/style-propable');
+var AutoPrefix = require('./styles/auto-prefix');
+var Transitions = require("./styles/transitions");
+var Paper = require('./paper');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var VIEWBOX_SIZE = 32;
+var RefreshIndicator = _react2['default'].createClass({
+  displayName: 'RefreshIndicator',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: _react2['default'].PropTypes.object
+  },
+
+  propTypes: {
+    left: _react2['default'].PropTypes.number.isRequired,
+    percentage: _react2['default'].PropTypes.number,
+    size: _react2['default'].PropTypes.number,
+    status: _react2['default'].PropTypes.oneOf(['ready', 'loading', 'hide']),
+    style: _react2['default'].PropTypes.object,
+    top: _react2['default'].PropTypes.number.isRequired
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      percentage: 0,
+      size: 40,
+      status: 'hide'
+    };
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: _react2['default'].PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  componentDidMount: function componentDidMount() {
+    this.componentDidUpdate();
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    this._scalePath(ReactDOM.findDOMNode(this.refs.path), 0);
+    this._rotateWrapper(ReactDOM.findDOMNode(this.refs.wrapper));
+  },
+
+  render: function render() {
+    var rootStyle = this._getRootStyle();
+    return _react2['default'].createElement(
+      Paper,
+      {
+        circle: true,
+        style: this.mergeStyles(rootStyle, this.props.style),
+        ref: 'indicatorCt'
+      },
+      this._renderChildren()
+    );
+  },
+
+  _renderChildren: function _renderChildren() {
+    var paperSize = this._getPaperSize();
+    var childrenCmp = null;
+    if (this.props.status !== 'ready') {
+      var circleStyle = this._getCircleStyle(paperSize);
+      childrenCmp = _react2['default'].createElement(
+        'div',
+        { ref: 'wrapper', style: this.prepareStyles({
+            transition: Transitions.create('transform', '20s', null, 'linear'),
+            width: '100%',
+            height: '100%'
+          })
+        },
+        _react2['default'].createElement(
+          'svg',
+          { style: {
+              width: paperSize,
+              height: paperSize
+            },
+            viewBox: '0 0 ' + VIEWBOX_SIZE + ' ' + VIEWBOX_SIZE
+          },
+          _react2['default'].createElement('circle', _extends({ ref: 'path',
+            style: this.prepareStyles(circleStyle.style, {
+              transition: Transitions.create('all', '1.5s', null, 'ease-in-out')
+            })
+          }, circleStyle.attr))
+        )
+      );
+    } else {
+      var circleStyle = this._getCircleStyle(paperSize);
+      var polygonStyle = this._getPolygonStyle(paperSize);
+      childrenCmp = _react2['default'].createElement(
+        'svg',
+        { style: {
+            width: paperSize,
+            height: paperSize
+          },
+          viewBox: '0 0 ' + VIEWBOX_SIZE + ' ' + VIEWBOX_SIZE
+        },
+        _react2['default'].createElement('circle', _extends({
+          style: this.prepareStyles(circleStyle.style)
+        }, circleStyle.attr)),
+        _react2['default'].createElement('polygon', _extends({
+          style: this.prepareStyles(polygonStyle.style)
+        }, polygonStyle.attr))
+      );
+    }
+
+    return childrenCmp;
+  },
+
+  _getTheme: function _getTheme() {
+    return this.state.muiTheme.refreshIndicator;
+  },
+
+  _getPaddingSize: function _getPaddingSize() {
+    var padding = this.props.size * 0.1;
+    return padding;
+  },
+
+  _getPaperSize: function _getPaperSize() {
+    return this.props.size - this._getPaddingSize() * 2;
+  },
+
+  _getCircleAttr: function _getCircleAttr() {
+    return {
+      radiu: VIEWBOX_SIZE / 2 - 5,
+      originX: VIEWBOX_SIZE / 2,
+      originY: VIEWBOX_SIZE / 2,
+      strokeWidth: 3
+    };
+  },
+
+  _getArcDeg: function _getArcDeg() {
+    var p = this.props.percentage / 100;
+
+    var beginDeg = p * 120;
+    var endDeg = p * 410;
+    return [beginDeg, endDeg];
+  },
+
+  _getFactor: function _getFactor() {
+    var p = this.props.percentage / 100;
+    var p1 = Math.min(1, p / 0.4);
+
+    return p1;
+  },
+
+  _getRootStyle: function _getRootStyle() {
+    var padding = this._getPaddingSize();
+    return {
+      position: "absolute",
+      zIndex: 2,
+      width: this.props.size,
+      height: this.props.size,
+      padding: padding,
+      top: -10000,
+      left: -10000,
+      transform: 'translate3d(' + (10000 + this.props.left) + 'px, ' + (10000 + this.props.top) + 'px, 0)',
+      opacity: this.props.status === 'hide' ? 0 : 1,
+      transition: this.props.status === 'hide' ? Transitions.create('all', '.3s', 'ease-out') : 'none'
+    };
+  },
+
+  _getCircleStyle: function _getCircleStyle() {
+    var isLoading = this.props.status === 'loading';
+    var p1 = isLoading ? 1 : this._getFactor();
+    var circle = this._getCircleAttr();
+    var perimeter = Math.PI * 2 * circle.radiu;
+
+    var _getArcDeg2 = this._getArcDeg();
+
+    var _getArcDeg22 = _slicedToArray(_getArcDeg2, 2);
+
+    var beginDeg = _getArcDeg22[0];
+    var endDeg = _getArcDeg22[1];
+
+    var arcLen = (endDeg - beginDeg) * perimeter / 360;
+    var dashOffset = -beginDeg * perimeter / 360;
+
+    var theme = this._getTheme();
+    return {
+      style: {
+        strokeDasharray: arcLen + ', ' + (perimeter - arcLen),
+        strokeDashoffset: dashOffset,
+        stroke: isLoading || this.props.percentage === 100 ? theme.loadingStrokeColor : theme.strokeColor,
+        strokeLinecap: 'round',
+        opacity: p1,
+        strokeWidth: circle.strokeWidth * p1,
+        fill: 'none'
+      },
+      attr: {
+        cx: circle.originX,
+        cy: circle.originY,
+        r: circle.radiu
+      }
+    };
+  },
+
+  _getPolygonStyle: function _getPolygonStyle() {
+    var p1 = this._getFactor();
+    var circle = this._getCircleAttr();
+
+    var triangleCx = circle.originX + circle.radiu;
+    var triangleCy = circle.originY;
+    var dx = circle.strokeWidth * 7 / 4 * p1;
+    var trianglePath = triangleCx - dx + ',' + triangleCy + ' ' + (triangleCx + dx) + ',' + triangleCy + ' ' + triangleCx + ',' + (triangleCy + dx);
+
+    var _getArcDeg3 = this._getArcDeg();
+
+    var _getArcDeg32 = _slicedToArray(_getArcDeg3, 2);
+
+    var endDeg = _getArcDeg32[1];
+
+    var theme = this._getTheme();
+    return {
+      style: {
+        fill: this.props.percentage === 100 ? theme.loadingStrokeColor : theme.strokeColor,
+        transform: 'rotate(' + endDeg + 'deg)',
+        transformOrigin: circle.originX + 'px ' + circle.originY + 'px',
+        opacity: p1
+      },
+      attr: {
+        points: trianglePath
+      }
+    };
+  },
+
+  _scalePath: function _scalePath(path, step) {
+    if (this.props.status !== 'loading' || !this.isMounted()) return;
+
+    var currStep = (step || 0) % 3;
+
+    clearTimeout(this._timer1);
+    this._timer1 = setTimeout(this._scalePath.bind(this, path, currStep + 1), currStep ? 750 : 250);
+
+    var circle = this._getCircleAttr();
+    var perimeter = Math.PI * 2 * circle.radiu;
+    var arcLen = perimeter * 0.64;
+
+    if (currStep === 0) {
+      path.style.strokeDasharray = '1, 200';
+      path.style.strokeDashoffset = 0;
+      path.style[this.prefixed('transitionDuration')] = '0ms';
+    } else if (currStep === 1) {
+      path.style.strokeDasharray = arcLen + ', 200';
+      path.style.strokeDashoffset = -15;
+      path.style[this.prefixed('transitionDuration')] = '750ms';
+    } else {
+      path.style.strokeDasharray = arcLen + ',200';
+      path.style.strokeDashoffset = -(perimeter - 1);
+      path.style[this.prefixed('transitionDuration')] = '850ms';
+    }
+  },
+
+  _rotateWrapper: function _rotateWrapper(wrapper) {
+    var _this = this;
+
+    if (this.props.status !== 'loading' || !this.isMounted()) return;
+
+    clearTimeout(this._timer2);
+    this._timer2 = setTimeout(this._rotateWrapper.bind(this, wrapper), 10050);
+
+    AutoPrefix.set(wrapper.style, "transform", null);
+    AutoPrefix.set(wrapper.style, "transform", "rotate(0deg)");
+    AutoPrefix.set(wrapper.style, "transitionDuration", "0ms");
+
+    setTimeout(function () {
+      if (_this.isMounted()) {
+        AutoPrefix.set(wrapper.style, "transform", "rotate(1800deg)");
+        wrapper.style.transitionDuration = "10s";
+        AutoPrefix.set(wrapper.style, "transitionTimingFunction", "linear");
+      }
+    }, 50);
+  },
+
+  prefixed: function prefixed(key) {
+    return AutoPrefix.single(key);
+  }
+
+});
+
+module.exports = RefreshIndicator;
+},{"./mixins/style-propable":81,"./paper":85,"./styles/auto-prefix":97,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react","react-dom":"react-dom"}],90:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -1800,7 +12499,7 @@ var CircleRipple = React.createClass({
 });
 
 module.exports = CircleRipple;
-},{"../mixins/style-propable":29,"../styles/auto-prefix":34,"../styles/colors":35,"../styles/transitions":39,"react":"react","react-addons-pure-render-mixin":56,"react-dom":"react-dom"}],32:[function(require,module,exports){
+},{"../mixins/style-propable":81,"../styles/auto-prefix":97,"../styles/colors":98,"../styles/transitions":105,"react":"react","react-addons-pure-render-mixin":170,"react-dom":"react-dom"}],91:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -1926,7 +12625,15 @@ var FocusRipple = React.createClass({
 });
 
 module.exports = FocusRipple;
-},{"../mixins/style-propable":29,"../styles/auto-prefix":34,"../styles/colors":35,"../styles/transitions":39,"../transition-groups/scale-in":42,"react":"react","react-addons-pure-render-mixin":56,"react-dom":"react-dom"}],33:[function(require,module,exports){
+},{"../mixins/style-propable":81,"../styles/auto-prefix":97,"../styles/colors":98,"../styles/transitions":105,"../transition-groups/scale-in":148,"react":"react","react-addons-pure-render-mixin":170,"react-dom":"react-dom"}],92:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  CircleRipple: require('./circle-ripple'),
+  FocusRipple: require('./focus-ripple'),
+  TouchRipple: require('./touch-ripple')
+};
+},{"./circle-ripple":90,"./focus-ripple":91,"./touch-ripple":93}],93:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -2088,7 +12795,982 @@ var TouchRipple = React.createClass({
 });
 
 module.exports = TouchRipple;
-},{"../mixins/style-propable":29,"../utils/dom":45,"../utils/immutability-helper":48,"./circle-ripple":31,"react":"react","react-addons-pure-render-mixin":56,"react-addons-transition-group":57,"react-dom":"react-dom"}],34:[function(require,module,exports){
+},{"../mixins/style-propable":81,"../utils/dom":155,"../utils/immutability-helper":158,"./circle-ripple":90,"react":"react","react-addons-pure-render-mixin":170,"react-addons-transition-group":171,"react-dom":"react-dom"}],94:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var TextField = require('./text-field');
+var DropDownMenu = require('./drop-down-menu');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+var ContextPure = require('./mixins/context-pure');
+
+var SelectField = React.createClass({
+  displayName: 'SelectField',
+
+  mixins: [StylePropable, ContextPure],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  statics: {
+    getChildrenClasses: function getChildrenClasses() {
+      return [TextField, DropDownMenu];
+    }
+  },
+
+  propTypes: {
+    errorText: React.PropTypes.string,
+    floatingLabelText: React.PropTypes.string,
+    selectFieldRoot: React.PropTypes.object,
+    underlineStyle: React.PropTypes.object,
+    labelStyle: React.PropTypes.object,
+    errorStyle: React.PropTypes.object,
+    hintText: React.PropTypes.string,
+    id: React.PropTypes.string,
+    multiLine: React.PropTypes.bool,
+    onBlur: React.PropTypes.func,
+    onChange: React.PropTypes.func,
+    onFocus: React.PropTypes.func,
+    onKeyDown: React.PropTypes.func,
+    onEnterKeyDown: React.PropTypes.func,
+    type: React.PropTypes.string,
+    rows: React.PropTypes.number,
+    inputStyle: React.PropTypes.object,
+    iconStyle: React.PropTypes.object,
+    floatingLabelStyle: React.PropTypes.object,
+    autoWidth: React.PropTypes.bool,
+    menuItems: React.PropTypes.array.isRequired,
+    menuItemStyle: React.PropTypes.object,
+    selectedIndex: React.PropTypes.number
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      fullWidth: false
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getStyles: function getStyles() {
+    var styles = {
+      root: {
+        height: 46,
+        position: 'relative',
+        width: '100%',
+        top: 16,
+        fontSize: 16
+      },
+      label: {
+        paddingLeft: 0,
+        top: 4,
+        width: '100%'
+      },
+      icon: {
+        top: 20,
+        right: 0
+      },
+      underline: {
+        borderTop: 'none'
+      },
+      input: {},
+      error: {}
+    };
+
+    if (!this.props.floatingLabelText) {
+      if (this.props.hintText) {
+        styles.root.top = -5;
+        styles.label.top = 1;
+        styles.icon.top = 17;
+      } else {
+        styles.root.top = -8;
+      }
+    } else {
+      styles.error.bottom = -15;
+    }
+
+    return styles;
+  },
+
+  render: function render() {
+    var styles = this.getStyles();
+    var _props = this.props;
+    var style = _props.style;
+    var labelStyle = _props.labelStyle;
+    var iconStyle = _props.iconStyle;
+    var underlineStyle = _props.underlineStyle;
+    var errorStyle = _props.errorStyle;
+    var selectFieldRoot = _props.selectFieldRoot;
+    var menuItems = _props.menuItems;
+    var disabled = _props.disabled;
+    var floatingLabelText = _props.floatingLabelText;
+    var floatingLabelStyle = _props.floatingLabelStyle;
+    var hintText = _props.hintText;
+    var fullWidth = _props.fullWidth;
+    var errorText = _props.errorText;
+
+    var other = _objectWithoutProperties(_props, ['style', 'labelStyle', 'iconStyle', 'underlineStyle', 'errorStyle', 'selectFieldRoot', 'menuItems', 'disabled', 'floatingLabelText', 'floatingLabelStyle', 'hintText', 'fullWidth', 'errorText']);
+
+    var textFieldProps = {
+      style: this.mergeAndPrefix(styles.input, style),
+      floatingLabelText: floatingLabelText,
+      floatingLabelStyle: floatingLabelStyle,
+      hintText: !hintText && !floatingLabelText ? ' ' : hintText,
+      fullWidth: fullWidth,
+      errorText: errorText,
+      errorStyle: this.mergeAndPrefix(styles.error, errorStyle)
+    };
+    var dropDownMenuProps = {
+      menuItems: menuItems,
+      disabled: disabled,
+      style: this.mergeAndPrefix(styles.root, selectFieldRoot),
+      labelStyle: this.mergeAndPrefix(styles.label, labelStyle),
+      iconStyle: this.mergeAndPrefix(styles.icon, iconStyle),
+      underlineStyle: this.mergeAndPrefix(styles.underline, underlineStyle),
+      autoWidth: false
+    };
+
+    return React.createElement(
+      TextField,
+      textFieldProps,
+      React.createElement(DropDownMenu, _extends({}, dropDownMenuProps, other))
+    );
+  }
+});
+
+module.exports = SelectField;
+},{"./drop-down-menu":54,"./mixins/context-pure":78,"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./text-field":129,"react":"react"}],95:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var FocusRipple = require('./ripples/focus-ripple');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+/**
+  * Verifies min/max range.
+  * @param   {Object} props         Properties of the React component.
+  * @param   {String} propName      Name of the property to validate.
+  * @param   {String} componentName Name of the component whose property is being validated.
+  * @returns {Object} Returns an Error if min >= max otherwise null.
+  */
+var minMaxPropType = function minMaxPropType(props, propName, componentName) {
+  var error = React.PropTypes.number(props, propName, componentName);
+  if (error !== null) return error;
+
+  if (props.min >= props.max) {
+    var errorMsg = propName === 'min' ? 'min should be less than max' : 'max should be greater than min';
+    return new Error(errorMsg);
+  }
+};
+
+/**
+  * Verifies value is within the min/max range.
+  * @param   {Object} props         Properties of the React component.
+  * @param   {String} propName      Name of the property to validate.
+  * @param   {String} componentName Name of the component whose property is being validated.
+  * @returns {Object} Returns an Error if the value is not within the range otherwise null.
+  */
+var valueInRangePropType = function valueInRangePropType(props, propName, componentName) {
+  var error = React.PropTypes.number(props, propName, componentName);
+  if (error !== null) return error;
+
+  var value = props[propName];
+  if (value < props.min || props.max < value) {
+    return new Error(propName + ' should be within the range specified by min and max');
+  }
+};
+
+var Slider = React.createClass({
+  displayName: 'Slider',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    name: React.PropTypes.string.isRequired,
+    defaultValue: valueInRangePropType,
+    description: React.PropTypes.string,
+    disabled: React.PropTypes.bool,
+    error: React.PropTypes.string,
+    max: minMaxPropType,
+    min: minMaxPropType,
+    required: React.PropTypes.bool,
+    step: React.PropTypes.number,
+    onBlur: React.PropTypes.func,
+    onChange: React.PropTypes.func,
+    onDragStart: React.PropTypes.func,
+    onDragStop: React.PropTypes.func,
+    onFocus: React.PropTypes.func,
+    value: valueInRangePropType
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      defaultValue: 0,
+      disabled: false,
+      max: 1,
+      min: 0,
+      required: true,
+      step: 0.01,
+      style: {}
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    var value = this.props.value;
+    if (value === undefined) {
+      value = this.props.defaultValue;
+    }
+    var percent = (value - this.props.min) / (this.props.max - this.props.min);
+    if (isNaN(percent)) percent = 0;
+
+    return {
+      active: false,
+      dragging: false,
+      focused: false,
+      hovered: false,
+      percent: percent,
+      value: value,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+
+    if (nextProps.value !== undefined) {
+      this.setValue(nextProps.value);
+    }
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.slider;
+  },
+
+  getStyles: function getStyles() {
+    var fillGutter = this.getTheme().handleSize / 2;
+    var disabledGutter = this.getTheme().trackSize + this.getTheme().handleSizeDisabled / 2;
+    var calcDisabledSpacing = this.props.disabled ? ' - ' + disabledGutter + 'px' : '';
+    var styles = {
+      root: {
+        touchCallout: 'none',
+        userSelect: 'none',
+        cursor: 'default',
+        height: this.getTheme().handleSizeActive,
+        position: 'relative',
+        marginTop: 24,
+        marginBottom: 48
+      },
+      track: {
+        position: 'absolute',
+        top: (this.getTheme().handleSizeActive - this.getTheme().trackSize) / 2,
+        left: 0,
+        width: '100%',
+        height: this.getTheme().trackSize
+      },
+      filledAndRemaining: {
+        position: 'absolute',
+        top: 0,
+        height: '100%',
+        transition: Transitions.easeOut(null, 'margin')
+      },
+      handle: {
+        boxSizing: 'border-box',
+        position: 'absolute',
+        cursor: 'pointer',
+        pointerEvents: 'inherit',
+        top: 0,
+        left: '0%',
+        zIndex: 1,
+        margin: this.getTheme().trackSize / 2 + 'px 0 0 0',
+        width: this.getTheme().handleSize,
+        height: this.getTheme().handleSize,
+        backgroundColor: this.getTheme().selectionColor,
+        backgroundClip: 'padding-box',
+        border: '0px solid transparent',
+        borderRadius: '50%',
+        transform: 'translate(-50%, -50%)',
+        transition: Transitions.easeOut('450ms', 'background') + ',' + Transitions.easeOut('450ms', 'border-color') + ',' + Transitions.easeOut('450ms', 'width') + ',' + Transitions.easeOut('450ms', 'height'),
+        overflow: 'visible'
+      },
+      handleWhenDisabled: {
+        boxSizing: 'content-box',
+        cursor: 'not-allowed',
+        backgroundColor: this.getTheme().trackColor,
+        width: this.getTheme().handleSizeDisabled,
+        height: this.getTheme().handleSizeDisabled,
+        border: 'none'
+      },
+      handleWhenPercentZero: {
+        border: this.getTheme().trackSize + 'px solid ' + this.getTheme().handleColorZero,
+        backgroundColor: this.getTheme().handleFillColor,
+        boxShadow: 'none'
+      },
+      handleWhenPercentZeroAndDisabled: {
+        cursor: 'not-allowed',
+        width: this.getTheme().handleSizeDisabled,
+        height: this.getTheme().handleSizeDisabled
+      },
+      handleWhenPercentZeroAndFocused: {
+        border: this.getTheme().trackSize + 'px solid ' + this.getTheme().trackColorSelected
+      },
+      handleWhenActive: {
+        width: this.getTheme().handleSizeActive,
+        height: this.getTheme().handleSizeActive
+      },
+      ripple: {
+        height: this.getTheme().handleSize,
+        width: this.getTheme().handleSize,
+        overflow: 'visible'
+      },
+      rippleWhenPercentZero: {
+        top: -this.getTheme().trackSize,
+        left: -this.getTheme().trackSize
+      },
+      rippleInner: {
+        height: '300%',
+        width: '300%',
+        top: -this.getTheme().handleSize,
+        left: -this.getTheme().handleSize
+      }
+    };
+    styles.filled = this.mergeAndPrefix(styles.filledAndRemaining, {
+      left: 0,
+      backgroundColor: this.props.disabled ? this.getTheme().trackColor : this.getTheme().selectionColor,
+      marginRight: fillGutter,
+      width: 'calc(' + this.state.percent * 100 + '%' + calcDisabledSpacing + ')'
+    });
+    styles.remaining = this.mergeAndPrefix(styles.filledAndRemaining, {
+      right: 0,
+      backgroundColor: this.getTheme().trackColor,
+      marginLeft: fillGutter,
+      width: 'calc(' + (1 - this.state.percent) * 100 + '%' + calcDisabledSpacing + ')'
+    });
+
+    return styles;
+  },
+
+  render: function render() {
+    var others = _objectWithoutProperties(this.props, []);
+
+    var percent = this.state.percent;
+    if (percent > 1) percent = 1;else if (percent < 0) percent = 0;
+
+    var styles = this.getStyles();
+    var sliderStyles = this.prepareStyles(styles.root, this.props.style);
+    var handleStyles = percent === 0 ? this.prepareStyles(styles.handle, styles.handleWhenPercentZero, this.state.active && styles.handleWhenActive, this.state.focused && { outline: 'none' }, (this.state.hovered || this.state.focused) && !this.props.disabled && styles.handleWhenPercentZeroAndFocused, this.props.disabled && styles.handleWhenPercentZeroAndDisabled) : this.prepareStyles(styles.handle, this.state.active && styles.handleWhenActive, this.state.focused && { outline: 'none' }, this.props.disabled && styles.handleWhenDisabled, {
+      left: percent * 100 + '%'
+    });
+    var rippleStyle = this.mergeAndPrefix(styles.ripple, percent === 0 && styles.rippleWhenPercentZero);
+    var remainingStyles = styles.remaining;
+    if ((this.state.hovered || this.state.focused) && !this.props.disabled) {
+      remainingStyles.backgroundColor = this.getTheme().trackColorSelected;
+    }
+
+    var rippleShowCondition = (this.state.hovered || this.state.focused) && !this.state.active;
+    var rippleColor = this.state.percent === 0 ? this.getTheme().handleColorZero : this.getTheme().rippleColor;
+    var focusRipple = undefined;
+    if (!this.props.disabled && !this.props.disableFocusRipple) {
+      focusRipple = React.createElement(FocusRipple, {
+        ref: 'focusRipple',
+        key: 'focusRipple',
+        style: rippleStyle,
+        innerStyle: styles.rippleInner,
+        show: rippleShowCondition,
+        color: rippleColor });
+    }
+
+    var handleDragProps = {};
+
+    if (!this.props.disabled) {
+      handleDragProps = {
+        onTouchStart: this._onHandleTouchStart,
+        onMouseDown: this._onHandleMouseDown
+      };
+    }
+
+    return React.createElement(
+      'div',
+      _extends({}, others, { style: this.prepareStyles(this.props.style) }),
+      React.createElement('span', { className: 'mui-input-highlight' }),
+      React.createElement('span', { className: 'mui-input-bar' }),
+      React.createElement(
+        'span',
+        { className: 'mui-input-description' },
+        this.props.description
+      ),
+      React.createElement(
+        'span',
+        { className: 'mui-input-error' },
+        this.props.error
+      ),
+      React.createElement(
+        'div',
+        { style: sliderStyles,
+          onFocus: this._onFocus,
+          onBlur: this._onBlur,
+          onMouseDown: this._onMouseDown,
+          onMouseEnter: this._onMouseEnter,
+          onMouseLeave: this._onMouseLeave,
+          onMouseUp: this._onMouseUp },
+        React.createElement(
+          'div',
+          { ref: 'track', style: this.prepareStyles(styles.track) },
+          React.createElement('div', { style: this.prepareStyles(styles.filled) }),
+          React.createElement('div', { style: this.prepareStyles(remainingStyles) }),
+          React.createElement(
+            'div',
+            _extends({ style: handleStyles, tabIndex: 0 }, handleDragProps),
+            focusRipple
+          )
+        )
+      ),
+      React.createElement('input', { ref: 'input', type: 'hidden',
+        name: this.props.name,
+        value: this.state.value,
+        required: this.props.required,
+        min: this.props.min,
+        max: this.props.max,
+        step: this.props.step })
+    );
+  },
+
+  _onHandleTouchStart: function _onHandleTouchStart(e) {
+    if (document) {
+      document.addEventListener('touchmove', this._dragTouchHandler, false);
+      document.addEventListener('touchup', this._dragTouchEndHandler, false);
+      document.addEventListener('touchend', this._dragTouchEndHandler, false);
+      document.addEventListener('touchcancel', this._dragTouchEndHandler, false);
+    }
+    this._onDragStart(e);
+  },
+
+  _onHandleMouseDown: function _onHandleMouseDown(e) {
+    if (document) {
+      document.addEventListener('mousemove', this._dragHandler, false);
+      document.addEventListener('mouseup', this._dragEndHandler, false);
+    }
+    this._onDragStart(e);
+  },
+
+  _dragHandler: function _dragHandler(e) {
+    var _this = this;
+
+    if (this._dragRunning) {
+      return;
+    }
+    this._dragRunning = true;
+    requestAnimationFrame(function () {
+      _this._onDragUpdate(e, e.clientX - _this._getTrackLeft());
+      _this._dragRunning = false;
+    });
+  },
+
+  _dragTouchHandler: function _dragTouchHandler(e) {
+    var _this2 = this;
+
+    if (this._dragRunning) {
+      return;
+    }
+    this._dragRunning = true;
+    requestAnimationFrame(function () {
+      _this2._onDragUpdate(e, e.touches[0].clientX - _this2._getTrackLeft());
+      _this2._dragRunning = false;
+    });
+  },
+
+  _dragEndHandler: function _dragEndHandler(e) {
+    if (document) {
+      document.removeEventListener('mousemove', this._dragHandler, false);
+      document.removeEventListener('mouseup', this._dragEndHandler, false);
+    }
+
+    this._onDragStop(e);
+  },
+
+  _dragTouchEndHandler: function _dragTouchEndHandler(e) {
+    if (document) {
+      document.removeEventListener('touchmove', this._dragTouchHandler, false);
+      document.removeEventListener('touchup', this._dragTouchEndHandler, false);
+      document.removeEventListener('touchend', this._dragTouchEndHandler, false);
+      document.removeEventListener('touchcancel', this._dragTouchEndHandler, false);
+    }
+
+    this._onDragStop(e);
+  },
+
+  getValue: function getValue() {
+    return this.state.value;
+  },
+
+  setValue: function setValue(i) {
+    // calculate percentage
+    var percent = (i - this.props.min) / (this.props.max - this.props.min);
+    if (isNaN(percent)) percent = 0;
+    // update state
+    this.setState({
+      value: i,
+      percent: percent
+    });
+  },
+
+  getPercent: function getPercent() {
+    return this.state.percent;
+  },
+
+  setPercent: function setPercent(percent, callback) {
+    var value = this._alignValue(this._percentToValue(percent));
+    var _props = this.props;
+    var min = _props.min;
+    var max = _props.max;
+
+    var alignedPercent = (value - min) / (max - min);
+    if (this.state.value !== value) {
+      this.setState({ value: value, percent: alignedPercent }, callback);
+    }
+  },
+
+  clearValue: function clearValue() {
+    this.setValue(this.props.min);
+  },
+
+  _alignValue: function _alignValue(val) {
+    var _props2 = this.props;
+    var step = _props2.step;
+    var min = _props2.min;
+
+    var alignValue = Math.round((val - min) / step) * step + min;
+    return parseFloat(alignValue.toFixed(5));
+  },
+
+  _onFocus: function _onFocus(e) {
+    this.setState({ focused: true });
+    if (this.props.onFocus) this.props.onFocus(e);
+  },
+
+  _onBlur: function _onBlur(e) {
+    this.setState({ focused: false, active: false });
+    if (this.props.onBlur) this.props.onBlur(e);
+  },
+
+  _onMouseDown: function _onMouseDown(e) {
+    if (!this.props.disabled) this._pos = e.clientX;
+  },
+
+  _onMouseEnter: function _onMouseEnter() {
+    this.setState({ hovered: true });
+  },
+
+  _onMouseLeave: function _onMouseLeave() {
+    this.setState({ hovered: false });
+  },
+
+  _getTrackLeft: function _getTrackLeft() {
+    return ReactDOM.findDOMNode(this.refs.track).getBoundingClientRect().left;
+  },
+
+  _onMouseUp: function _onMouseUp(e) {
+    if (!this.props.disabled) this.setState({ active: false });
+    if (!this.state.dragging && Math.abs(this._pos - e.clientX) < 5) {
+      var pos = e.clientX - this._getTrackLeft();
+      this._dragX(e, pos);
+    }
+
+    this._pos = undefined;
+  },
+
+  _onDragStart: function _onDragStart(e) {
+    this.setState({
+      dragging: true,
+      active: true
+    });
+    if (this.props.onDragStart) this.props.onDragStart(e);
+  },
+
+  _onDragStop: function _onDragStop(e) {
+    this.setState({
+      dragging: false,
+      active: false
+    });
+    if (this.props.onDragStop) this.props.onDragStop(e);
+  },
+
+  _onDragUpdate: function _onDragUpdate(e, pos) {
+    if (!this.state.dragging) return;
+    if (!this.props.disabled) this._dragX(e, pos);
+  },
+
+  _dragX: function _dragX(e, pos) {
+    var max = ReactDOM.findDOMNode(this.refs.track).clientWidth;
+    if (pos < 0) pos = 0;else if (pos > max) pos = max;
+    this._updateWithChangeEvent(e, pos / max);
+  },
+
+  _updateWithChangeEvent: function _updateWithChangeEvent(e, percent) {
+    var _this3 = this;
+
+    this.setPercent(percent, function () {
+      if (_this3.props.onChange) _this3.props.onChange(e, _this3.state.value);
+    });
+  },
+
+  _percentToValue: function _percentToValue(percent) {
+    return percent * (this.props.max - this.props.min) + this.props.min;
+  }
+
+});
+
+module.exports = Slider;
+},{"./mixins/style-propable":81,"./ripples/focus-ripple":91,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react","react-dom":"react-dom"}],96:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var ClickAwayable = require('./mixins/click-awayable');
+var FlatButton = require('./flat-button');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+var ContextPure = require('./mixins/context-pure');
+var StyleResizable = require('./mixins/style-resizable');
+
+var Snackbar = React.createClass({
+  displayName: 'Snackbar',
+
+  mixins: [StylePropable, StyleResizable, ClickAwayable, ContextPure],
+
+  manuallyBindClickAway: true,
+
+  // ID of the active timer.
+  _autoHideTimerId: undefined,
+
+  _oneAtTheTimeTimerId: undefined,
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      openOnMount: false
+    };
+  },
+
+  statics: {
+    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+      var theme = muiTheme.snackbar;
+      var spacing = muiTheme.rawTheme.spacing;
+
+      return {
+        textColor: theme.textColor,
+        backgroundColor: theme.backgroundColor,
+        desktopGutter: spacing.desktopGutter,
+        desktopSubheaderHeight: spacing.desktopSubheaderHeight,
+        actionColor: theme.actionColor
+      };
+    },
+    getChildrenClasses: function getChildrenClasses() {
+      return [FlatButton];
+    }
+  },
+
+  propTypes: {
+    message: React.PropTypes.node.isRequired,
+    action: React.PropTypes.string,
+    autoHideDuration: React.PropTypes.number,
+    onActionTouchTap: React.PropTypes.func,
+    onShow: React.PropTypes.func,
+    onDismiss: React.PropTypes.func,
+    openOnMount: React.PropTypes.bool
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      open: this.props.openOnMount,
+      message: this.props.message,
+      action: this.props.action,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var _this = this;
+
+    //to update theme inside state whenever a new theme is passed down
+    //from the parent / owner using context
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+
+    if (this.state.open) {
+      this.setState({
+        open: false
+      });
+
+      clearTimeout(this._oneAtTheTimeTimerId);
+      this._oneAtTheTimeTimerId = setTimeout(function () {
+        if (_this.isMounted()) {
+          _this.setState({
+            message: nextProps.message,
+            action: nextProps.action,
+            open: true
+          });
+        }
+      }, 400);
+    } else {
+      this.setState({
+        message: nextProps.message,
+        action: nextProps.action
+      });
+    }
+  },
+
+  componentDidMount: function componentDidMount() {
+    if (this.props.openOnMount) {
+      this._setAutoHideTimer();
+      this._bindClickAway();
+    }
+  },
+
+  componentClickAway: function componentClickAway() {
+    this.dismiss();
+  },
+
+  componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+    var _this2 = this;
+
+    if (prevState.open !== this.state.open) {
+      if (this.state.open) {
+        this._setAutoHideTimer();
+
+        //Only Bind clickaway after transition finishes
+        setTimeout(function () {
+          if (_this2.isMounted()) {
+            _this2._bindClickAway();
+          }
+        }, 400);
+      } else {
+        clearTimeout(this._autoHideTimerId);
+        this._unbindClickAway();
+      }
+    }
+  },
+
+  componentWillUnmount: function componentWillUnmount() {
+    clearTimeout(this._autoHideTimerId);
+    this._unbindClickAway();
+  },
+
+  getStyles: function getStyles() {
+    var _constructor$getRelevantContextKeys = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+    var textColor = _constructor$getRelevantContextKeys.textColor;
+    var backgroundColor = _constructor$getRelevantContextKeys.backgroundColor;
+    var desktopGutter = _constructor$getRelevantContextKeys.desktopGutter;
+    var desktopSubheaderHeight = _constructor$getRelevantContextKeys.desktopSubheaderHeight;
+    var actionColor = _constructor$getRelevantContextKeys.actionColor;
+
+    var isSmall = this.state.deviceSize === this.constructor.Sizes.SMALL;
+
+    var styles = {
+      root: {
+        position: 'fixed',
+        left: 0,
+        display: '-webkit-box; display: -webkit-flex; display: flex',
+        right: 0,
+        bottom: 0,
+        zIndex: 10,
+        visibility: 'hidden',
+        transform: 'translate3d(0, ' + desktopSubheaderHeight + 'px, 0)',
+        transition: Transitions.easeOut('400ms', 'transform') + ',' + Transitions.easeOut('400ms', 'visibility')
+      },
+      rootWhenOpen: {
+        visibility: 'visible',
+        transform: 'translate3d(0, 0, 0)'
+      },
+      body: {
+        backgroundColor: backgroundColor,
+        padding: '0 ' + desktopGutter + 'px',
+        height: desktopSubheaderHeight,
+        lineHeight: desktopSubheaderHeight + 'px',
+        borderRadius: isSmall ? 0 : 2,
+        maxWidth: isSmall ? 'inherit' : 568,
+        minWidth: isSmall ? 'inherit' : 288,
+        flexGrow: isSmall ? 1 : 0,
+        margin: 'auto'
+      },
+      content: {
+        fontSize: 14,
+        color: textColor,
+        opacity: 0,
+        transition: Transitions.easeOut('400ms', 'opacity')
+      },
+      contentWhenOpen: {
+        opacity: 1,
+        transition: Transitions.easeOut('500ms', 'opacity', '100ms')
+      },
+      action: {
+        color: actionColor,
+        float: 'right',
+        marginTop: 6,
+        marginRight: -16,
+        marginLeft: desktopGutter,
+        backgroundColor: 'transparent'
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var onActionTouchTap = _props.onActionTouchTap;
+    var style = _props.style;
+
+    var others = _objectWithoutProperties(_props, ['onActionTouchTap', 'style']);
+
+    var styles = this.getStyles();
+
+    var _state = this.state;
+    var open = _state.open;
+    var action = _state.action;
+    var message = _state.message;
+
+    var rootStyles = open ? this.mergeStyles(styles.root, styles.rootWhenOpen, style) : this.mergeStyles(styles.root, style);
+
+    var actionButton = undefined;
+    if (action) {
+      actionButton = React.createElement(FlatButton, {
+        style: styles.action,
+        label: action,
+        onTouchTap: onActionTouchTap });
+    }
+
+    var contentStyle = open ? this.mergeStyles(styles.content, styles.contentWhenOpen) : styles.content;
+
+    return React.createElement(
+      'div',
+      _extends({}, others, { style: rootStyles }),
+      React.createElement(
+        'div',
+        { style: styles.body },
+        React.createElement(
+          'div',
+          { style: contentStyle },
+          React.createElement(
+            'span',
+            null,
+            message
+          ),
+          actionButton
+        )
+      )
+    );
+  },
+
+  show: function show() {
+    this.setState({
+      open: true
+    });
+
+    if (this.props.onShow) {
+      this.props.onShow();
+    }
+  },
+
+  dismiss: function dismiss() {
+    this.setState({
+      open: false
+    });
+
+    if (this.props.onDismiss) {
+      this.props.onDismiss();
+    }
+  },
+
+  _setAutoHideTimer: function _setAutoHideTimer() {
+    var _this3 = this;
+
+    if (this.props.autoHideDuration > 0) {
+      clearTimeout(this._autoHideTimerId);
+      this._autoHideTimerId = setTimeout(function () {
+        if (_this3.isMounted()) {
+          _this3.dismiss();
+        }
+      }, this.props.autoHideDuration);
+    }
+  }
+
+});
+
+module.exports = Snackbar;
+},{"./flat-button":58,"./mixins/click-awayable":77,"./mixins/context-pure":78,"./mixins/style-propable":81,"./mixins/style-resizable":82,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react"}],97:[function(require,module,exports){
 'use strict';
 
 var isBrowser = require('../utils/is-browser');
@@ -2142,7 +13824,7 @@ module.exports = {
   }
 
 };
-},{"../utils/is-browser":49,"../utils/modernizr.custom":51}],35:[function(require,module,exports){
+},{"../utils/is-browser":160,"../utils/modernizr.custom":163}],98:[function(require,module,exports){
 // To include this file in your project:
 // let mui = require('mui');
 // let Colors = mui.Styles.Colors;
@@ -2438,7 +14120,45 @@ module.exports = {
   lightWhite: 'rgba(255, 255, 255, 0.54)'
 
 };
-},{}],36:[function(require,module,exports){
+},{}],99:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  AutoPrefix: require('./auto-prefix'),
+  Colors: require('./colors'),
+  Spacing: require('./spacing'),
+  ThemeManager: require('./theme-manager'),
+  Transitions: require('./transitions'),
+  Typography: require('./typography'),
+  LightRawTheme: require('./raw-themes/light-raw-theme'),
+  DarkRawTheme: require('./raw-themes/dark-raw-theme'),
+  ThemeDecorator: require('./theme-decorator')
+};
+},{"./auto-prefix":97,"./colors":98,"./raw-themes/dark-raw-theme":100,"./raw-themes/light-raw-theme":101,"./spacing":102,"./theme-decorator":103,"./theme-manager":104,"./transitions":105,"./typography":106}],100:[function(require,module,exports){
+'use strict';
+
+var Colors = require('../colors');
+var ColorManipulator = require('../../utils/color-manipulator');
+var Spacing = require('../spacing');
+
+module.exports = {
+  spacing: Spacing,
+  fontFamily: 'Roboto, sans-serif',
+  palette: {
+    primary1Color: Colors.cyan700,
+    primary2Color: Colors.cyan700,
+    primary3Color: Colors.grey600,
+    accent1Color: Colors.pinkA200,
+    accent2Color: Colors.pinkA400,
+    accent3Color: Colors.pinkA100,
+    textColor: Colors.fullWhite,
+    alternateTextColor: '#303030',
+    canvasColor: '#303030',
+    borderColor: ColorManipulator.fade(Colors.fullWhite, 0.3),
+    disabledColor: ColorManipulator.fade(Colors.fullWhite, 0.3)
+  }
+};
+},{"../../utils/color-manipulator":152,"../colors":98,"../spacing":102}],101:[function(require,module,exports){
 'use strict';
 
 var Colors = require('../colors');
@@ -2468,7 +14188,7 @@ module.exports = {
     disabledColor: ColorManipulator.fade(Colors.darkBlack, 0.3)
   }
 };
-},{"../../utils/color-manipulator":44,"../colors":35,"../spacing":37}],37:[function(require,module,exports){
+},{"../../utils/color-manipulator":152,"../colors":98,"../spacing":102}],102:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -2485,7 +14205,34 @@ module.exports = {
   desktopSubheaderHeight: 48,
   desktopToolbarHeight: 56
 };
-},{}],38:[function(require,module,exports){
+},{}],103:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+
+module.exports = function (customTheme) {
+
+  return function (Component) {
+
+    return React.createClass({
+
+      childContextTypes: {
+        muiTheme: React.PropTypes.object
+      },
+
+      getChildContext: function getChildContext() {
+        return {
+          muiTheme: customTheme
+        };
+      },
+
+      render: function render() {
+        return React.createElement(Component, this.props);
+      }
+    });
+  };
+};
+},{"react":"react"}],104:[function(require,module,exports){
 'use strict';
 
 var Colors = require('./colors');
@@ -2732,7 +14479,7 @@ module.exports = {
   }
 
 };
-},{"../utils/color-manipulator":44,"../utils/extend":47,"./colors":35,"react-addons-update":58}],39:[function(require,module,exports){
+},{"../utils/color-manipulator":152,"../utils/extend":157,"./colors":98,"react-addons-update":172}],105:[function(require,module,exports){
 'use strict';
 
 var AutoPrefix = require('./auto-prefix');
@@ -2768,7 +14515,7 @@ module.exports = {
     return AutoPrefix.singleHyphened(property) + ' ' + duration + ' ' + easeFunction + ' ' + delay;
   }
 };
-},{"./auto-prefix":34}],40:[function(require,module,exports){
+},{"./auto-prefix":97}],106:[function(require,module,exports){
 'use strict';
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
@@ -2796,7 +14543,4933 @@ var Typography = function Typography() {
 };
 
 module.exports = new Typography();
-},{"./colors":35}],41:[function(require,module,exports){
+},{"./colors":98}],107:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var SvgIcon = React.createClass({
+  displayName: 'SvgIcon',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    color: React.PropTypes.string,
+    hoverColor: React.PropTypes.string,
+    onMouseEnter: React.PropTypes.func,
+    onMouseLeave: React.PropTypes.func,
+    viewBox: React.PropTypes.string
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      hovered: false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      onMouseEnter: function onMouseEnter() {},
+      onMouseLeave: function onMouseLeave() {},
+      viewBox: '0 0 24 24'
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var children = _props.children;
+    var color = _props.color;
+    var hoverColor = _props.hoverColor;
+    var onMouseEnter = _props.onMouseEnter;
+    var onMouseLeave = _props.onMouseLeave;
+    var style = _props.style;
+    var viewBox = _props.viewBox;
+
+    var other = _objectWithoutProperties(_props, ['children', 'color', 'hoverColor', 'onMouseEnter', 'onMouseLeave', 'style', 'viewBox']);
+
+    var offColor = color ? color : style && style.fill ? style.fill : this.state.muiTheme.rawTheme.palette.textColor;
+    var onColor = hoverColor ? hoverColor : offColor;
+
+    var mergedStyles = this.prepareStyles({
+      display: 'inline-block',
+      height: 24,
+      width: 24,
+      userSelect: 'none',
+      transition: Transitions.easeOut()
+    }, style, {
+      // Make sure our fill color overrides fill provided in props.style
+      fill: this.state.hovered ? onColor : offColor
+    });
+
+    var events = hoverColor ? {
+      onMouseEnter: this._handleMouseEnter,
+      onMouseLeave: this._handleMouseLeave
+    } : {};
+
+    return React.createElement(
+      'svg',
+      _extends({}, other, events, {
+        style: mergedStyles,
+        viewBox: viewBox }),
+      children
+    );
+  },
+
+  _handleMouseLeave: function _handleMouseLeave(e) {
+    this.setState({ hovered: false });
+    this.props.onMouseLeave(e);
+  },
+
+  _handleMouseEnter: function _handleMouseEnter(e) {
+    this.setState({ hovered: true });
+    this.props.onMouseEnter(e);
+  }
+});
+
+module.exports = SvgIcon;
+},{"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react"}],108:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var HardwareKeyboardArrowDown = React.createClass({
+  displayName: 'HardwareKeyboardArrowDown',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M7.41 7.84L12 12.42l4.59-4.58L18 9.25l-6 6-6-6z' })
+    );
+  }
+
+});
+
+module.exports = HardwareKeyboardArrowDown;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],109:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var HardwareKeyboardArrowUp = React.createClass({
+  displayName: 'HardwareKeyboardArrowUp',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z' })
+    );
+  }
+
+});
+
+module.exports = HardwareKeyboardArrowUp;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],110:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var NavigationArrowDropDown = React.createClass({
+  displayName: 'NavigationArrowDropDown',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M7 10l5 5 5-5z' })
+    );
+  }
+
+});
+
+module.exports = NavigationArrowDropDown;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],111:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var NavigationArrowDropUp = React.createClass({
+  displayName: 'NavigationArrowDropUp',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M7 14l5-5 5 5z' })
+    );
+  }
+
+});
+
+module.exports = NavigationArrowDropUp;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],112:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var NavigationChevronLeft = React.createClass({
+  displayName: 'NavigationChevronLeft',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z' })
+    );
+  }
+
+});
+
+module.exports = NavigationChevronLeft;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],113:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var NavigationChevronRight = React.createClass({
+  displayName: 'NavigationChevronRight',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z' })
+    );
+  }
+
+});
+
+module.exports = NavigationChevronRight;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],114:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var NavigationMenu = React.createClass({
+  displayName: 'NavigationMenu',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z' })
+    );
+  }
+
+});
+
+module.exports = NavigationMenu;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],115:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var ToggleCheckBoxOutlineBlank = React.createClass({
+  displayName: 'ToggleCheckBoxOutlineBlank',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M19 5v14H5V5h14m0-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2z' })
+    );
+  }
+
+});
+
+module.exports = ToggleCheckBoxOutlineBlank;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],116:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var ToggleCheckBox = React.createClass({
+  displayName: 'ToggleCheckBox',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z' })
+    );
+  }
+
+});
+
+module.exports = ToggleCheckBox;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],117:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var ToggleRadioButtonChecked = React.createClass({
+  displayName: 'ToggleRadioButtonChecked',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M12 7c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0-5C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z' })
+    );
+  }
+
+});
+
+module.exports = ToggleRadioButtonChecked;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],118:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var PureRenderMixin = require('react-addons-pure-render-mixin');
+var SvgIcon = require('../../svg-icon');
+
+var ToggleRadioButtonUnchecked = React.createClass({
+  displayName: 'ToggleRadioButtonUnchecked',
+
+  mixins: [PureRenderMixin],
+
+  render: function render() {
+    return React.createElement(
+      SvgIcon,
+      this.props,
+      React.createElement('path', { d: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z' })
+    );
+  }
+
+});
+
+module.exports = ToggleRadioButtonUnchecked;
+},{"../../svg-icon":107,"react":"react","react-addons-pure-render-mixin":170}],119:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var Checkbox = require('../checkbox');
+var TableRowColumn = require('./table-row-column');
+var ClickAwayable = require('../mixins/click-awayable');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var TableBody = React.createClass({
+  displayName: 'TableBody',
+
+  mixins: [ClickAwayable, StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  propTypes: {
+    allRowsSelected: React.PropTypes.bool,
+    deselectOnClickaway: React.PropTypes.bool,
+    displayRowCheckbox: React.PropTypes.bool,
+    multiSelectable: React.PropTypes.bool,
+    onCellClick: React.PropTypes.func,
+    onCellHover: React.PropTypes.func,
+    onCellHoverExit: React.PropTypes.func,
+    onRowHover: React.PropTypes.func,
+    onRowHoverExit: React.PropTypes.func,
+    onRowSelection: React.PropTypes.func,
+    preScanRows: React.PropTypes.bool,
+    selectable: React.PropTypes.bool,
+    showRowHover: React.PropTypes.bool,
+    stripedRows: React.PropTypes.bool,
+    style: React.PropTypes.object
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      allRowsSelected: false,
+      deselectOnClickaway: true,
+      displayRowCheckbox: true,
+      multiSelectable: false,
+      preScanRows: true,
+      selectable: true,
+      style: {}
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      selectedRows: this._calculatePreselectedRows(this.props)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+
+    var newState = {};
+
+    if (this.props.allRowsSelected && !nextProps.allRowsSelected) {
+      var lastSelectedRow = this.state.selectedRows.length ? this.state.selectedRows[this.state.selectedRows.length - 1] : undefined;
+
+      newState.selectedRows = [lastSelectedRow];
+    } else {
+      newState.selectedRows = this._calculatePreselectedRows(nextProps);
+    }
+
+    this.setState(newState);
+  },
+
+  componentClickAway: function componentClickAway() {
+    if (this.props.deselectOnClickaway && this.state.selectedRows.length) {
+      this.setState({ selectedRows: [] });
+    }
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var className = _props.className;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['className', 'style']);
+
+    var classes = 'mui-table-body';
+    if (className) classes += ' ' + className;
+
+    var rows = this._createRows();
+
+    return React.createElement(
+      'tbody',
+      { className: classes, style: this.prepareStyles(style) },
+      rows
+    );
+  },
+
+  _createRows: function _createRows() {
+    var _this = this;
+
+    var numChildren = React.Children.count(this.props.children);
+    var rowNumber = 0;
+    var handlers = {
+      onCellClick: this._onCellClick,
+      onCellHover: this._onCellHover,
+      onCellHoverExit: this._onCellHoverExit,
+      onRowHover: this._onRowHover,
+      onRowHoverExit: this._onRowHoverExit,
+      onRowClick: this._onRowClick
+    };
+
+    return React.Children.map(this.props.children, function (child) {
+      if (React.isValidElement(child)) {
+        var _ret = (function () {
+          var props = {
+            displayRowCheckbox: _this.props.displayRowCheckbox,
+            hoverable: _this.props.showRowHover,
+            selected: _this._isRowSelected(rowNumber),
+            striped: _this.props.stripedRows && rowNumber % 2 === 0,
+            rowNumber: rowNumber++
+          };
+          var checkboxColumn = _this._createRowCheckboxColumn(props);
+
+          if (rowNumber === numChildren) {
+            props.displayBorder = false;
+          }
+
+          var children = [checkboxColumn];
+          React.Children.forEach(child.props.children, function (child) {
+            children.push(child);
+          });
+
+          return {
+            v: React.cloneElement(child, _extends({}, props, handlers), children)
+          };
+        })();
+
+        if (typeof _ret === 'object') return _ret.v;
+      }
+    });
+  },
+
+  _createRowCheckboxColumn: function _createRowCheckboxColumn(rowProps) {
+    if (!this.props.displayRowCheckbox) return null;
+
+    var key = rowProps.rowNumber + '-cb';
+    var checkbox = React.createElement(Checkbox, {
+      ref: 'rowSelectCB',
+      name: key,
+      value: 'selected',
+      disabled: !this.props.selectable,
+      checked: rowProps.selected });
+
+    return React.createElement(
+      TableRowColumn,
+      {
+        key: key,
+        columnNumber: 0,
+        style: { width: 24 } },
+      checkbox
+    );
+  },
+
+  _calculatePreselectedRows: function _calculatePreselectedRows(props) {
+    // Determine what rows are 'pre-selected'.
+    var preSelectedRows = [];
+
+    if (props.selectable && props.preScanRows) {
+      (function () {
+        var index = 0;
+        React.Children.forEach(props.children, function (child) {
+          if (React.isValidElement(child)) {
+            if (child.props.selected && (preSelectedRows.length === 0 || props.multiSelectable)) {
+              preSelectedRows.push(index);
+            }
+
+            index++;
+          }
+        });
+      })();
+    }
+
+    return preSelectedRows;
+  },
+
+  _isRowSelected: function _isRowSelected(rowNumber) {
+    if (this.props.allRowsSelected) {
+      return true;
+    }
+
+    for (var i = 0; i < this.state.selectedRows.length; i++) {
+      var selection = this.state.selectedRows[i];
+
+      if (typeof selection === 'object') {
+        if (this._isValueInRange(rowNumber, selection)) return true;
+      } else {
+        if (selection === rowNumber) return true;
+      }
+    }
+
+    return false;
+  },
+
+  _isValueInRange: function _isValueInRange(value, range) {
+    if (!range) return false;
+
+    if (range.start <= value && value <= range.end || range.end <= value && value <= range.start) {
+      return true;
+    }
+
+    return false;
+  },
+
+  _onRowClick: function _onRowClick(e, rowNumber) {
+    e.stopPropagation();
+
+    if (this.props.selectable) {
+      // Prevent text selection while selecting rows.
+      window.getSelection().removeAllRanges();
+      this._processRowSelection(e, rowNumber);
+    }
+  },
+
+  _processRowSelection: function _processRowSelection(e, rowNumber) {
+    var selectedRows = this.state.selectedRows;
+
+    if (e.shiftKey && this.props.multiSelectable && selectedRows.length) {
+      var lastIndex = selectedRows.length - 1;
+      var lastSelection = selectedRows[lastIndex];
+
+      if (typeof lastSelection === 'object') {
+        lastSelection.end = rowNumber;
+      } else {
+        selectedRows.splice(lastIndex, 1, { start: lastSelection, end: rowNumber });
+      }
+    } else if ((e.ctrlKey && !e.metaKey || e.metaKey && !e.ctrlKey) && this.props.multiSelectable) {
+      var idx = selectedRows.indexOf(rowNumber);
+      if (idx < 0) {
+        var foundRange = false;
+        for (var i = 0; i < selectedRows.length; i++) {
+          var range = selectedRows[i];
+          if (typeof range !== 'object') continue;
+
+          if (this._isValueInRange(rowNumber, range)) {
+            var _selectedRows;
+
+            foundRange = true;
+            var values = this._splitRange(range, rowNumber);
+            (_selectedRows = selectedRows).splice.apply(_selectedRows, [i, 1].concat(_toConsumableArray(values)));
+          }
+        }
+
+        if (!foundRange) selectedRows.push(rowNumber);
+      } else {
+        selectedRows.splice(idx, 1);
+      }
+    } else {
+      if (selectedRows.length === 1 && selectedRows[0] === rowNumber) {
+        selectedRows = [];
+      } else {
+        selectedRows = [rowNumber];
+      }
+    }
+
+    this.setState({ selectedRows: selectedRows });
+    if (this.props.onRowSelection) this.props.onRowSelection(this._flattenRanges(selectedRows));
+  },
+
+  _splitRange: function _splitRange(range, splitPoint) {
+    var splitValues = [];
+    var startOffset = range.start - splitPoint;
+    var endOffset = range.end - splitPoint;
+
+    // Process start half
+    splitValues.push.apply(splitValues, _toConsumableArray(this._genRangeOfValues(splitPoint, startOffset)));
+
+    // Process end half
+    splitValues.push.apply(splitValues, _toConsumableArray(this._genRangeOfValues(splitPoint, endOffset)));
+
+    return splitValues;
+  },
+
+  _genRangeOfValues: function _genRangeOfValues(start, offset) {
+    var values = [];
+    var dir = offset > 0 ? -1 : 1; // This forces offset to approach 0 from either direction.
+    while (offset !== 0) {
+      values.push(start + offset);
+      offset += dir;
+    }
+
+    return values;
+  },
+
+  _flattenRanges: function _flattenRanges(selectedRows) {
+    var rows = [];
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = selectedRows[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var selection = _step.value;
+
+        if (typeof selection === 'object') {
+          var values = this._genRangeOfValues(selection.end, selection.start - selection.end);
+          rows.push.apply(rows, [selection.end].concat(_toConsumableArray(values)));
+        } else {
+          rows.push(selection);
+        }
+      }
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator['return']) {
+          _iterator['return']();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    return rows.sort();
+  },
+
+  _onCellClick: function _onCellClick(e, rowNumber, columnNumber) {
+    e.stopPropagation();
+    if (this.props.onCellClick) this.props.onCellClick(rowNumber, this._getColumnId(columnNumber));
+  },
+
+  _onCellHover: function _onCellHover(e, rowNumber, columnNumber) {
+    if (this.props.onCellHover) this.props.onCellHover(rowNumber, this._getColumnId(columnNumber));
+    this._onRowHover(e, rowNumber);
+  },
+
+  _onCellHoverExit: function _onCellHoverExit(e, rowNumber, columnNumber) {
+    if (this.props.onCellHoverExit) this.props.onCellHoverExit(rowNumber, this._getColumnId(columnNumber));
+    this._onRowHoverExit(e, rowNumber);
+  },
+
+  _onRowHover: function _onRowHover(e, rowNumber) {
+    if (this.props.onRowHover) this.props.onRowHover(rowNumber);
+  },
+
+  _onRowHoverExit: function _onRowHoverExit(e, rowNumber) {
+    if (this.props.onRowHoverExit) this.props.onRowHoverExit(rowNumber);
+  },
+
+  _getColumnId: function _getColumnId(columnNumber) {
+    var columnId = columnNumber;
+    if (this.props.displayRowCheckbox) columnId--;
+
+    return columnId;
+  }
+
+});
+
+module.exports = TableBody;
+},{"../checkbox":40,"../mixins/click-awayable":77,"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"./table-row-column":123,"react":"react"}],120:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var TableRowColumn = require('./table-row-column');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var TableFooter = React.createClass({
+  displayName: 'TableFooter',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    adjustForCheckbox: React.PropTypes.bool,
+    style: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      adjustForCheckbox: true,
+      style: {}
+    };
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.tableFooter;
+  },
+
+  getStyles: function getStyles() {
+    var styles = {
+      cell: {
+        borderTop: '1px solid ' + this.getTheme().borderColor,
+        verticalAlign: 'bottom',
+        padding: 20,
+        textAlign: 'left',
+        whiteSpace: 'nowrap'
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var className = _props.className;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['className', 'style']);
+
+    var classes = 'mui-table-footer';
+    if (className) classes += ' ' + className;
+
+    var footerRows = this._createRows();
+
+    return React.createElement(
+      'tfoot',
+      _extends({ className: classes, style: this.prepareStyles(style) }, other),
+      footerRows
+    );
+  },
+
+  _createRows: function _createRows() {
+    var _this = this;
+
+    var rowNumber = 0;
+    return React.Children.map(this.props.children, function (child) {
+      return _this._createRow(child, rowNumber++);
+    });
+  },
+
+  _createRow: function _createRow(child, rowNumber) {
+    var styles = this.getStyles();
+    var props = {
+      className: 'mui-table-footer-row',
+      displayBorder: false,
+      key: 'f-' + rowNumber,
+      rowNumber: rowNumber,
+      style: this.mergeAndPrefix(styles.cell, child.props.style)
+    };
+
+    var children = [this._getCheckboxPlaceholder(props)];
+    React.Children.forEach(child.props.children, function (child) {
+      children.push(child);
+    });
+
+    return React.cloneElement(child, props, children);
+  },
+
+  _getCheckboxPlaceholder: function _getCheckboxPlaceholder(props) {
+    if (!this.props.adjustForCheckbox) return null;
+
+    var key = 'fpcb' + props.rowNumber;
+    return React.createElement(TableRowColumn, { key: key, style: { width: 24 } });
+  }
+
+});
+
+module.exports = TableFooter;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"./table-row-column":123,"react":"react"}],121:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var Tooltip = require('../tooltip');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var TableHeaderColumn = React.createClass({
+  displayName: 'TableHeaderColumn',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    columnNumber: React.PropTypes.number,
+    onClick: React.PropTypes.func,
+    style: React.PropTypes.object,
+    tooltip: React.PropTypes.string,
+    tooltipStyle: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      hovered: false
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.tableHeaderColumn;
+  },
+
+  getStyles: function getStyles() {
+    var theme = this.getTheme();
+    var styles = {
+      root: {
+        fontWeight: 'normal',
+        fontSize: 12,
+        paddingLeft: theme.spacing,
+        paddingRight: theme.spacing,
+        height: theme.height,
+        textAlign: 'left',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis',
+        color: this.getTheme().textColor,
+        position: 'relative'
+      },
+      tooltip: {
+        boxSizing: 'border-box',
+        marginTop: theme.height / 2
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var styles = this.getStyles();
+    var handlers = {
+      onMouseEnter: this._onMouseEnter,
+      onMouseLeave: this._onMouseLeave,
+      onClick: this._onClick
+    };
+    var _props = this.props;
+    var className = _props.className;
+    var columnNumber = _props.columnNumber;
+    var onClick = _props.onClick;
+    var style = _props.style;
+    var tooltip = _props.tooltip;
+    var tooltipStyle = _props.tooltipStyle;
+
+    var other = _objectWithoutProperties(_props, ['className', 'columnNumber', 'onClick', 'style', 'tooltip', 'tooltipStyle']);
+
+    var classes = 'mui-table-header-column';
+    if (className) classes += ' ' + className;
+
+    if (this.props.tooltip !== undefined) {
+      tooltip = React.createElement(Tooltip, {
+        label: this.props.tooltip,
+        show: this.state.hovered,
+        style: this.mergeStyles(styles.tooltip, tooltipStyle) });
+    }
+
+    return React.createElement(
+      'th',
+      _extends({
+        key: this.props.key,
+        className: classes,
+        style: this.prepareStyles(styles.root, style)
+      }, handlers, other),
+      tooltip,
+      this.props.children
+    );
+  },
+
+  _onMouseEnter: function _onMouseEnter() {
+    if (this.props.tooltip !== undefined) this.setState({ hovered: true });
+  },
+
+  _onMouseLeave: function _onMouseLeave() {
+    if (this.props.tooltip !== undefined) this.setState({ hovered: false });
+  },
+
+  _onClick: function _onClick(e) {
+    if (this.props.onClick) this.props.onClick(e, this.props.columnNumber);
+  }
+
+});
+
+module.exports = TableHeaderColumn;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../tooltip":146,"react":"react"}],122:[function(require,module,exports){
+'use strict';
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var Checkbox = require('../checkbox');
+var StylePropable = require('../mixins/style-propable');
+var TableHeaderColumn = require('./table-header-column');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var TableHeader = React.createClass({
+  displayName: 'TableHeader',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    adjustForCheckbox: React.PropTypes.bool,
+    displaySelectAll: React.PropTypes.bool,
+    enableSelectAll: React.PropTypes.bool,
+    onSelectAll: React.PropTypes.func,
+    selectAllSelected: React.PropTypes.bool,
+    style: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      adjustForCheckbox: true,
+      displaySelectAll: true,
+      enableSelectAll: true,
+      selectAllSelected: false
+    };
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.tableHeader;
+  },
+
+  getStyles: function getStyles() {
+    var styles = {
+      root: {
+        borderBottom: '1px solid ' + this.getTheme().borderColor
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var className = _props.className;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['className', 'style']);
+
+    var classes = 'mui-table-header';
+    if (className) classes += ' ' + className;
+
+    var superHeaderRows = this._createSuperHeaderRows();
+    var baseHeaderRow = this._createBaseHeaderRow();
+
+    return React.createElement(
+      'thead',
+      { className: classes, style: this.prepareStyles(this.getStyles().root, style) },
+      superHeaderRows,
+      baseHeaderRow
+    );
+  },
+
+  _createSuperHeaderRows: function _createSuperHeaderRows() {
+    var numChildren = React.Children.count(this.props.children);
+    if (numChildren === 1) return undefined;
+
+    var superHeaders = [];
+    for (var index = 0; index < numChildren - 1; index++) {
+      var child = this.props.children[index];
+
+      if (!React.isValidElement(child)) continue;
+
+      var props = {
+        className: 'mui-table-super-header-row',
+        displayRowCheckbox: false,
+        key: 'sh' + index,
+        rowNumber: index
+      };
+      superHeaders.push(this._createSuperHeaderRow(child, props));
+    }
+
+    if (superHeaders.length) return superHeaders;
+  },
+
+  _createSuperHeaderRow: function _createSuperHeaderRow(child, props) {
+    var children = [];
+    if (this.props.adjustForCheckbox) {
+      children.push(this._getCheckboxPlaceholder(props));
+    }
+    React.Children.forEach(child.props.children, function (child) {
+      children.push(child);
+    });
+
+    return React.cloneElement(child, props, children);
+  },
+
+  _createBaseHeaderRow: function _createBaseHeaderRow() {
+    var numChildren = React.Children.count(this.props.children);
+    var child = numChildren === 1 ? this.props.children : this.props.children[numChildren - 1];
+    var props = {
+      className: 'mui-table-header-row',
+      key: 'h' + numChildren,
+      rowNumber: numChildren
+    };
+
+    var children = [this._getSelectAllCheckboxColumn(props)];
+    React.Children.forEach(child.props.children, function (child) {
+      children.push(child);
+    });
+
+    return React.cloneElement(child, props, children);
+  },
+
+  _getCheckboxPlaceholder: function _getCheckboxPlaceholder(props) {
+    if (!this.props.adjustForCheckbox) return null;
+
+    var key = 'hpcb' + props.rowNumber;
+    return React.createElement(TableHeaderColumn, { key: key, style: { width: 24 } });
+  },
+
+  _getSelectAllCheckboxColumn: function _getSelectAllCheckboxColumn(props) {
+    if (!this.props.displaySelectAll) return this._getCheckboxPlaceholder(props);
+
+    var checkbox = React.createElement(Checkbox, {
+      key: 'selectallcb',
+      name: 'selectallcb',
+      value: 'selected',
+      disabled: !this.props.enableSelectAll,
+      checked: this.props.selectAllSelected,
+      onCheck: this._onSelectAll });
+
+    return React.createElement(
+      TableHeaderColumn,
+      { style: { width: 24 } },
+      checkbox
+    );
+  },
+
+  _onSelectAll: function _onSelectAll(e, checked) {
+    if (this.props.onSelectAll) this.props.onSelectAll(checked);
+  }
+
+});
+
+module.exports = TableHeader;
+},{"../checkbox":40,"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"./table-header-column":121,"react":"react"}],123:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var TableRowColumn = React.createClass({
+  displayName: 'TableRowColumn',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    columnNumber: React.PropTypes.number,
+    hoverable: React.PropTypes.bool,
+    onClick: React.PropTypes.func,
+    onHover: React.PropTypes.func,
+    onHoverExit: React.PropTypes.func,
+    style: React.PropTypes.object
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      hoverable: false
+    };
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      hovered: false
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.tableRowColumn;
+  },
+
+  getStyles: function getStyles() {
+    var theme = this.getTheme();
+    var styles = {
+      root: {
+        paddingLeft: theme.spacing,
+        paddingRight: theme.spacing,
+        height: theme.height,
+        textAlign: 'left',
+        fontSize: 13,
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        textOverflow: 'ellipsis'
+      }
+    };
+
+    if (React.Children.count(this.props.children) === 1 && !isNaN(this.props.children)) {
+      styles.textAlign = 'right';
+    }
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var className = _props.className;
+    var columnNumber = _props.columnNumber;
+    var hoverable = _props.hoverable;
+    var onClick = _props.onClick;
+    var onHover = _props.onHover;
+    var onHoverExit = _props.onHoverExit;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['className', 'columnNumber', 'hoverable', 'onClick', 'onHover', 'onHoverExit', 'style']);
+
+    var styles = this.getStyles();
+    var handlers = {
+      onClick: this._onClick,
+      onMouseEnter: this._onMouseEnter,
+      onMouseLeave: this._onMouseLeave
+    };
+    var classes = 'mui-table-row-column';
+    if (className) classes += ' ' + className;
+
+    return React.createElement(
+      'td',
+      _extends({
+        key: this.props.key,
+        className: classes,
+        style: this.prepareStyles(styles.root, style)
+      }, handlers, other),
+      this.props.children
+    );
+  },
+
+  _onClick: function _onClick(e) {
+    if (this.props.onClick) this.props.onClick(e, this.props.columnNumber);
+  },
+
+  _onMouseEnter: function _onMouseEnter(e) {
+    if (this.props.hoverable) {
+      this.setState({ hovered: true });
+      if (this.props.onHover) this.props.onHover(e, this.props.columnNumber);
+    }
+  },
+
+  _onMouseLeave: function _onMouseLeave(e) {
+    if (this.props.hoverable) {
+      this.setState({ hovered: false });
+      if (this.props.onHoverExit) this.props.onHoverExit(e, this.props.columnNumber);
+    }
+  }
+
+});
+
+module.exports = TableRowColumn;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],124:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var TableRow = React.createClass({
+  displayName: 'TableRow',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    displayBorder: React.PropTypes.bool,
+    hoverable: React.PropTypes.bool,
+    onCellClick: React.PropTypes.func,
+    onCellHover: React.PropTypes.func,
+    onCellHoverExit: React.PropTypes.func,
+    onRowClick: React.PropTypes.func,
+    onRowHover: React.PropTypes.func,
+    onRowHoverExit: React.PropTypes.func,
+    rowNumber: React.PropTypes.number,
+    selectable: React.PropTypes.bool,
+    selected: React.PropTypes.bool,
+    striped: React.PropTypes.bool,
+    style: React.PropTypes.object
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      displayBorder: true,
+      displayRowCheckbox: true,
+      hoverable: false,
+      selectable: true,
+      selected: false,
+      striped: false
+    };
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      hovered: false
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.tableRow;
+  },
+
+  getStyles: function getStyles() {
+    var theme = this.getTheme();
+    var cellBgColor = 'inherit';
+    if (this.state.hovered) {
+      cellBgColor = theme.hoverColor;
+    } else if (this.props.selected) {
+      cellBgColor = theme.selectedColor;
+    } else if (this.props.striped) {
+      cellBgColor = theme.stripeColor;
+    }
+
+    var styles = {
+      root: {
+        borderBottom: '1px solid ' + this.getTheme().borderColor,
+        color: this.getTheme().textColor
+      },
+      cell: {
+        backgroundColor: cellBgColor
+      }
+    };
+
+    if (!this.props.displayBorder) {
+      styles.root.borderBottom = '';
+    }
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var className = _props.className;
+    var displayBorder = _props.displayBorder;
+    var hoverable = _props.hoverable;
+    var onCellClick = _props.onCellClick;
+    var onCellHover = _props.onCellHover;
+    var onCellHoverExit = _props.onCellHoverExit;
+    var onRowClick = _props.onRowClick;
+    var onRowHover = _props.onRowHover;
+    var onRowHoverExit = _props.onRowHoverExit;
+    var rowNumber = _props.rowNumber;
+    var selectable = _props.selectable;
+    var selected = _props.selected;
+    var striped = _props.striped;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['className', 'displayBorder', 'hoverable', 'onCellClick', 'onCellHover', 'onCellHoverExit', 'onRowClick', 'onRowHover', 'onRowHoverExit', 'rowNumber', 'selectable', 'selected', 'striped', 'style']);
+
+    var classes = 'mui-table-row';
+    if (className) classes += ' ' + className;
+    var rowColumns = this._createColumns();
+
+    return React.createElement(
+      'tr',
+      _extends({
+        className: classes,
+        style: this.prepareStyles(this.getStyles().root, style)
+      }, other),
+      rowColumns
+    );
+  },
+
+  _createColumns: function _createColumns() {
+    var _this = this;
+
+    var columnNumber = 1;
+    return React.Children.map(this.props.children, function (child) {
+      if (React.isValidElement(child)) {
+        return _this._createColumn(child, columnNumber++);
+      }
+    });
+  },
+
+  _createColumn: function _createColumn(child, columnNumber) {
+    var key = this.props.rowNumber + '-' + columnNumber;
+    var styles = this.getStyles();
+    var handlers = {
+      onClick: this._onCellClick,
+      onHover: this._onCellHover,
+      onHoverExit: this._onCellHoverExit
+    };
+
+    return React.cloneElement(child, _extends({
+      columnNumber: columnNumber,
+      hoverable: this.props.hoverable,
+      key: child.props.key || key,
+      style: this.mergeAndPrefix(styles.cell, child.props.style)
+    }, handlers));
+  },
+
+  _onRowClick: function _onRowClick(e) {
+    if (this.props.onRowClick) this.props.onRowClick(e, this.props.rowNumber);
+  },
+
+  _onRowHover: function _onRowHover(e) {
+    if (this.props.onRowHover) this.props.onRowHover(e, this.props.rowNumber);
+  },
+
+  _onRowHoverExit: function _onRowHoverExit(e) {
+    if (this.props.onRowHoverExit) this.props.onRowHoverExit(e, this.props.rowNumber);
+  },
+
+  _onCellClick: function _onCellClick(e, columnIndex) {
+    if (this.props.selectable && this.props.onCellClick) this.props.onCellClick(e, this.props.rowNumber, columnIndex);
+    e.ctrlKey = true;
+    this._onRowClick(e);
+  },
+
+  _onCellHover: function _onCellHover(e, columnIndex) {
+    if (this.props.hoverable) {
+      this.setState({ hovered: true });
+      if (this.props.onCellHover) this.props.onCellHover(e, this.props.rowNumber, columnIndex);
+      this._onRowHover(e);
+    }
+  },
+
+  _onCellHoverExit: function _onCellHoverExit(e, columnIndex) {
+    if (this.props.hoverable) {
+      this.setState({ hovered: false });
+      if (this.props.onCellHoverExit) this.props.onCellHoverExit(e, this.props.rowNumber, columnIndex);
+      this._onRowHoverExit(e);
+    }
+  }
+
+});
+
+module.exports = TableRow;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],125:[function(require,module,exports){
+'use strict';
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var Table = React.createClass({
+  displayName: 'Table',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    allRowsSelected: React.PropTypes.bool,
+    fixedFooter: React.PropTypes.bool,
+    fixedHeader: React.PropTypes.bool,
+    height: React.PropTypes.string,
+    multiSelectable: React.PropTypes.bool,
+    onCellClick: React.PropTypes.func,
+    onCellHover: React.PropTypes.func,
+    onCellHoverExit: React.PropTypes.func,
+    onRowHover: React.PropTypes.func,
+    onRowHoverExit: React.PropTypes.func,
+    onRowSelection: React.PropTypes.func,
+    selectable: React.PropTypes.bool,
+    style: React.PropTypes.object
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      allRowsSelected: false,
+      fixedFooter: true,
+      fixedHeader: true,
+      height: 'inherit',
+      multiSelectable: false,
+      selectable: true
+    };
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme),
+      allRowsSelected: this.props.allRowsSelected
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.table;
+  },
+
+  getStyles: function getStyles() {
+    var styles = {
+      root: {
+        backgroundColor: this.getTheme().backgroundColor,
+        padding: '0 ' + this.state.muiTheme.rawTheme.spacing.desktopGutter + 'px',
+        width: '100%',
+        borderCollapse: 'collapse',
+        borderSpacing: 0,
+        tableLayout: 'fixed'
+      },
+      bodyTable: {
+        height: this.props.fixedHeader || this.props.fixedFooter ? this.props.height : 'auto',
+        overflowX: 'hidden',
+        overflowY: 'auto'
+      },
+      tableWrapper: {
+        height: this.props.fixedHeader || this.props.fixedFooter ? 'auto' : this.props.height,
+        overflow: 'auto'
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var children = _props.children;
+    var className = _props.className;
+    var fixedFooter = _props.fixedFooter;
+    var fixedHeader = _props.fixedHeader;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['children', 'className', 'fixedFooter', 'fixedHeader', 'style']);
+
+    var classes = 'mui-table';
+    if (className) classes += ' ' + className;
+    var styles = this.getStyles();
+
+    var tHead = undefined,
+        tFoot = undefined,
+        tBody = undefined;
+    var _iteratorNormalCompletion = true;
+    var _didIteratorError = false;
+    var _iteratorError = undefined;
+
+    try {
+      for (var _iterator = children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        var child = _step.value;
+
+        if (!React.isValidElement(child)) continue;
+
+        var displayName = child.type.displayName;
+        if (displayName === 'TableBody') {
+          tBody = this._createTableBody(child);
+        } else if (displayName === 'TableHeader') {
+          tHead = this._createTableHeader(child);
+        } else if (displayName === 'TableFooter') {
+          tFoot = this._createTableFooter(child);
+        }
+      }
+
+      // If we could not find a table-header and a table-body, do not attempt to display anything.
+    } catch (err) {
+      _didIteratorError = true;
+      _iteratorError = err;
+    } finally {
+      try {
+        if (!_iteratorNormalCompletion && _iterator['return']) {
+          _iterator['return']();
+        }
+      } finally {
+        if (_didIteratorError) {
+          throw _iteratorError;
+        }
+      }
+    }
+
+    if (!tBody && !tHead) return null;
+
+    var mergedTableStyle = this.prepareStyles(styles.root, style);
+    var headerTable = undefined,
+        footerTable = undefined;
+    var inlineHeader = undefined,
+        inlineFooter = undefined;
+    if (fixedHeader) {
+      headerTable = React.createElement(
+        'div',
+        { className: 'mui-header-table' },
+        React.createElement(
+          'table',
+          { className: className, style: mergedTableStyle },
+          tHead
+        )
+      );
+    } else {
+      inlineHeader = tHead;
+    }
+    if (tFoot !== undefined) {
+      if (fixedFooter) {
+        footerTable = React.createElement(
+          'div',
+          { className: 'mui-footer-table' },
+          React.createElement(
+            'table',
+            { className: className, style: mergedTableStyle },
+            tFoot
+          )
+        );
+      } else {
+        inlineFooter = tFoot;
+      }
+    }
+
+    return React.createElement(
+      'div',
+      { className: 'mui-table-wrapper', style: this.prepareStyles(styles.tableWrapper) },
+      headerTable,
+      React.createElement(
+        'div',
+        { className: 'mui-body-table', style: this.prepareStyles(styles.bodyTable), ref: 'tableDiv' },
+        React.createElement(
+          'table',
+          { className: classes, style: mergedTableStyle, ref: 'tableBody' },
+          inlineHeader,
+          inlineFooter,
+          tBody
+        )
+      ),
+      footerTable
+    );
+  },
+
+  isScrollbarVisible: function isScrollbarVisible() {
+    var tableDivHeight = ReactDOM.findDOMNode(this.refs.tableDiv).clientHeight;
+    var tableBodyHeight = ReactDOM.findDOMNode(this.refs.tableBody).clientHeight;
+
+    return tableBodyHeight > tableDivHeight;
+  },
+
+  _createTableHeader: function _createTableHeader(base) {
+    return React.cloneElement(base, {
+      enableSelectAll: base.props.enableSelectAll && this.props.selectable && this.props.multiSelectable,
+      onSelectAll: this._onSelectAll,
+      selectAllSelected: this.state.allRowsSelected
+    });
+  },
+
+  _createTableBody: function _createTableBody(base) {
+    return React.cloneElement(base, {
+      allRowsSelected: this.state.allRowsSelected,
+      multiSelectable: this.props.multiSelectable,
+      onCellClick: this._onCellClick,
+      onCellHover: this._onCellHover,
+      onCellHoverExit: this._onCellHoverExit,
+      onRowHover: this._onRowHover,
+      onRowHoverExit: this._onRowHoverExit,
+      onRowSelection: this._onRowSelection,
+      selectable: this.props.selectable,
+      style: this.mergeAndPrefix({ height: this.props.height }, base.props.style)
+    });
+  },
+
+  _createTableFooter: function _createTableFooter(base) {
+    return base;
+  },
+
+  _onCellClick: function _onCellClick(rowNumber, columnNumber) {
+    if (this.props.onCellClick) this.props.onCellClick(rowNumber, columnNumber);
+  },
+
+  _onCellHover: function _onCellHover(rowNumber, columnNumber) {
+    if (this.props.onCellHover) this.props.onCellHover(rowNumber, columnNumber);
+  },
+
+  _onCellHoverExit: function _onCellHoverExit(rowNumber, columnNumber) {
+    if (this.props.onCellHoverExit) this.props.onCellHoverExit(rowNumber, columnNumber);
+  },
+
+  _onRowHover: function _onRowHover(rowNumber) {
+    if (this.props.onRowHover) this.props.onRowHover(rowNumber);
+  },
+
+  _onRowHoverExit: function _onRowHoverExit(rowNumber) {
+    if (this.props.onRowHoverExit) this.props.onRowHoverExit(rowNumber);
+  },
+
+  _onRowSelection: function _onRowSelection(selectedRows) {
+    if (this.state.allRowsSelected) this.setState({ allRowsSelected: false });
+    if (this.props.onRowSelection) this.props.onRowSelection(selectedRows);
+  },
+
+  _onSelectAll: function _onSelectAll() {
+    if (this.props.onRowSelection && !this.state.allRowsSelected) this.props.onRowSelection('all');
+    this.setState({ allRowsSelected: !this.state.allRowsSelected });
+  }
+
+});
+
+module.exports = Table;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react","react-dom":"react-dom"}],126:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var Tab = React.createClass({
+  displayName: 'Tab',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    onTouchTap: React.PropTypes.func,
+    label: React.PropTypes.node,
+    onActive: React.PropTypes.func,
+    selected: React.PropTypes.bool,
+    width: React.PropTypes.string,
+    value: React.PropTypes.string
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      onActive: function onActive() {},
+      onTouchTap: function onTouchTap() {}
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var label = _props.label;
+    var onActive = _props.onActive;
+    var onTouchTap = _props.onTouchTap;
+    var selected = _props.selected;
+    var style = _props.style;
+    var value = _props.value;
+    var width = _props.width;
+
+    var other = _objectWithoutProperties(_props, ['label', 'onActive', 'onTouchTap', 'selected', 'style', 'value', 'width']);
+
+    var styles = this.prepareStyles({
+      display: 'table-cell',
+      cursor: 'pointer',
+      textAlign: 'center',
+      verticalAlign: 'middle',
+      height: 48,
+      color: selected ? this.state.muiTheme.tabs.selectedTextColor : this.state.muiTheme.tabs.textColor,
+      outline: 'none',
+      fontSize: 14,
+      fontWeight: 500,
+      whiteSpace: 'initial',
+      fontFamily: this.state.muiTheme.rawTheme.fontFamily,
+      boxSizing: 'border-box',
+      width: width
+    }, style);
+
+    return React.createElement(
+      'div',
+      _extends({}, other, {
+        style: styles,
+        onTouchTap: this._handleTouchTap }),
+      label
+    );
+  },
+
+  _handleTouchTap: function _handleTouchTap(e) {
+    this.props.onTouchTap(this.props.value, e, this);
+  }
+
+});
+
+module.exports = Tab;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],127:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+
+var TabTemplate = React.createClass({
+  displayName: 'TabTemplate',
+
+  render: function render() {
+    var styles = {
+      'height': 0,
+      'overflow': 'hidden',
+      'width': '100%',
+      'position': 'relative',
+      'textAlign': 'initial'
+    };
+
+    if (this.props.selected) {
+      delete styles.height;
+      delete styles.overflow;
+    }
+
+    return React.createElement(
+      'div',
+      { style: styles },
+      this.props.children
+    );
+  }
+});
+
+module.exports = TabTemplate;
+},{"react":"react"}],128:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var TabTemplate = require('./tabTemplate');
+var InkBar = require('../ink-bar');
+var StylePropable = require('../mixins/style-propable');
+var Controllable = require('../mixins/controllable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var Tabs = React.createClass({
+  displayName: 'Tabs',
+
+  mixins: [StylePropable, Controllable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    contentContainerStyle: React.PropTypes.object,
+    initialSelectedIndex: React.PropTypes.number,
+    inkBarStyle: React.PropTypes.object,
+    tabItemContainerStyle: React.PropTypes.object,
+    tabTemplate: React.PropTypes.func
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      initialSelectedIndex: 0,
+      tabTemplate: TabTemplate
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    var valueLink = this.getValueLink(this.props);
+    var initialIndex = this.props.initialSelectedIndex;
+
+    return {
+      selectedIndex: valueLink.value ? this._getSelectedIndex(this.props) : initialIndex < this.getTabCount() ? initialIndex : 0,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  getEvenWidth: function getEvenWidth() {
+    return parseInt(window.getComputedStyle(ReactDOM.findDOMNode(this)).getPropertyValue('width'), 10);
+  },
+
+  getTabCount: function getTabCount() {
+    return React.Children.count(this.props.children);
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(newProps, nextContext) {
+    var valueLink = this.getValueLink(newProps);
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+
+    if (valueLink.value) {
+      this.setState({ selectedIndex: this._getSelectedIndex(newProps) });
+    }
+
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  render: function render() {
+    var _this = this;
+
+    var _props = this.props;
+    var children = _props.children;
+    var contentContainerStyle = _props.contentContainerStyle;
+    var initialSelectedIndex = _props.initialSelectedIndex;
+    var inkBarStyle = _props.inkBarStyle;
+    var style = _props.style;
+    var tabWidth = _props.tabWidth;
+    var tabItemContainerStyle = _props.tabItemContainerStyle;
+    var tabTemplate = _props.tabTemplate;
+
+    var other = _objectWithoutProperties(_props, ['children', 'contentContainerStyle', 'initialSelectedIndex', 'inkBarStyle', 'style', 'tabWidth', 'tabItemContainerStyle', 'tabTemplate']);
+
+    var themeVariables = this.state.muiTheme.tabs;
+    var styles = {
+      tabItemContainer: {
+        margin: 0,
+        padding: 0,
+        width: '100%',
+        height: 48,
+        backgroundColor: themeVariables.backgroundColor,
+        whiteSpace: 'nowrap',
+        display: 'table'
+      }
+    };
+
+    var valueLink = this.getValueLink(this.props);
+    var tabValue = valueLink.value;
+    var tabContent = [];
+
+    var width = 100 / this.getTabCount() + '%';
+
+    var left = 'calc(' + width + '*' + this.state.selectedIndex + ')';
+
+    var tabs = React.Children.map(children, function (tab, index) {
+      if (tab.type.displayName === "Tab") {
+        if (!tab.props.value && tabValue && process.env.NODE_ENV !== 'production') {
+          console.error('Tabs value prop has been passed, but Tab ' + index + ' does not have a value prop. Needs value if Tabs is going' + ' to be a controlled component.');
+        }
+
+        tabContent.push(tab.props.children ? React.createElement(tabTemplate, {
+          key: index,
+          selected: _this._getSelected(tab, index)
+        }, tab.props.children) : undefined);
+
+        return React.cloneElement(tab, {
+          key: index,
+          selected: _this._getSelected(tab, index),
+          tabIndex: index,
+          width: width,
+          onTouchTap: _this._handleTabTouchTap
+        });
+      } else {
+        var type = tab.type.displayName || tab.type;
+        console.error('Tabs only accepts Tab Components as children. Found ' + type + ' as child number ' + (index + 1) + ' of Tabs');
+      }
+    }, this);
+
+    var inkBar = this.state.selectedIndex !== -1 ? React.createElement(InkBar, {
+      left: left,
+      width: width,
+      style: inkBarStyle }) : null;
+
+    var inkBarContainerWidth = tabItemContainerStyle ? tabItemContainerStyle.width : '100%';
+
+    return React.createElement(
+      'div',
+      _extends({}, other, {
+        style: this.prepareStyles(style) }),
+      React.createElement(
+        'div',
+        { style: this.prepareStyles(styles.tabItemContainer, tabItemContainerStyle) },
+        tabs
+      ),
+      React.createElement(
+        'div',
+        { style: { width: inkBarContainerWidth } },
+        inkBar
+      ),
+      React.createElement(
+        'div',
+        { style: this.prepareStyles(contentContainerStyle) },
+        tabContent
+      )
+    );
+  },
+
+  _getSelectedIndex: function _getSelectedIndex(props) {
+    var valueLink = this.getValueLink(props);
+    var selectedIndex = -1;
+
+    React.Children.forEach(props.children, function (tab, index) {
+      if (valueLink.value === tab.props.value) {
+        selectedIndex = index;
+      }
+    });
+
+    return selectedIndex;
+  },
+
+  _handleTabTouchTap: function _handleTabTouchTap(value, e, tab) {
+    var valueLink = this.getValueLink(this.props);
+    var tabIndex = tab.props.tabIndex;
+
+    if (valueLink.value && valueLink.value !== value || this.state.selectedIndex !== tabIndex) {
+      valueLink.requestChange(value, e, tab);
+    }
+
+    this.setState({ selectedIndex: tabIndex });
+    tab.props.onActive(tab);
+  },
+
+  _getSelected: function _getSelected(tab, index) {
+    var valueLink = this.getValueLink(this.props);
+    return valueLink.value ? valueLink.value === tab.props.value : this.state.selectedIndex === index;
+  }
+
+});
+
+module.exports = Tabs;
+}).call(this,require('_process'))
+},{"../ink-bar":64,"../mixins/controllable":79,"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"./tabTemplate":127,"_process":168,"react":"react","react-dom":"react-dom"}],129:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var ColorManipulator = require('./utils/color-manipulator');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var UniqueId = require('./utils/unique-id');
+var EnhancedTextarea = require('./enhanced-textarea');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+var ContextPure = require('./mixins/context-pure');
+
+/**
+ * Check if a value is valid to be displayed inside an input.
+ *
+ * @param The value to check.
+ * @returns True if the string provided is valid, false otherwise.
+ */
+function isValid(value) {
+  return value || value === 0;
+}
+
+var TextField = React.createClass({
+  displayName: 'TextField',
+
+  mixins: [ContextPure, StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    errorStyle: React.PropTypes.object,
+    errorText: React.PropTypes.string,
+    floatingLabelStyle: React.PropTypes.object,
+    floatingLabelText: React.PropTypes.string,
+    fullWidth: React.PropTypes.bool,
+    hintText: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element]),
+    hintStyle: React.PropTypes.object,
+    id: React.PropTypes.string,
+    inputStyle: React.PropTypes.object,
+    multiLine: React.PropTypes.bool,
+    onBlur: React.PropTypes.func,
+    onChange: React.PropTypes.func,
+    onEnterKeyDown: React.PropTypes.func,
+    onFocus: React.PropTypes.func,
+    onKeyDown: React.PropTypes.func,
+    rows: React.PropTypes.number,
+    rowsMax: React.PropTypes.number,
+    type: React.PropTypes.string,
+    underlineStyle: React.PropTypes.object,
+    underlineFocusStyle: React.PropTypes.object,
+    underlineDisabledStyle: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      fullWidth: false,
+      type: 'text',
+      rows: 1
+    };
+  },
+
+  statics: {
+    getRelevantContextKeys: function getRelevantContextKeys(muiTheme) {
+      var textFieldTheme = muiTheme.textField;
+
+      return {
+        floatingLabelColor: textFieldTheme.floatingLabelColor,
+        focusColor: textFieldTheme.focusColor,
+        borderColor: textFieldTheme.borderColor,
+        textColor: textFieldTheme.textColor,
+        disabledTextColor: textFieldTheme.disabledTextColor,
+        backgroundColor: textFieldTheme.backgroundColor,
+        hintColor: textFieldTheme.hintColor,
+        errorColor: textFieldTheme.errorColor
+      };
+    },
+    getChildrenClasses: function getChildrenClasses() {
+      return [EnhancedTextarea];
+    }
+  },
+
+  getInitialState: function getInitialState() {
+    var props = this.props.children ? this.props.children.props : this.props;
+
+    return {
+      errorText: this.props.errorText,
+      hasValue: isValid(props.value) || isValid(props.defaultValue) || props.valueLink && isValid(props.valueLink.value),
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    this._uniqueId = UniqueId.generate();
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newState = {};
+    newState.muiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+
+    newState.errorText = nextProps.errorText;
+    if (nextProps.children && nextProps.children.props) {
+      nextProps = nextProps.children.props;
+    }
+
+    var hasValueLinkProp = nextProps.hasOwnProperty('valueLink');
+    var hasValueProp = nextProps.hasOwnProperty('value');
+    var hasNewDefaultValue = nextProps.defaultValue !== this.props.defaultValue;
+
+    if (hasValueLinkProp) {
+      newState.hasValue = isValid(nextProps.valueLink.value);
+    } else if (hasValueProp) {
+      newState.hasValue = isValid(nextProps.value);
+    } else if (hasNewDefaultValue) {
+      newState.hasValue = isValid(nextProps.defaultValue);
+    }
+
+    if (newState) this.setState(newState);
+  },
+
+  getStyles: function getStyles() {
+    var props = this.props;
+
+    var _constructor$getRelevantContextKeys = this.constructor.getRelevantContextKeys(this.state.muiTheme);
+
+    var floatingLabelColor = _constructor$getRelevantContextKeys.floatingLabelColor;
+    var focusColor = _constructor$getRelevantContextKeys.focusColor;
+    var borderColor = _constructor$getRelevantContextKeys.borderColor;
+    var textColor = _constructor$getRelevantContextKeys.textColor;
+    var disabledTextColor = _constructor$getRelevantContextKeys.disabledTextColor;
+    var backgroundColor = _constructor$getRelevantContextKeys.backgroundColor;
+    var hintColor = _constructor$getRelevantContextKeys.hintColor;
+    var errorColor = _constructor$getRelevantContextKeys.errorColor;
+
+    var styles = {
+      root: {
+        fontSize: 16,
+        lineHeight: '24px',
+        width: props.fullWidth ? '100%' : 256,
+        height: (props.rows - 1) * 24 + (props.floatingLabelText ? 72 : 48),
+        display: 'inline-block',
+        position: 'relative',
+        backgroundColor: backgroundColor,
+        fontFamily: this.state.muiTheme.rawTheme.fontFamily,
+        transition: Transitions.easeOut('200ms', 'height')
+      },
+      error: {
+        position: 'relative',
+        bottom: 5,
+        fontSize: 12,
+        lineHeight: '12px',
+        color: errorColor,
+        transition: Transitions.easeOut()
+      },
+      hint: {
+        position: 'absolute',
+        lineHeight: '22px',
+        opacity: 1,
+        color: hintColor,
+        transition: Transitions.easeOut(),
+        bottom: 12
+      },
+      input: {
+        tapHighlightColor: 'rgba(0,0,0,0)',
+        padding: 0,
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        border: 'none',
+        outline: 'none',
+        backgroundColor: 'transparent',
+        color: props.disabled ? disabledTextColor : textColor,
+        font: 'inherit'
+      },
+      underline: {
+        border: 'none',
+        borderBottom: 'solid 1px ' + borderColor,
+        position: 'absolute',
+        width: '100%',
+        bottom: 8,
+        margin: 0,
+        MozBoxSizing: 'content-box',
+        boxSizing: 'content-box',
+        height: 0
+      },
+      underlineAfter: {
+        position: 'absolute',
+        width: '100%',
+        overflow: 'hidden',
+        userSelect: 'none',
+        cursor: 'default',
+        bottom: 8,
+        borderBottom: 'dotted 2px ' + disabledTextColor
+      },
+      underlineFocus: {
+        borderBottom: 'solid 2px',
+        borderColor: focusColor,
+        transform: 'scaleX(0)',
+        transition: Transitions.easeOut()
+      }
+    };
+
+    styles.error = this.mergeAndPrefix(styles.error, props.errorStyle);
+    styles.underline = this.mergeAndPrefix(styles.underline, props.underlineStyle);
+    styles.underlineAfter = this.mergeAndPrefix(styles.underlineAfter, props.underlineDisabledStyle);
+
+    styles.floatingLabel = this.mergeStyles(styles.hint, {
+      lineHeight: '22px',
+      top: 38,
+      bottom: 'none',
+      opacity: 1,
+      transform: 'scale(1) translate3d(0, 0, 0)',
+      transformOrigin: 'left top'
+    });
+
+    styles.textarea = this.mergeStyles(styles.input, {
+      marginTop: props.floatingLabelText ? 36 : 12,
+      marginBottom: props.floatingLabelText ? -36 : -12,
+      boxSizing: 'border-box',
+      font: 'inherit'
+    });
+
+    styles.focusUnderline = this.mergeStyles(styles.underline, styles.underlineFocus, props.underlineFocusStyle);
+
+    if (this.state.isFocused) {
+      styles.floatingLabel.color = focusColor;
+      styles.floatingLabel.transform = 'perspective(1px) scale(0.75) translate3d(2px, -28px, 0)';
+      styles.focusUnderline.transform = 'scaleX(1)';
+    }
+
+    if (this.state.hasValue) {
+      styles.floatingLabel.color = ColorManipulator.fade(props.disabled ? disabledTextColor : floatingLabelColor, 0.5);
+      styles.floatingLabel.transform = 'perspective(1px) scale(0.75) translate3d(2px, -28px, 0)';
+      styles.hint.opacity = 0;
+    }
+
+    if (props.floatingLabelText) {
+      styles.hint.opacity = 0;
+      styles.input.boxSizing = 'border-box';
+      if (this.state.isFocused && !this.state.hasValue) styles.hint.opacity = 1;
+    }
+
+    if (props.style && props.style.height) {
+      styles.hint.lineHeight = props.style.height;
+    }
+
+    if (this.state.errorText && this.state.isFocused) styles.floatingLabel.color = styles.error.color;
+    if (props.floatingLabelText && !props.multiLine) styles.input.marginTop = 14;
+
+    if (this.state.errorText) {
+      styles.focusUnderline.borderColor = styles.error.color;
+      styles.focusUnderline.transform = 'scaleX(1)';
+    }
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var className = _props.className;
+    var errorStyle = _props.errorStyle;
+    var errorText = _props.errorText;
+    var floatingLabelText = _props.floatingLabelText;
+    var fullWidth = _props.fullWidth;
+    var hintText = _props.hintText;
+    var hintStyle = _props.hintStyle;
+    var id = _props.id;
+    var multiLine = _props.multiLine;
+    var onBlur = _props.onBlur;
+    var onChange = _props.onChange;
+    var onFocus = _props.onFocus;
+    var type = _props.type;
+    var rows = _props.rows;
+    var rowsMax = _props.rowsMax;
+
+    var other = _objectWithoutProperties(_props, ['className', 'errorStyle', 'errorText', 'floatingLabelText', 'fullWidth', 'hintText', 'hintStyle', 'id', 'multiLine', 'onBlur', 'onChange', 'onFocus', 'type', 'rows', 'rowsMax']);
+
+    var styles = this.getStyles();
+
+    var inputId = id || this._uniqueId;
+
+    var errorTextElement = this.state.errorText ? React.createElement(
+      'div',
+      { style: this.prepareStyles(styles.error) },
+      this.state.errorText
+    ) : null;
+
+    var hintTextElement = hintText ? React.createElement(
+      'div',
+      { style: this.prepareStyles(styles.hint, hintStyle) },
+      hintText
+    ) : null;
+
+    var floatingLabelTextElement = floatingLabelText ? React.createElement(
+      'label',
+      {
+        style: this.prepareStyles(styles.floatingLabel, this.props.floatingLabelStyle),
+        htmlFor: inputId },
+      floatingLabelText
+    ) : null;
+
+    var inputProps = undefined;
+    var inputElement = undefined;
+
+    inputProps = {
+      id: inputId,
+      ref: this._getRef(),
+      onBlur: this._handleInputBlur,
+      onFocus: this._handleInputFocus,
+      disabled: this.props.disabled,
+      onKeyDown: this._handleInputKeyDown
+    };
+    var inputStyle = this.mergeStyles(styles.input, this.props.inputStyle);
+
+    if (!this.props.hasOwnProperty('valueLink')) {
+      inputProps.onChange = this._handleInputChange;
+    }
+    if (this.props.children) {
+      var childInputStyle = this.mergeStyles(inputStyle, this.props.children.style);
+      inputElement = React.cloneElement(this.props.children, _extends({}, inputProps, this.props.children.props, { style: childInputStyle }));
+    } else {
+      inputElement = multiLine ? React.createElement(EnhancedTextarea, _extends({}, other, inputProps, {
+        style: inputStyle,
+        rows: rows,
+        rowsMax: rowsMax,
+        onHeightChange: this._handleTextAreaHeightChange,
+        textareaStyle: this.mergeAndPrefix(styles.textarea) })) : React.createElement('input', _extends({}, other, inputProps, {
+        style: this.prepareStyles(inputStyle),
+        type: type }));
+    }
+
+    var underlineElement = this.props.disabled ? React.createElement('div', { style: this.prepareStyles(styles.underlineAfter) }) : React.createElement('hr', { style: this.prepareStyles(styles.underline) });
+    var focusUnderlineElement = React.createElement('hr', { style: this.prepareStyles(styles.focusUnderline) });
+
+    return React.createElement(
+      'div',
+      { className: className, style: this.prepareStyles(styles.root, this.props.style) },
+      floatingLabelTextElement,
+      hintTextElement,
+      inputElement,
+      underlineElement,
+      focusUnderlineElement,
+      errorTextElement
+    );
+  },
+
+  blur: function blur() {
+    if (this.isMounted()) this._getInputNode().blur();
+  },
+
+  clearValue: function clearValue() {
+    this.setValue('');
+  },
+
+  focus: function focus() {
+    if (this.isMounted()) this._getInputNode().focus();
+  },
+
+  getValue: function getValue() {
+    return this.isMounted() ? this._getInputNode().value : undefined;
+  },
+
+  setErrorText: function setErrorText(newErrorText) {
+    if (process.env.NODE_ENV !== 'production' && this.props.hasOwnProperty('errorText')) {
+      console.error('Cannot call TextField.setErrorText when errorText is defined as a property.');
+    } else if (this.isMounted()) {
+      this.setState({ errorText: newErrorText });
+    }
+  },
+
+  setValue: function setValue(newValue) {
+    if (process.env.NODE_ENV !== 'production' && this._isControlled()) {
+      console.error('Cannot call TextField.setValue when value or valueLink is defined as a property.');
+    } else if (this.isMounted()) {
+      if (this.props.multiLine) {
+        this.refs[this._getRef()].setValue(newValue);
+      } else {
+        this._getInputNode().value = newValue;
+      }
+
+      this.setState({ hasValue: isValid(newValue) });
+    }
+  },
+
+  _getRef: function _getRef() {
+    return this.props.ref ? this.props.ref : 'input';
+  },
+
+  _getInputNode: function _getInputNode() {
+    return this.props.children || this.props.multiLine ? this.refs[this._getRef()].getInputNode() : ReactDOM.findDOMNode(this.refs[this._getRef()]);
+  },
+
+  _handleInputBlur: function _handleInputBlur(e) {
+    this.setState({ isFocused: false });
+    if (this.props.onBlur) this.props.onBlur(e);
+  },
+
+  _handleInputChange: function _handleInputChange(e) {
+    this.setState({ hasValue: isValid(e.target.value) });
+    if (this.props.onChange) this.props.onChange(e);
+  },
+
+  _handleInputFocus: function _handleInputFocus(e) {
+    if (this.props.disabled) return;
+    this.setState({ isFocused: true });
+    if (this.props.onFocus) this.props.onFocus(e);
+  },
+
+  _handleInputKeyDown: function _handleInputKeyDown(e) {
+    if (e.keyCode === 13 && this.props.onEnterKeyDown) this.props.onEnterKeyDown(e);
+    if (this.props.onKeyDown) this.props.onKeyDown(e);
+  },
+
+  _handleTextAreaHeightChange: function _handleTextAreaHeightChange(e, height) {
+    var newHeight = height + 24;
+    if (this.props.floatingLabelText) newHeight += 24;
+    ReactDOM.findDOMNode(this).style.height = newHeight + 'px';
+  },
+
+  _isControlled: function _isControlled() {
+    return this.props.hasOwnProperty('value') || this.props.hasOwnProperty('valueLink');
+  }
+
+});
+
+module.exports = TextField;
+}).call(this,require('_process'))
+},{"./enhanced-textarea":57,"./mixins/context-pure":78,"./mixins/style-propable":81,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"./utils/color-manipulator":152,"./utils/unique-id":167,"_process":168,"react":"react","react-dom":"react-dom"}],130:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+
+module.exports = React.createClass({
+	displayName: 'exports',
+
+	propTypes: {
+		theme: React.PropTypes.object.isRequired
+	},
+
+	childContextTypes: {
+		muiTheme: React.PropTypes.object
+	},
+
+	getChildContext: function getChildContext() {
+		return {
+			muiTheme: this.props.theme
+		};
+	},
+
+	render: function render() {
+		return this.props.children();
+	}
+});
+},{"react":"react"}],131:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var EnhancedButton = require('../enhanced-button');
+var Transitions = require('../styles/transitions');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var ClockButton = React.createClass({
+  displayName: 'ClockButton',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    position: React.PropTypes.oneOf(['left', 'right'])
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      position: "left"
+    };
+  },
+
+  _handleTouchTap: function _handleTouchTap() {
+    this.setState({
+      selected: true
+    });
+    this.props.onTouchTap();
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.timePicker;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var className = _props.className;
+
+    var other = _objectWithoutProperties(_props, ['className']);
+
+    var styles = {
+      root: {
+        position: "absolute",
+        bottom: 65,
+        pointerEvents: "auto",
+        height: 50,
+        width: 50,
+        borderRadius: "100%"
+      },
+
+      label: {
+        position: "absolute",
+        top: 17,
+        left: 14
+      },
+
+      select: {
+        position: 'absolute',
+        height: 50,
+        width: 50,
+        top: 0,
+        left: 0,
+        opacity: 0,
+        borderRadius: '50%',
+        transform: 'scale(0)',
+        transition: Transitions.easeOut(),
+        backgroundColor: this.getTheme().accentColor
+      }
+    };
+
+    if (this.props.selected) {
+      styles.label.color = this.getTheme().selectTextColor;
+      styles.select.opacity = 1;
+      styles.select.transform = 'scale(1)';
+    }
+
+    if (this.props.position === "right") {
+      styles.root.right = "5px";
+    } else {
+      styles.root.left = "5px";
+    }
+
+    return React.createElement(
+      EnhancedButton,
+      _extends({}, other, {
+        style: this.mergeStyles(styles.root),
+        disableFocusRipple: true,
+        disableTouchRipple: true,
+        onTouchTap: this._handleTouchTap }),
+      React.createElement('span', { style: this.prepareStyles(styles.select) }),
+      React.createElement(
+        'span',
+        { style: this.prepareStyles(styles.label) },
+        this.props.children
+      )
+    );
+  }
+});
+
+module.exports = ClockButton;
+},{"../enhanced-button":55,"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/transitions":105,"react":"react"}],132:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('../mixins/style-propable');
+var ClockNumber = require("./clock-number");
+var ClockPointer = require("./clock-pointer");
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+function rad2deg(rad) {
+  return rad * 57.29577951308232;
+}
+
+function getTouchEventOffsetValues(e) {
+  var el = e.target;
+  var boundingRect = el.getBoundingClientRect();
+
+  var offset = {
+    offsetX: e.clientX - boundingRect.left,
+    offsetY: e.clientY - boundingRect.top
+  };
+
+  return offset;
+}
+
+var ClockHours = React.createClass({
+  displayName: 'ClockHours',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  propTypes: {
+    initialHours: React.PropTypes.number,
+    onChange: React.PropTypes.func,
+    format: React.PropTypes.oneOf(['ampm', '24hr'])
+  },
+
+  center: { x: 0, y: 0 },
+  basePoint: { x: 0, y: 0 },
+
+  isMousePressed: function isMousePressed(e) {
+    if (typeof e.buttons === "undefined") {
+      return e.nativeEvent.which;
+    }
+
+    return e.buttons;
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      initialHours: new Date().getHours(),
+      onChange: function onChange() {},
+      format: 'ampm'
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    var clockElement = ReactDOM.findDOMNode(this.refs.mask);
+
+    this.center = {
+      x: clockElement.offsetWidth / 2,
+      y: clockElement.offsetHeight / 2
+    };
+
+    this.basePoint = {
+      x: this.center.x,
+      y: 0
+    };
+  },
+
+  handleUp: function handleUp(e) {
+    e.preventDefault();
+    this.setClock(e.nativeEvent, true);
+  },
+
+  handleMove: function handleMove(e) {
+    e.preventDefault();
+    if (this.isMousePressed(e) !== 1) return;
+    this.setClock(e.nativeEvent, false);
+  },
+
+  handleTouchMove: function handleTouchMove(e) {
+    e.preventDefault();
+    this.setClock(e.changedTouches[0], false);
+  },
+
+  handleTouchEnd: function handleTouchEnd(e) {
+    e.preventDefault();
+    this.setClock(e.changedTouches[0], true);
+  },
+
+  setClock: function setClock(e, finish) {
+    if (typeof e.offsetX === 'undefined') {
+      var offset = getTouchEventOffsetValues(e);
+
+      e.offsetX = offset.offsetX;
+      e.offsetY = offset.offsetY;
+    }
+
+    var hours = this.getHours(e.offsetX, e.offsetY);
+
+    this.props.onChange(hours, finish);
+  },
+
+  getHours: function getHours(offsetX, offsetY) {
+    var step = 30;
+    var x = offsetX - this.center.x;
+    var y = offsetY - this.center.y;
+    var cx = this.basePoint.x - this.center.x;
+    var cy = this.basePoint.y - this.center.y;
+
+    var atan = Math.atan2(cx, cy) - Math.atan2(x, y);
+
+    var deg = rad2deg(atan);
+    deg = Math.round(deg / step) * step;
+    deg %= 360;
+
+    var value = Math.floor(deg / step) || 0;
+
+    var delta = Math.pow(x, 2) + Math.pow(y, 2);
+    var distance = Math.sqrt(delta);
+
+    value = value || 12;
+    if (this.props.format === "24hr") {
+      if (distance < 90) {
+        value += 12;
+        value %= 24;
+      }
+    } else {
+      value %= 12;
+    }
+
+    return value;
+  },
+
+  _getSelected: function _getSelected() {
+    var hour = this.props.initialHours;
+
+    if (this.props.format === "ampm") {
+      hour %= 12;
+      hour = hour || 12;
+    }
+
+    return hour;
+  },
+
+  _getHourNumbers: function _getHourNumbers() {
+    var _this = this;
+
+    var style = {
+      pointerEvents: "none"
+    };
+    var hourSize = this.props.format === 'ampm' ? 12 : 24;
+
+    var hours = [];
+    for (var i = 1; i <= hourSize; i++) {
+      hours.push(i % 24);
+    }
+
+    return hours.map(function (hour) {
+      var isSelected = _this._getSelected() === hour;
+      return React.createElement(ClockNumber, { key: hour, style: style, isSelected: isSelected, type: 'hour',
+        value: hour });
+    });
+  },
+
+  render: function render() {
+    var styles = {
+      root: {
+        height: "100%",
+        width: "100%",
+        borderRadius: "100%",
+        position: "relative",
+        pointerEvents: "none",
+        boxSizing: "border-box"
+      },
+
+      hitMask: {
+        height: "100%",
+        width: "100%",
+        pointerEvents: "auto"
+      }
+    };
+
+    var hours = this._getSelected();
+    var numbers = this._getHourNumbers();
+
+    return React.createElement(
+      'div',
+      { ref: 'clock', style: this.prepareStyles(styles.root) },
+      React.createElement(ClockPointer, { hasSelected: true, value: hours, type: 'hour' }),
+      numbers,
+      React.createElement('div', { ref: 'mask', style: this.prepareStyles(styles.hitMask), onTouchMove: this.handleTouchMove,
+        onTouchEnd: this.handleTouchEnd, onMouseUp: this.handleUp, onMouseMove: this.handleMove })
+    );
+  }
+});
+
+module.exports = ClockHours;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"./clock-number":134,"./clock-pointer":135,"react":"react","react-dom":"react-dom"}],133:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('../mixins/style-propable');
+var ClockNumber = require("./clock-number");
+var ClockPointer = require("./clock-pointer");
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+function rad2deg(rad) {
+  return rad * 57.29577951308232;
+}
+
+function getTouchEventOffsetValues(e) {
+  var el = e.target;
+  var boundingRect = el.getBoundingClientRect();
+
+  var offset = {
+    offsetX: e.clientX - boundingRect.left,
+    offsetY: e.clientY - boundingRect.top
+  };
+
+  return offset;
+}
+
+var ClockMinutes = React.createClass({
+  displayName: 'ClockMinutes',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    initialMinutes: React.PropTypes.number,
+    onChange: React.PropTypes.func
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  center: { x: 0, y: 0 },
+  basePoint: { x: 0, y: 0 },
+
+  isMousePressed: function isMousePressed(e) {
+
+    if (typeof e.buttons === "undefined") {
+      return e.nativeEvent.which;
+    }
+    return e.buttons;
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      initialMinutes: new Date().getMinutes(),
+      onChange: function onChange() {}
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    var clockElement = ReactDOM.findDOMNode(this.refs.mask);
+
+    this.center = {
+      x: clockElement.offsetWidth / 2,
+      y: clockElement.offsetHeight / 2
+    };
+
+    this.basePoint = {
+      x: this.center.x,
+      y: 0
+    };
+  },
+
+  handleUp: function handleUp(e) {
+    e.preventDefault();
+    this.setClock(e.nativeEvent, true);
+  },
+
+  handleMove: function handleMove(e) {
+    e.preventDefault();
+    if (this.isMousePressed(e) !== 1) return;
+    this.setClock(e.nativeEvent, false);
+  },
+
+  handleTouch: function handleTouch(e) {
+    e.preventDefault();
+    this.setClock(e.changedTouches[0], false);
+  },
+
+  setClock: function setClock(e, finish) {
+    if (typeof e.offsetX === 'undefined') {
+      var offset = getTouchEventOffsetValues(e);
+
+      e.offsetX = offset.offsetX;
+      e.offsetY = offset.offsetY;
+    }
+
+    var minutes = this.getMinutes(e.offsetX, e.offsetY);
+
+    this.props.onChange(minutes, finish);
+  },
+
+  getMinutes: function getMinutes(offsetX, offsetY) {
+    var step = 6;
+    var x = offsetX - this.center.x;
+    var y = offsetY - this.center.y;
+    var cx = this.basePoint.x - this.center.x;
+    var cy = this.basePoint.y - this.center.y;
+
+    var atan = Math.atan2(cx, cy) - Math.atan2(x, y);
+
+    var deg = rad2deg(atan);
+    deg = Math.round(deg / step) * step;
+    deg %= 360;
+
+    var value = Math.floor(deg / step) || 0;
+
+    return value;
+  },
+
+  _getMinuteNumbers: function _getMinuteNumbers() {
+    var minutes = [];
+    for (var i = 0; i < 12; i++) {
+      minutes.push(i * 5);
+    }
+    var selectedMinutes = this.props.initialMinutes;
+    var hasSelected = false;
+
+    var numbers = minutes.map(function (minute) {
+      var isSelected = selectedMinutes === minute;
+      if (isSelected) hasSelected = true;
+      return React.createElement(ClockNumber, { key: minute, isSelected: isSelected, type: 'minute', value: minute });
+    });
+
+    return {
+      numbers: numbers,
+      hasSelected: hasSelected,
+      selected: selectedMinutes
+    };
+  },
+
+  render: function render() {
+    var styles = {
+      root: {
+        height: "100%",
+        width: "100%",
+        borderRadius: "100%",
+        position: "relative",
+        pointerEvents: "none",
+        boxSizing: "border-box"
+      },
+
+      hitMask: {
+        height: "100%",
+        width: "100%",
+        pointerEvents: "auto"
+      }
+    };
+
+    var minutes = this._getMinuteNumbers();
+
+    return React.createElement(
+      'div',
+      { ref: 'clock', style: this.prepareStyles(styles.root) },
+      React.createElement(ClockPointer, { value: minutes.selected, type: 'minute' }),
+      minutes.numbers,
+      React.createElement('div', { ref: 'mask', style: this.prepareStyles(styles.hitMask), hasSelected: minutes.hasSelected,
+        onTouchMove: this.handleTouch, onTouchEnd: this.handleTouch,
+        onMouseUp: this.handleUp, onMouseMove: this.handleMove })
+    );
+  }
+});
+
+module.exports = ClockMinutes;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"./clock-number":134,"./clock-pointer":135,"react":"react","react-dom":"react-dom"}],134:[function(require,module,exports){
+'use strict';
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var ClockNumber = React.createClass({
+  displayName: 'ClockNumber',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    value: React.PropTypes.number,
+    type: React.PropTypes.oneOf(['hour', 'minute']),
+    onSelected: React.PropTypes.func,
+    isSelected: React.PropTypes.bool
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      value: 0,
+      type: 'minute',
+      isSelected: false
+    };
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.timePicker;
+  },
+
+  render: function render() {
+    var pos = this.props.value;
+    var inner = false;
+
+    if (this.props.type === "hour") {
+      inner = pos < 1 || pos > 12;
+      pos %= 12;
+    } else {
+      pos = pos / 5;
+    }
+
+    var positions = [[0, 5], [54.5, 16.6], [94.4, 59.5], [109, 114], [94.4, 168.5], [54.5, 208.4], [0, 223], [-54.5, 208.4], [-94.4, 168.5], [-109, 114], [-94.4, 59.5], [-54.5, 19.6]];
+
+    var innerPositions = [[0, 40], [36.9, 49.9], [64, 77], [74, 114], [64, 151], [37, 178], [0, 188], [-37, 178], [-64, 151], [-74, 114], [-64, 77], [-37, 50]];
+
+    var styles = {
+      root: {
+        display: "inline-block",
+        position: "absolute",
+        width: 32,
+        height: 32,
+        borderRadius: "100%",
+        left: 'calc(50% - 16px)',
+        top: 10,
+        textAlign: "center",
+        paddingTop: 5,
+        userSelect: "none", /* Chrome all / Safari all */
+        fontSize: "1.1em",
+        pointerEvents: "none",
+        boxSizing: "border-box"
+      }
+    };
+
+    if (this.props.isSelected) {
+      styles.root.backgroundColor = this.getTheme().accentColor;
+      styles.root.color = this.getTheme().selectTextColor;
+    }
+
+    var transformPos = positions[pos];
+
+    if (inner) {
+      styles.root.width = "28px";
+      styles.root.height = "28px";
+      styles.root.left = 'calc(50% - 14px)';
+      transformPos = innerPositions[pos];
+    }
+
+    var _transformPos = transformPos;
+
+    var _transformPos2 = _slicedToArray(_transformPos, 2);
+
+    var x = _transformPos2[0];
+    var y = _transformPos2[1];
+
+    styles.root.transform = "translate(" + x + "px, " + y + "px)";
+
+    return React.createElement(
+      'span',
+      { style: this.prepareStyles(styles.root) },
+      this.props.value
+    );
+  }
+});
+
+module.exports = ClockNumber;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],135:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var ClockPointer = React.createClass({
+  displayName: 'ClockPointer',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    value: React.PropTypes.number,
+    type: React.PropTypes.oneOf(['hour', 'minute'])
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      inner: this.isInner(this.props.value),
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      value: null,
+      type: 'minute',
+      hasSelected: false
+    };
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({
+      inner: this.isInner(nextProps.value),
+      muiTheme: newMuiTheme
+    });
+  },
+
+  isInner: function isInner(value) {
+    if (this.props.type !== "hour") {
+      return false;
+    }
+    return value < 1 || value > 12;
+  },
+
+  getAngle: function getAngle() {
+    if (this.props.type === "hour") {
+      return this.calcAngle(this.props.value, 12);
+    }
+
+    return this.calcAngle(this.props.value, 60);
+  },
+
+  calcAngle: function calcAngle(value, base) {
+    value %= base;
+    var angle = 360 / base * value;
+    return angle;
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.timePicker;
+  },
+
+  render: function render() {
+    if (this.props.value === null) {
+      return React.createElement('span', null);
+    }
+
+    var angle = this.getAngle();
+
+    var styles = {
+      root: {
+        height: "30%",
+        background: this.getTheme().accentColor,
+        width: 2,
+        left: 'calc(50% - 1px)',
+        position: "absolute",
+        bottom: "50%",
+        transformOrigin: "bottom",
+        pointerEvents: "none",
+        transform: "rotateZ(" + angle + "deg)"
+      },
+      mark: {
+        background: this.getTheme().selectTextColor,
+        border: "4px solid " + this.getTheme().accentColor,
+        width: 7,
+        height: 7,
+        position: "absolute",
+        top: -5,
+        left: -6,
+        borderRadius: "100%"
+      }
+    };
+
+    if (!this.state.inner) {
+      styles.root.height = "40%";
+    }
+
+    if (this.props.hasSelected) {
+      styles.mark.display = "none";
+    }
+
+    return React.createElement(
+      'div',
+      { style: this.prepareStyles(styles.root) },
+      React.createElement('div', { style: this.prepareStyles(styles.mark) })
+    );
+  }
+});
+
+module.exports = ClockPointer;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],136:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var TimeDisplay = require("./time-display");
+var ClockButton = require("./clock-button");
+var ClockHours = require("./clock-hours");
+var ClockMinutes = require("./clock-minutes");
+
+var Clock = React.createClass({
+  displayName: 'Clock',
+
+  mixins: [StylePropable],
+
+  propTypes: {
+    onChangeMinutes: React.PropTypes.func,
+    onChangeHours: React.PropTypes.func,
+    initialTime: React.PropTypes.object,
+    mode: React.PropTypes.oneOf(['hour', 'minute']),
+    format: React.PropTypes.oneOf(['ampm', '24hr']),
+    isActive: React.PropTypes.bool
+  },
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      initialTime: new Date()
+    };
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    this.setState({
+      selectedTime: nextProps.initialTime
+    });
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      selectedTime: this.props.initialTime,
+      mode: 'hour'
+    };
+  },
+
+  _setMode: function _setMode(mode) {
+    var _this = this;
+
+    setTimeout(function () {
+      _this.setState({
+        mode: mode
+      });
+    }, 100);
+  },
+
+  _setAffix: function _setAffix(affix) {
+    if (affix === this._getAffix()) return;
+
+    var hours = this.state.selectedTime.getHours();
+
+    if (affix === "am") {
+      this.handleChangeHours(hours - 12, affix);
+      return;
+    }
+
+    this.handleChangeHours(hours + 12, affix);
+  },
+
+  _getAffix: function _getAffix() {
+    if (this.props.format !== "ampm") return "";
+
+    var hours = this.state.selectedTime.getHours();
+    if (hours < 12) {
+      return "am";
+    }
+
+    return "pm";
+  },
+
+  _getButtons: function _getButtons() {
+    var buttons = [];
+    var isAM = this._getIsAM();
+
+    if (this.props.format === 'ampm') {
+      buttons = [React.createElement(
+        ClockButton,
+        { position: 'left', onTouchTap: this._setAffix.bind(this, "am"), selected: isAM },
+        "AM"
+      ), React.createElement(
+        ClockButton,
+        { position: 'right', onTouchTap: this._setAffix.bind(this, "pm"), selected: !isAM },
+        "PM"
+      )];
+    }
+    return buttons;
+  },
+
+  _getIsAM: function _getIsAM() {
+    return this._getAffix() === "am";
+  },
+
+  render: function render() {
+    var clock = null;
+    var buttons = this._getButtons();
+
+    var styles = {
+      root: {},
+
+      container: {
+        height: 280,
+        padding: 10
+      }
+    };
+
+    if (this.state.mode === "hour") {
+      clock = React.createElement(ClockHours, { key: 'hours',
+        format: this.props.format,
+        onChange: this.handleChangeHours,
+        initialHours: this.state.selectedTime.getHours() });
+    } else {
+      clock = React.createElement(ClockMinutes, { key: 'minutes',
+        onChange: this.handleChangeMinutes,
+        initialMinutes: this.state.selectedTime.getMinutes() });
+    }
+
+    return React.createElement(
+      'div',
+      { style: this.prepareStyles(styles.root) },
+      React.createElement(TimeDisplay, {
+        selectedTime: this.state.selectedTime,
+        mode: this.state.mode,
+        format: this.props.format,
+        affix: this._getAffix(),
+        onSelectHour: this._setMode.bind(this, 'hour'),
+        onSelectMin: this._setMode.bind(this, 'minute') }),
+      React.createElement(
+        'div',
+        { style: this.prepareStyles(styles.container) },
+        clock
+      ),
+      buttons
+    );
+  },
+
+  handleChangeHours: function handleChangeHours(hours, finished) {
+    var _this2 = this;
+
+    var time = new Date(this.state.selectedTime);
+    var affix = undefined;
+
+    if (typeof finished === 'string') {
+      affix = finished;
+      finished = undefined;
+    }
+    if (!affix) {
+      affix = this._getAffix();
+    }
+    if (affix === 'pm' && hours < 12) {
+      hours += 12;
+    }
+
+    time.setHours(hours);
+    this.setState({
+      selectedTime: time
+    });
+
+    var onChangeHours = this.props.onChangeHours;
+
+    if (finished) {
+      setTimeout(function () {
+        _this2.setState({
+          mode: 'minute'
+        });
+        if (typeof onChangeHours === 'function') {
+          onChangeHours(time);
+        }
+      }, 100);
+    }
+  },
+
+  handleChangeMinutes: function handleChangeMinutes(minutes) {
+    var time = new Date(this.state.selectedTime);
+    time.setMinutes(minutes);
+    this.setState({
+      selectedTime: time
+    });
+
+    var onChangeMinutes = this.props.onChangeMinutes;
+
+    if (typeof onChangeMinutes === 'function') {
+      setTimeout(function () {
+        onChangeMinutes(time);
+      }, 0);
+    }
+  },
+
+  getSelectedTime: function getSelectedTime() {
+    return this.state.selectedTime;
+  }
+});
+
+module.exports = Clock;
+},{"../mixins/style-propable":81,"./clock-button":131,"./clock-hours":132,"./clock-minutes":133,"./time-display":138,"react":"react"}],137:[function(require,module,exports){
+'use strict';
+
+module.exports = require('./time-picker');
+},{"./time-picker":140}],138:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var TimeDisplay = React.createClass({
+  displayName: 'TimeDisplay',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    selectedTime: React.PropTypes.object.isRequired,
+    format: React.PropTypes.oneOf(['ampm', '24hr']),
+    mode: React.PropTypes.oneOf(['hour', 'minute']),
+    affix: React.PropTypes.oneOf(['', 'pm', 'am'])
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      transitionDirection: 'up',
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      mode: 'hour',
+      affix: ''
+    };
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var direction = undefined;
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+
+    if (nextProps.selectedTime !== this.props.selectedTime) {
+      direction = nextProps.selectedTime > this.props.selectedTime ? 'up' : 'down';
+
+      this.setState({
+        transitionDirection: direction
+      });
+    }
+  },
+
+  sanitizeTime: function sanitizeTime() {
+    var hour = this.props.selectedTime.getHours();
+    var min = this.props.selectedTime.getMinutes().toString();
+
+    if (this.props.format === "ampm") {
+      hour %= 12;
+      hour = hour || 12;
+    }
+
+    hour = hour.toString();
+    if (hour.length < 2) hour = "0" + hour;
+    if (min.length < 2) min = "0" + min;
+
+    return [hour, min];
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.timePicker;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var selectedTime = _props.selectedTime;
+    var mode = _props.mode;
+
+    var other = _objectWithoutProperties(_props, ['selectedTime', 'mode']);
+
+    var styles = {
+      root: {
+        textAlign: "center",
+        position: "relative",
+        width: 280,
+        height: "100%"
+      },
+
+      time: {
+        margin: "6px 0",
+        lineHeight: "58px",
+        height: 58,
+        fontSize: "58px"
+      },
+
+      box: {
+        padding: "16px 0",
+        backgroundColor: this.getTheme().color,
+        color: this.getTheme().textColor
+      },
+
+      hour: {},
+
+      minute: {}
+    };
+
+    var _sanitizeTime = this.sanitizeTime();
+
+    var _sanitizeTime2 = _slicedToArray(_sanitizeTime, 2);
+
+    var hour = _sanitizeTime2[0];
+    var min = _sanitizeTime2[1];
+
+    styles[mode].color = this.getTheme().accentColor;
+
+    return React.createElement(
+      'div',
+      _extends({}, other, { style: this.prepareStyles(styles.root) }),
+      React.createElement(
+        'div',
+        { style: this.prepareStyles(styles.box) },
+        React.createElement(
+          'div',
+          { style: this.prepareStyles(styles.time) },
+          React.createElement(
+            'span',
+            { style: this.prepareStyles(styles.hour), onTouchTap: this.props.onSelectHour },
+            hour
+          ),
+          React.createElement(
+            'span',
+            null,
+            ':'
+          ),
+          React.createElement(
+            'span',
+            { style: this.prepareStyles(styles.minute), onTouchTap: this.props.onSelectMin },
+            min
+          )
+        ),
+        React.createElement(
+          'span',
+          { key: "affix" },
+          this.props.affix.toUpperCase()
+        )
+      )
+    );
+  }
+
+});
+
+module.exports = TimeDisplay;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],139:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var WindowListenable = require('../mixins/window-listenable');
+var KeyCode = require('../utils/key-code');
+var Clock = require('./clock');
+var Dialog = require('../dialog');
+var FlatButton = require('../flat-button');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var TimePickerDialog = React.createClass({
+  displayName: 'TimePickerDialog',
+
+  mixins: [StylePropable, WindowListenable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    autoOk: React.PropTypes.bool,
+    initialTime: React.PropTypes.object,
+    onAccept: React.PropTypes.func,
+    onShow: React.PropTypes.func,
+    onDismiss: React.PropTypes.func
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  windowListeners: {
+    keyup: '_handleWindowKeyUp'
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.timePicker;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var initialTime = _props.initialTime;
+    var onAccept = _props.onAccept;
+    var format = _props.format;
+    var autoOk = _props.autoOk;
+
+    var other = _objectWithoutProperties(_props, ['initialTime', 'onAccept', 'format', 'autoOk']);
+
+    var styles = {
+      root: {
+        fontSize: 14,
+        color: this.getTheme().clockColor
+      },
+      dialogContent: {
+        width: 280
+      },
+      body: {
+        padding: 0
+      }
+    };
+
+    var actions = [React.createElement(FlatButton, {
+      key: 0,
+      label: 'Cancel',
+      secondary: true,
+      onTouchTap: this._handleCancelTouchTap }), React.createElement(FlatButton, {
+      key: 1,
+      label: 'OK',
+      secondary: true,
+      onTouchTap: this._handleOKTouchTap })];
+
+    var onClockChangeMinutes = autoOk === true ? this._handleOKTouchTap : undefined;
+
+    return React.createElement(
+      Dialog,
+      _extends({}, other, {
+        ref: 'dialogWindow',
+        style: this.mergeAndPrefix(styles.root),
+        bodyStyle: this.mergeAndPrefix(styles.body),
+        actions: actions,
+        contentStyle: styles.dialogContent,
+        onDismiss: this._handleDialogDismiss,
+        onShow: this._handleDialogShow,
+        repositionOnUpdate: false }),
+      React.createElement(Clock, {
+        ref: 'clock',
+        format: format,
+        initialTime: initialTime,
+        onChangeMinutes: onClockChangeMinutes })
+    );
+  },
+
+  show: function show() {
+    this.refs.dialogWindow.show();
+  },
+
+  dismiss: function dismiss() {
+    this.refs.dialogWindow.dismiss();
+  },
+
+  _handleCancelTouchTap: function _handleCancelTouchTap() {
+    this.dismiss();
+  },
+
+  _handleOKTouchTap: function _handleOKTouchTap() {
+    this.dismiss();
+    if (this.props.onAccept) {
+      this.props.onAccept(this.refs.clock.getSelectedTime());
+    }
+  },
+
+  _handleDialogShow: function _handleDialogShow() {
+    if (this.props.onShow) {
+      this.props.onShow();
+    }
+  },
+
+  _handleDialogDismiss: function _handleDialogDismiss() {
+    if (this.props.onDismiss) {
+      this.props.onDismiss();
+    }
+  },
+
+  _handleWindowKeyUp: function _handleWindowKeyUp(e) {
+    if (this.refs.dialogWindow.isOpen()) {
+      switch (e.keyCode) {
+        case KeyCode.ENTER:
+          this._handleOKTouchTap();
+          break;
+      }
+    }
+  }
+
+});
+
+module.exports = TimePickerDialog;
+},{"../dialog":52,"../flat-button":58,"../mixins/style-propable":81,"../mixins/window-listenable":83,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../utils/key-code":161,"./clock":136,"react":"react"}],140:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var WindowListenable = require('../mixins/window-listenable');
+var TimePickerDialog = require('./time-picker-dialog');
+var TextField = require('../text-field');
+
+var emptyTime = new Date();
+emptyTime.setHours(0);
+emptyTime.setMinutes(0);
+
+var TimePicker = React.createClass({
+  displayName: 'TimePicker',
+
+  mixins: [StylePropable, WindowListenable],
+
+  propTypes: {
+    autoOk: React.PropTypes.bool,
+    defaultTime: React.PropTypes.object,
+    format: React.PropTypes.oneOf(['ampm', '24hr']),
+    pedantic: React.PropTypes.bool,
+    onFocus: React.PropTypes.func,
+    onTouchTap: React.PropTypes.func,
+    onChange: React.PropTypes.func,
+    onShow: React.PropTypes.func,
+    onDismiss: React.PropTypes.func,
+    style: React.PropTypes.object,
+    textFieldStyle: React.PropTypes.object
+  },
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  windowListeners: {
+    'keyup': '_handleWindowKeyUp'
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      defaultTime: null,
+      format: 'ampm',
+      pedantic: false,
+      autoOk: false,
+      style: {}
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      time: this.props.defaultTime || emptyTime,
+      dialogTime: new Date()
+    };
+  },
+
+  formatTime: function formatTime(date) {
+    var hours = date.getHours();
+    var mins = date.getMinutes().toString();
+
+    if (this.props.format === "ampm") {
+      var isAM = hours < 12;
+      hours = hours % 12;
+      var additional = isAM ? " am" : " pm";
+      hours = (hours || 12).toString();
+
+      if (mins.length < 2) mins = "0" + mins;
+
+      if (this.props.pedantic) {
+        // Treat midday/midnight specially http://www.nist.gov/pml/div688/times.cfm
+        if (hours === "12" && mins === "00") {
+          return additional === " pm" ? "12 noon" : "12 midnight";
+        }
+      }
+
+      return hours + (mins === "00" ? "" : ":" + mins) + additional;
+    }
+
+    hours = hours.toString();
+
+    if (hours.length < 2) hours = "0" + hours;
+    if (mins.length < 2) mins = "0" + mins;
+
+    return hours + ":" + mins;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var autoOk = _props.autoOk;
+    var format = _props.format;
+    var onFocus = _props.onFocus;
+    var onTouchTap = _props.onTouchTap;
+    var onShow = _props.onShow;
+    var onDismiss = _props.onDismiss;
+    var style = _props.style;
+    var textFieldStyle = _props.textFieldStyle;
+
+    var other = _objectWithoutProperties(_props, ['autoOk', 'format', 'onFocus', 'onTouchTap', 'onShow', 'onDismiss', 'style', 'textFieldStyle']);
+
+    var defaultInputValue = undefined;
+
+    if (this.props.defaultTime) {
+      defaultInputValue = this.formatTime(this.props.defaultTime);
+    }
+
+    return React.createElement(
+      'div',
+      { style: this.prepareStyles(style) },
+      React.createElement(TextField, _extends({}, other, {
+        style: textFieldStyle,
+        ref: 'input',
+        defaultValue: defaultInputValue,
+        onFocus: this._handleInputFocus,
+        onTouchTap: this._handleInputTouchTap })),
+      React.createElement(TimePickerDialog, {
+        ref: 'dialogWindow',
+        initialTime: this.state.dialogTime,
+        onAccept: this._handleDialogAccept,
+        onShow: onShow,
+        onDismiss: onDismiss,
+        format: format,
+        autoOk: autoOk })
+    );
+  },
+
+  getTime: function getTime() {
+    return this.state.time;
+  },
+
+  setTime: function setTime(t) {
+    this.setState({
+      time: t
+    });
+    this.refs.input.setValue(this.formatTime(t));
+  },
+
+  /**
+   * Alias for `openDialog()` for an api consistent with TextField.
+   */
+  focus: function focus() {
+    this.openDialog();
+  },
+
+  openDialog: function openDialog() {
+    this.setState({
+      dialogTime: this.getTime()
+    });
+
+    this.refs.dialogWindow.show();
+  },
+
+  _handleDialogAccept: function _handleDialogAccept(t) {
+    this.setTime(t);
+    if (this.props.onChange) this.props.onChange(null, t);
+  },
+
+  _handleInputFocus: function _handleInputFocus(e) {
+    e.target.blur();
+    if (this.props.onFocus) this.props.onFocus(e);
+  },
+
+  _handleInputTouchTap: function _handleInputTouchTap(e) {
+    e.preventDefault();
+
+    this.openDialog();
+
+    if (this.props.onTouchTap) this.props.onTouchTap(e);
+  }
+});
+
+module.exports = TimePicker;
+},{"../mixins/style-propable":81,"../mixins/window-listenable":83,"../text-field":129,"./time-picker-dialog":139,"react":"react"}],141:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var Paper = require('./paper');
+var EnhancedSwitch = require('./enhanced-switch');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var Toggle = React.createClass({
+  displayName: 'Toggle',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    elementStyle: React.PropTypes.object,
+    labelStyle: React.PropTypes.object,
+    onToggle: React.PropTypes.func,
+    toggled: React.PropTypes.bool,
+    defaultToggled: React.PropTypes.bool
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      switched: this.props.toggled || this.props.defaultToggled || this.props.valueLink && this.props.valueLink.value || false,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.toggle;
+  },
+
+  getStyles: function getStyles() {
+    var toggleSize = 20;
+    var toggleTrackWidth = 36;
+    var styles = {
+      icon: {
+        width: 36,
+        padding: '4px 0px 6px 2px'
+      },
+      toggleElement: {
+        width: toggleTrackWidth
+      },
+      track: {
+        transition: Transitions.easeOut(),
+        width: '100%',
+        height: 14,
+        borderRadius: 30,
+        backgroundColor: this.getTheme().trackOffColor
+      },
+      thumb: {
+        transition: Transitions.easeOut(),
+        position: 'absolute',
+        top: 1,
+        left: 0,
+        width: toggleSize,
+        height: toggleSize,
+        lineHeight: '24px',
+        borderRadius: '50%',
+        backgroundColor: this.getTheme().thumbOffColor
+      },
+      trackWhenSwitched: {
+        backgroundColor: this.getTheme().trackOnColor
+      },
+      thumbWhenSwitched: {
+        backgroundColor: this.getTheme().thumbOnColor,
+        left: '100%'
+      },
+      trackWhenDisabled: {
+        backgroundColor: this.getTheme().trackDisabledColor
+      },
+      thumbWhenDisabled: {
+        backgroundColor: this.getTheme().thumbDisabledColor
+      },
+      label: {
+        color: this.props.disabled ? this.getTheme().labelDisabledColor : this.getTheme().labelColor,
+        width: 'calc(100% - ' + (toggleTrackWidth + 10) + 'px)'
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var onToggle = _props.onToggle;
+
+    var other = _objectWithoutProperties(_props, ['onToggle']);
+
+    var styles = this.getStyles();
+
+    var trackStyles = this.mergeStyles(styles.track, this.props.trackStyle, this.state.switched && styles.trackWhenSwitched, this.props.disabled && styles.trackWhenDisabled);
+
+    var thumbStyles = this.mergeStyles(styles.thumb, this.props.thumbStyle, this.state.switched && styles.thumbWhenSwitched, this.props.disabled && styles.thumbWhenDisabled);
+
+    if (this.state.switched) {
+      thumbStyles.marginLeft = '-' + thumbStyles.width;
+    }
+
+    var toggleElementStyles = this.mergeStyles(styles.toggleElement, this.props.elementStyle);
+
+    var toggleElement = React.createElement(
+      'div',
+      { style: this.prepareStyles(toggleElementStyles) },
+      React.createElement('div', { style: this.prepareStyles(trackStyles) }),
+      React.createElement(Paper, { style: thumbStyles, circle: true, zDepth: 1 })
+    );
+
+    var customRippleStyle = this.mergeStyles({
+      top: -10,
+      left: -10
+    }, this.props.rippleStyle);
+
+    var rippleColor = this.state.switched ? this.getTheme().thumbOnColor : this.state.muiTheme.textColor;
+
+    var iconStyle = this.mergeStyles(styles.icon, this.props.iconStyle);
+
+    var labelStyle = this.mergeStyles(styles.label, this.props.labelStyle);
+
+    var enhancedSwitchProps = {
+      ref: "enhancedSwitch",
+      inputType: "checkbox",
+      switchElement: toggleElement,
+      rippleStyle: customRippleStyle,
+      rippleColor: rippleColor,
+      iconStyle: iconStyle,
+      trackStyle: trackStyles,
+      thumbStyle: thumbStyles,
+      labelStyle: labelStyle,
+      switched: this.state.switched,
+      onSwitch: this._handleToggle,
+      onParentShouldUpdate: this._handleStateChange,
+      defaultSwitched: this.props.defaultToggled,
+      labelPosition: this.props.labelPosition ? this.props.labelPosition : "left"
+    };
+
+    if (this.props.hasOwnProperty('toggled')) enhancedSwitchProps.checked = this.props.toggled;
+
+    return React.createElement(EnhancedSwitch, _extends({}, other, enhancedSwitchProps));
+  },
+
+  isToggled: function isToggled() {
+    return this.refs.enhancedSwitch.isSwitched();
+  },
+
+  setToggled: function setToggled(newToggledValue) {
+    this.refs.enhancedSwitch.setSwitched(newToggledValue);
+  },
+
+  _handleToggle: function _handleToggle(e, isInputChecked) {
+    if (this.props.onToggle) this.props.onToggle(e, isInputChecked);
+  },
+
+  _handleStateChange: function _handleStateChange(newSwitched) {
+    this.setState({ switched: newSwitched });
+  }
+
+});
+
+module.exports = Toggle;
+},{"./enhanced-switch":56,"./mixins/style-propable":81,"./paper":85,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react"}],142:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var Colors = require('../styles/colors');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var ToolbarGroup = React.createClass({
+  displayName: 'ToolbarGroup',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    className: React.PropTypes.string,
+    float: React.PropTypes.string
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      float: 'left'
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.toolbar;
+  },
+
+  getSpacing: function getSpacing() {
+    return this.state.muiTheme.rawTheme.spacing.desktopGutter;
+  },
+
+  getStyles: function getStyles() {
+    var marginHorizontal = this.getSpacing();
+    var marginVertical = (this.getTheme().height - this.state.muiTheme.button.height) / 2;
+    var styles = {
+      root: {
+        position: 'relative',
+        float: this.props.float
+      },
+      dropDownMenu: {
+        root: {
+          float: 'left',
+          color: Colors.lightBlack, // removes hover color change, we want to keep it
+          display: 'inline-block',
+          marginRight: this.getSpacing()
+        },
+        controlBg: {
+          backgroundColor: this.getTheme().menuHoverColor,
+          borderRadius: 0
+        },
+        underline: {
+          display: 'none'
+        }
+      },
+      button: {
+        float: 'left',
+        margin: marginVertical + 'px ' + marginHorizontal + 'px',
+        position: 'relative'
+      },
+      icon: {
+        root: {
+          float: 'left',
+          cursor: 'pointer',
+          color: this.getTheme().iconColor,
+          lineHeight: this.getTheme().height + 'px',
+          paddingLeft: this.getSpacing()
+        },
+        hover: {
+          color: Colors.darkBlack
+        }
+      },
+      span: {
+        float: 'left',
+        color: this.getTheme().iconColor,
+        lineHeight: this.getTheme().height + 'px'
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _this = this;
+
+    var styles = this.getStyles();
+
+    if (this.props.firstChild) styles.marginLeft = -24;
+    if (this.props.lastChild) styles.marginRight = -24;
+
+    var newChildren = React.Children.map(this.props.children, function (currentChild) {
+      if (!currentChild) {
+        return null;
+      }
+      if (!currentChild.type) {
+        return currentChild;
+      }
+      switch (currentChild.type.displayName) {
+        case 'DropDownMenu':
+          return React.cloneElement(currentChild, {
+            style: _this.mergeStyles(styles.dropDownMenu.root, currentChild.props.style),
+            styleControlBg: styles.dropDownMenu.controlBg,
+            styleUnderline: styles.dropDownMenu.underline
+          });
+        case 'DropDownIcon':
+          return React.cloneElement(currentChild, {
+            style: _this.mergeStyles({ float: 'left' }, currentChild.props.style),
+            iconStyle: styles.icon.root,
+            onMouseEnter: _this._handleMouseEnterDropDownMenu,
+            onMouseLeave: _this._handleMouseLeaveDropDownMenu
+          });
+        case 'RaisedButton':case 'FlatButton':
+          return React.cloneElement(currentChild, {
+            style: _this.mergeStyles(styles.button, currentChild.props.style)
+          });
+        case 'FontIcon':
+          return React.cloneElement(currentChild, {
+            style: _this.mergeStyles(styles.icon.root, currentChild.props.style),
+            onMouseEnter: _this._handleMouseEnterFontIcon,
+            onMouseLeave: _this._handleMouseLeaveFontIcon
+          });
+        case 'ToolbarSeparator':case 'ToolbarTitle':
+          return React.cloneElement(currentChild, {
+            style: _this.mergeStyles(styles.span, currentChild.props.style)
+          });
+        default:
+          return currentChild;
+      }
+    }, this);
+
+    return React.createElement(
+      'div',
+      { className: this.props.className, style: this.prepareStyles(styles.root, this.props.style) },
+      newChildren
+    );
+  },
+
+  _handleMouseEnterDropDownMenu: function _handleMouseEnterDropDownMenu(e) {
+    e.target.style.zIndex = this.getStyles().icon.hover.zIndex;
+    e.target.style.color = this.getStyles().icon.hover.color;
+  },
+
+  _handleMouseLeaveDropDownMenu: function _handleMouseLeaveDropDownMenu(e) {
+    e.target.style.zIndex = 'auto';
+    e.target.style.color = this.getStyles().icon.root.color;
+  },
+
+  _handleMouseEnterFontIcon: function _handleMouseEnterFontIcon(e) {
+    e.target.style.zIndex = this.getStyles().icon.hover.zIndex;
+    e.target.style.color = this.getStyles().icon.hover.color;
+  },
+
+  _handleMouseLeaveFontIcon: function _handleMouseLeaveFontIcon(e) {
+    e.target.style.zIndex = 'auto';
+    e.target.style.color = this.getStyles().icon.root.color;
+  }
+});
+
+module.exports = ToolbarGroup;
+},{"../mixins/style-propable":81,"../styles/colors":98,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],143:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var ToolbarSeparator = React.createClass({
+  displayName: 'ToolbarSeparator',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.toolbar;
+  },
+
+  getSpacing: function getSpacing() {
+    return this.state.muiTheme.rawTheme.spacing;
+  },
+
+  render: function render() {
+    var styles = this.prepareStyles({
+      backgroundColor: this.getTheme().separatorColor,
+      display: 'inline-block',
+      height: this.getSpacing().desktopGutterMore,
+      marginLeft: this.getSpacing().desktopGutter,
+      position: 'relative',
+      top: (this.getTheme().height - this.getSpacing().desktopGutterMore) / 2,
+      width: 1
+    }, this.props.style);
+
+    return React.createElement('span', { className: this.props.className, style: styles });
+  }
+
+});
+
+module.exports = ToolbarSeparator;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],144:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var ToolbarTitle = React.createClass({
+  displayName: 'ToolbarTitle',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    text: React.PropTypes.string
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.toolbar;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var style = _props.style;
+    var text = _props.text;
+
+    var other = _objectWithoutProperties(_props, ['style', 'text']);
+
+    var styles = this.prepareStyles({
+      paddingRight: this.state.muiTheme.rawTheme.spacing.desktopGutterLess,
+      lineHeight: this.getTheme().height + 'px',
+      fontSize: this.getTheme().titleFontSize + 'px',
+      display: 'inline-block',
+      position: 'relative'
+    }, style);
+
+    return React.createElement(
+      'span',
+      _extends({ style: styles }, other),
+      text
+    );
+  }
+
+});
+
+module.exports = ToolbarTitle;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],145:[function(require,module,exports){
+'use strict';
+
+var React = require('react');
+var StylePropable = require('../mixins/style-propable');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var Toolbar = React.createClass({
+  displayName: 'Toolbar',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    className: React.PropTypes.string,
+    style: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  getTheme: function getTheme() {
+    return this.state.muiTheme.toolbar;
+  },
+
+  getStyles: function getStyles() {
+    return this.mergeStyles({
+      boxSizing: 'border-box',
+      WebkitTapHighlightColor: 'rgba(0,0,0,0)',
+      backgroundColor: this.getTheme().backgroundColor,
+      height: this.getTheme().height,
+      width: '100%',
+      padding: this.props.noGutter ? 0 : '0px ' + this.state.muiTheme.rawTheme.spacing.desktopGutter + 'px'
+    }, this.props.style);
+  },
+
+  render: function render() {
+    return React.createElement(
+      'div',
+      { className: this.props.className, style: this.prepareStyles(this.getStyles()) },
+      this.props.children
+    );
+  }
+
+});
+
+module.exports = Toolbar;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"react":"react"}],146:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('./mixins/style-propable');
+var Transitions = require('./styles/transitions');
+var Colors = require('./styles/colors');
+var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
+var ThemeManager = require('./styles/theme-manager');
+
+var Tooltip = React.createClass({
+  displayName: 'Tooltip',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  propTypes: {
+    className: React.PropTypes.string,
+    label: React.PropTypes.node.isRequired,
+    show: React.PropTypes.bool,
+    touch: React.PropTypes.bool,
+    verticalPosition: React.PropTypes.oneOf(['top', 'bottom']),
+    horizontalPosition: React.PropTypes.oneOf(['left', 'right', 'center'])
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  componentDidMount: function componentDidMount() {
+    this._setRippleSize();
+    this._setTooltipPosition();
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    this._setTooltipPosition();
+
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    this._setRippleSize();
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      offsetWidth: null,
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  getStyles: function getStyles() {
+    var verticalPosition = this.props.verticalPosition;
+    var horizontalPosition = this.props.horizontalPosition;
+    var touchMarginOffset = this.props.touch ? 10 : 0;
+    var touchOffsetTop = this.props.touch ? -20 : -10;
+    var offset = verticalPosition === 'bottom' ? 14 + touchMarginOffset : -14 - touchMarginOffset;
+
+    var styles = {
+      root: {
+        position: 'absolute',
+        fontFamily: this.state.muiTheme.rawTheme.fontFamily,
+        fontSize: '10px',
+        lineHeight: '22px',
+        padding: '0 8px',
+        color: Colors.white,
+        overflow: 'hidden',
+        top: -10000,
+        borderRadius: 2,
+        userSelect: 'none',
+        opacity: 0,
+        right: horizontalPosition === 'left' ? 12 : null,
+        left: horizontalPosition === 'center' ? (this.state.offsetWidth - 48) / 2 * -1 : null,
+        transition: Transitions.easeOut('0ms', 'top', '450ms') + ',' + Transitions.easeOut('450ms', 'transform', '0ms') + ',' + Transitions.easeOut('450ms', 'opacity', '0ms')
+      },
+      label: {
+        position: 'relative',
+        whiteSpace: 'nowrap'
+      },
+      ripple: {
+        position: 'absolute',
+        left: horizontalPosition === 'center' ? '50%' : horizontalPosition === 'left' ? '100%' : '0%',
+        top: verticalPosition === 'bottom' ? 0 : '100%',
+        transform: 'translate(-50%, -50%)',
+        borderRadius: '50%',
+        backgroundColor: 'transparent',
+        transition: Transitions.easeOut('0ms', 'width', '450ms') + ',' + Transitions.easeOut('0ms', 'height', '450ms') + ',' + Transitions.easeOut('450ms', 'backgroundColor', '0ms')
+      },
+      rootWhenShown: {
+        top: verticalPosition === 'top' ? touchOffsetTop : 36,
+        opacity: 0.9,
+        transform: 'translate3d(0px, ' + offset + 'px, 0px)',
+        transition: Transitions.easeOut('0ms', 'top', '0ms') + ',' + Transitions.easeOut('450ms', 'transform', '0ms') + ',' + Transitions.easeOut('450ms', 'opacity', '0ms')
+      },
+      rootWhenTouched: {
+        fontSize: '14px',
+        lineHeight: '32px',
+        padding: '0 16px'
+      },
+      rippleWhenShown: {
+        backgroundColor: Colors.grey700,
+        transition: Transitions.easeOut('450ms', 'width', '0ms') + ',' + Transitions.easeOut('450ms', 'height', '0ms') + ',' + Transitions.easeOut('450ms', 'backgroundColor', '0ms')
+      }
+    };
+
+    return styles;
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var label = _props.label;
+
+    var other = _objectWithoutProperties(_props, ['label']);
+
+    var styles = this.getStyles();
+    return React.createElement(
+      'div',
+      _extends({}, other, {
+        style: this.prepareStyles(styles.root, this.props.show && styles.rootWhenShown, this.props.touch && styles.rootWhenTouched, this.props.style) }),
+      React.createElement('div', {
+        ref: 'ripple',
+        style: this.prepareStyles(styles.ripple, this.props.show && styles.rippleWhenShown) }),
+      React.createElement(
+        'span',
+        { style: this.prepareStyles(styles.label) },
+        this.props.label
+      )
+    );
+  },
+
+  _setRippleSize: function _setRippleSize() {
+    var ripple = ReactDOM.findDOMNode(this.refs.ripple);
+    var tooltip = window.getComputedStyle(ReactDOM.findDOMNode(this));
+    var tooltipWidth = parseInt(tooltip.getPropertyValue("width"), 10) / (this.props.horizontalPosition === 'center' ? 2 : 1);
+    var tooltipHeight = parseInt(tooltip.getPropertyValue("height"), 10);
+
+    var rippleDiameter = Math.ceil(Math.sqrt(Math.pow(tooltipHeight, 2) + Math.pow(tooltipWidth, 2)) * 2);
+    if (this.props.show) {
+      ripple.style.height = rippleDiameter + 'px';
+      ripple.style.width = rippleDiameter + 'px';
+    } else {
+      ripple.style.width = '0px';
+      ripple.style.height = '0px';
+    }
+  },
+
+  _setTooltipPosition: function _setTooltipPosition() {
+    var tooltip = ReactDOM.findDOMNode(this);
+    this.setState({ offsetWidth: tooltip.offsetWidth });
+  }
+
+});
+
+module.exports = Tooltip;
+},{"./mixins/style-propable":81,"./styles/colors":98,"./styles/raw-themes/light-raw-theme":101,"./styles/theme-manager":104,"./styles/transitions":105,"react":"react","react-dom":"react-dom"}],147:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -2935,7 +19608,7 @@ var ScaleInChild = React.createClass({
 });
 
 module.exports = ScaleInChild;
-},{"../mixins/style-propable":29,"../styles/auto-prefix":34,"../styles/raw-themes/light-raw-theme":36,"../styles/theme-manager":38,"../styles/transitions":39,"react":"react","react-addons-pure-render-mixin":56,"react-dom":"react-dom"}],42:[function(require,module,exports){
+},{"../mixins/style-propable":81,"../styles/auto-prefix":97,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/transitions":105,"react":"react","react-addons-pure-render-mixin":170,"react-dom":"react-dom"}],148:[function(require,module,exports){
 'use strict';
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
@@ -3038,7 +19711,240 @@ var ScaleIn = React.createClass({
 });
 
 module.exports = ScaleIn;
-},{"../mixins/style-propable":29,"../styles/raw-themes/light-raw-theme":36,"../styles/theme-manager":38,"./scale-in-child":41,"react":"react","react-addons-pure-render-mixin":56,"react-addons-transition-group":57}],43:[function(require,module,exports){
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"./scale-in-child":147,"react":"react","react-addons-pure-render-mixin":170,"react-addons-transition-group":171}],149:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactDOM = require('react-dom');
+var StylePropable = require('../mixins/style-propable');
+var AutoPrefix = require('../styles/auto-prefix');
+var Transitions = require('../styles/transitions');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var SlideInChild = React.createClass({
+  displayName: 'SlideInChild',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  propTypes: {
+    enterDelay: React.PropTypes.number,
+    //This callback is needed bacause
+    //the direction could change when leaving the dom
+    getLeaveDirection: React.PropTypes.func.isRequired
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      enterDelay: 0
+    };
+  },
+
+  componentWillEnter: function componentWillEnter(callback) {
+    var _this = this;
+
+    var style = ReactDOM.findDOMNode(this).style;
+    var x = this.props.direction === 'left' ? '100%' : this.props.direction === 'right' ? '-100%' : '0';
+    var y = this.props.direction === 'up' ? '100%' : this.props.direction === 'down' ? '-100%' : '0';
+
+    style.opacity = '0';
+    AutoPrefix.set(style, 'transform', 'translate3d(' + x + ',' + y + ',0)');
+
+    setTimeout(function () {
+      if (_this.isMounted()) callback();
+    }, this.props.enterDelay);
+  },
+
+  componentDidEnter: function componentDidEnter() {
+    var style = ReactDOM.findDOMNode(this).style;
+    style.opacity = '1';
+    AutoPrefix.set(style, 'transform', 'translate3d(0,0,0)');
+  },
+
+  componentWillLeave: function componentWillLeave(callback) {
+    var _this2 = this;
+
+    var style = ReactDOM.findDOMNode(this).style;
+    var direction = this.props.getLeaveDirection();
+    var x = direction === 'left' ? '-100%' : direction === 'right' ? '100%' : '0';
+    var y = direction === 'up' ? '-100%' : direction === 'down' ? '100%' : '0';
+
+    style.opacity = '0';
+    AutoPrefix.set(style, 'transform', 'translate3d(' + x + ',' + y + ',0)');
+
+    setTimeout(function () {
+      if (_this2.isMounted()) callback();
+    }, 450);
+  },
+
+  render: function render() {
+    var _props = this.props;
+    var children = _props.children;
+    var enterDelay = _props.enterDelay;
+    var getLeaveDirection = _props.getLeaveDirection;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['children', 'enterDelay', 'getLeaveDirection', 'style']);
+
+    var mergedRootStyles = this.prepareStyles({
+      position: 'absolute',
+      height: '100%',
+      width: '100%',
+      top: 0,
+      left: 0,
+      transition: Transitions.easeOut(null, ['transform', 'opacity'])
+    }, style);
+
+    return React.createElement(
+      'div',
+      _extends({}, other, { style: mergedRootStyles }),
+      children
+    );
+  }
+
+});
+
+module.exports = SlideInChild;
+},{"../mixins/style-propable":81,"../styles/auto-prefix":97,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"../styles/transitions":105,"react":"react","react-dom":"react-dom"}],150:[function(require,module,exports){
+'use strict';
+
+var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+
+function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
+
+var React = require('react');
+var ReactTransitionGroup = require('react-addons-transition-group');
+var StylePropable = require('../mixins/style-propable');
+var SlideInChild = require('./slide-in-child');
+var DefaultRawTheme = require('../styles/raw-themes/light-raw-theme');
+var ThemeManager = require('../styles/theme-manager');
+
+var SlideIn = React.createClass({
+  displayName: 'SlideIn',
+
+  mixins: [StylePropable],
+
+  contextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  //for passing default theme context to children
+  childContextTypes: {
+    muiTheme: React.PropTypes.object
+  },
+
+  getChildContext: function getChildContext() {
+    return {
+      muiTheme: this.state.muiTheme
+    };
+  },
+
+  getInitialState: function getInitialState() {
+    return {
+      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
+    };
+  },
+
+  //to update theme inside state whenever a new theme is passed down
+  //from the parent / owner using context
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
+    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
+    this.setState({ muiTheme: newMuiTheme });
+  },
+
+  propTypes: {
+    enterDelay: React.PropTypes.number,
+    childStyle: React.PropTypes.object,
+    direction: React.PropTypes.oneOf(['left', 'right', 'up', 'down'])
+  },
+
+  getDefaultProps: function getDefaultProps() {
+    return {
+      enterDelay: 0,
+      direction: 'left'
+    };
+  },
+
+  render: function render() {
+    var _this = this;
+
+    var _props = this.props;
+    var enterDelay = _props.enterDelay;
+    var children = _props.children;
+    var childStyle = _props.childStyle;
+    var direction = _props.direction;
+    var style = _props.style;
+
+    var other = _objectWithoutProperties(_props, ['enterDelay', 'children', 'childStyle', 'direction', 'style']);
+
+    var mergedRootStyles = this.prepareStyles({
+      position: 'relative',
+      overflow: 'hidden',
+      height: '100%'
+    }, style);
+
+    var newChildren = React.Children.map(children, function (child) {
+      return React.createElement(
+        SlideInChild,
+        {
+          key: child.key,
+          direction: direction,
+          enterDelay: enterDelay,
+          getLeaveDirection: _this._getLeaveDirection,
+          style: childStyle },
+        child
+      );
+    }, this);
+
+    return React.createElement(
+      ReactTransitionGroup,
+      _extends({}, other, {
+        style: mergedRootStyles,
+        component: 'div' }),
+      newChildren
+    );
+  },
+
+  _getLeaveDirection: function _getLeaveDirection() {
+    return this.props.direction;
+  }
+
+});
+
+module.exports = SlideIn;
+},{"../mixins/style-propable":81,"../styles/raw-themes/light-raw-theme":101,"../styles/theme-manager":104,"./slide-in-child":149,"react":"react","react-addons-transition-group":171}],151:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -3080,7 +19986,7 @@ module.exports = {
   }
 
 };
-},{"react":"react","react-addons-create-fragment":55}],44:[function(require,module,exports){
+},{"react":"react","react-addons-create-fragment":169}],152:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -3255,7 +20161,213 @@ module.exports = {
     }
   }
 };
-},{}],45:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
+'use strict';
+
+var Events = require('./events');
+
+module.exports = {
+
+  _testSupportedProps: function _testSupportedProps(props) {
+    var i = undefined,
+        el = document.createElement('div');
+
+    for (i in props) {
+      if (props.hasOwnProperty(i) && el.style[i] !== undefined) {
+        return props[i];
+      }
+    }
+  },
+
+  //Returns the correct event name to use
+  transitionEndEventName: function transitionEndEventName() {
+    return this._testSupportedProps({
+      'transition': 'transitionend',
+      'OTransition': 'otransitionend',
+      'MozTransition': 'transitionend',
+      'WebkitTransition': 'webkitTransitionEnd'
+    });
+  },
+
+  animationEndEventName: function animationEndEventName() {
+    return this._testSupportedProps({
+      'animation': 'animationend',
+      '-o-animation': 'oAnimationEnd',
+      '-moz-animation': 'animationend',
+      '-webkit-animation': 'webkitAnimationEnd'
+    });
+  },
+
+  onTransitionEnd: function onTransitionEnd(el, callback) {
+    var transitionEnd = this.transitionEndEventName();
+
+    Events.once(el, transitionEnd, function () {
+      return callback();
+    });
+  },
+
+  onAnimationEnd: function onAnimationEnd(el, callback) {
+    var animationEnd = this.animationEndEventName();
+
+    Events.once(el, animationEnd, function () {
+      return callback();
+    });
+  }
+};
+},{"./events":156}],154:[function(require,module,exports){
+(function (process){
+'use strict';
+
+var dayList = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+var monthList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+var monthLongList = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+function DateTimeFormat(locale, options) {
+  if (process.env.NODE_ENV !== 'production' && locale !== 'en-US') {
+    console.warn('Wrong usage of DateTimeFormat. The ' + locale + ' locale is not supported.');
+  }
+
+  this.format = function (date) {
+    var output = undefined;
+
+    if (options.month === 'short' && options.weekday === 'short' && options.day === '2-digit') {
+
+      output = dayList[date.getDay()] + ', ';
+      output += monthList[date.getMonth()] + ' ';
+      output += date.getDate();
+    } else if (options.month === 'long' && options.year === 'numeric') {
+
+      output = monthLongList[date.getMonth()];
+      output += ' ' + date.getFullYear();
+    } else if (process.env.NODE_ENV !== 'production') {
+      console.warn('Wrong usage of DateTimeFormat');
+    }
+
+    return output;
+  };
+}
+
+module.exports = {
+  DateTimeFormat: DateTimeFormat,
+
+  addDays: function addDays(d, days) {
+    var newDate = this.clone(d);
+    newDate.setDate(d.getDate() + days);
+    return newDate;
+  },
+
+  addMonths: function addMonths(d, months) {
+    var newDate = this.clone(d);
+    newDate.setMonth(d.getMonth() + months);
+    return newDate;
+  },
+
+  addYears: function addYears(d, years) {
+    var newDate = this.clone(d);
+    newDate.setFullYear(d.getFullYear() + years);
+    return newDate;
+  },
+
+  clone: function clone(d) {
+    return new Date(d.getTime());
+  },
+
+  cloneAsDate: function cloneAsDate(d) {
+    var clonedDate = this.clone(d);
+    clonedDate.setHours(0, 0, 0, 0);
+    return clonedDate;
+  },
+
+  getDaysInMonth: function getDaysInMonth(d) {
+    var resultDate = this.getFirstDayOfMonth(d);
+
+    resultDate.setMonth(resultDate.getMonth() + 1);
+    resultDate.setDate(resultDate.getDate() - 1);
+
+    return resultDate.getDate();
+  },
+
+  getFirstDayOfMonth: function getFirstDayOfMonth(d) {
+    return new Date(d.getFullYear(), d.getMonth(), 1);
+  },
+
+  getWeekArray: function getWeekArray(d) {
+    var dayArray = [];
+    var daysInMonth = this.getDaysInMonth(d);
+    var daysInWeek = undefined;
+    var emptyDays = undefined;
+    var firstDayOfWeek = undefined;
+    var week = undefined;
+    var weekArray = [];
+
+    for (var i = 1; i <= daysInMonth; i++) {
+      dayArray.push(new Date(d.getFullYear(), d.getMonth(), i));
+    }
+
+    while (dayArray.length) {
+      firstDayOfWeek = dayArray[0].getDay();
+      daysInWeek = 7 - firstDayOfWeek;
+      emptyDays = 7 - daysInWeek;
+      week = dayArray.splice(0, daysInWeek);
+
+      for (var i = 0; i < emptyDays; i++) {
+        week.unshift(null);
+      }
+
+      weekArray.push(week);
+    }
+
+    return weekArray;
+  },
+
+  format: function format(date) {
+    var m = date.getMonth() + 1;
+    var d = date.getDate();
+    var y = date.getFullYear();
+    return m + '/' + d + '/' + y;
+  },
+
+  isEqualDate: function isEqualDate(d1, d2) {
+    return d1 && d2 && d1.getFullYear() === d2.getFullYear() && d1.getMonth() === d2.getMonth() && d1.getDate() === d2.getDate();
+  },
+
+  isBeforeDate: function isBeforeDate(d1, d2) {
+    var date1 = this.cloneAsDate(d1);
+    var date2 = this.cloneAsDate(d2);
+
+    return date1.getTime() < date2.getTime();
+  },
+
+  isAfterDate: function isAfterDate(d1, d2) {
+    var date1 = this.cloneAsDate(d1);
+    var date2 = this.cloneAsDate(d2);
+
+    return date1.getTime() > date2.getTime();
+  },
+
+  isBetweenDates: function isBetweenDates(dateToCheck, startDate, endDate) {
+    return !this.isBeforeDate(dateToCheck, startDate) && !this.isAfterDate(dateToCheck, endDate);
+  },
+
+  isDateObject: function isDateObject(d) {
+    return d instanceof Date;
+  },
+
+  monthDiff: function monthDiff(d1, d2) {
+    var m = undefined;
+    m = (d1.getFullYear() - d2.getFullYear()) * 12;
+    m += d1.getMonth();
+    m -= d2.getMonth();
+    return m;
+  },
+
+  yearDiff: function yearDiff(d1, d2) {
+    return ~ ~(this.monthDiff(d1, d2) / 12);
+  }
+
+};
+}).call(this,require('_process'))
+},{"_process":168}],155:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -3328,7 +20440,7 @@ module.exports = {
   }
 
 };
-},{}],46:[function(require,module,exports){
+},{}],156:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -3369,7 +20481,7 @@ module.exports = {
     return ['keydown', 'keypress', 'keyup'].indexOf(e.type) !== -1;
   }
 };
-},{}],47:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 'use strict';
 
 function isObject(obj) {
@@ -3419,7 +20531,7 @@ var extend = function extend(base, override) {
 };
 
 module.exports = extend;
-},{}],48:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -3461,11 +20573,26 @@ module.exports = {
   }
 
 };
-},{"react":"react","react-addons-update":58}],49:[function(require,module,exports){
+},{"react":"react","react-addons-update":172}],159:[function(require,module,exports){
+'use strict';
+
+module.exports = {
+  ColorManipulator: require('./color-manipulator'),
+  CssEvent: require('./css-event'),
+  Dom: require('./dom'),
+  Events: require('./events'),
+  Extend: require('./extend'),
+  ImmutabilityHelper: require('./immutability-helper'),
+  KeyCode: require('./key-code'),
+  KeyLine: require('./key-line'),
+  UniqueId: require('./unique-id'),
+  Styles: require('./styles')
+};
+},{"./color-manipulator":152,"./css-event":153,"./dom":155,"./events":156,"./extend":157,"./immutability-helper":158,"./key-code":161,"./key-line":162,"./styles":166,"./unique-id":167}],160:[function(require,module,exports){
 'use strict';
 
 module.exports = !!(typeof window !== 'undefined' && window.document && window.document.createElement);
-},{}],50:[function(require,module,exports){
+},{}],161:[function(require,module,exports){
 "use strict";
 
 module.exports = {
@@ -3478,7 +20605,23 @@ module.exports = {
   TAB: 9,
   UP: 38
 };
-},{}],51:[function(require,module,exports){
+},{}],162:[function(require,module,exports){
+"use strict";
+
+module.exports = {
+
+  Desktop: {
+    GUTTER: 24,
+    GUTTER_LESS: 16,
+    INCREMENT: 64,
+    MENU_ITEM_HEIGHT: 32
+  },
+
+  getIncrementalDim: function getIncrementalDim(dim) {
+    return Math.ceil(dim / this.Desktop.INCREMENT) * this.Desktop.INCREMENT;
+  }
+};
+},{}],163:[function(require,module,exports){
 /* Modernizr 2.8.3 (Custom Build) | MIT & BSD
  * Build: http://modernizr.com/download/#-borderradius-boxshadow-opacity-csstransforms-csstransforms3d-csstransitions-prefixed-teststyles-testprop-testallprops-prefixes-domprefixes
  */
@@ -3738,7 +20881,7 @@ module.exports = (function (window, document, undefined) {
 
     return Modernizr;
 })(window, window.document);
-},{}],52:[function(require,module,exports){
+},{}],164:[function(require,module,exports){
 'use strict';
 
 var React = require('react');
@@ -3754,7 +20897,43 @@ module.exports = {
   zDepth: React.PropTypes.oneOf([0, 1, 2, 3, 4, 5])
 
 };
-},{"react":"react"}],53:[function(require,module,exports){
+},{"react":"react"}],165:[function(require,module,exports){
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+exports['default'] = shallowEqual;
+
+function shallowEqual(objA, objB) {
+  if (objA === objB) {
+    return true;
+  }
+
+  if (typeof objA !== 'object' || objA === null || typeof objB !== 'object' || objB === null) {
+    return false;
+  }
+
+  var keysA = Object.keys(objA);
+  var keysB = Object.keys(objB);
+
+  if (keysA.length !== keysB.length) {
+    return false;
+  }
+
+  // Test for A's keys different from B.
+  var bHasOwnProperty = Object.prototype.hasOwnProperty.bind(objB);
+  for (var i = 0; i < keysA.length; i++) {
+    if (!bHasOwnProperty(keysA[i]) || objA[keysA[i]] !== objB[keysA[i]]) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+module.exports = exports['default'];
+},{}],166:[function(require,module,exports){
 (function (process){
 'use strict';
 
@@ -3860,7 +21039,17 @@ module.exports = {
   }
 };
 }).call(this,require('_process'))
-},{"../styles/auto-prefix":34,"../utils/immutability-helper":48,"_process":54}],54:[function(require,module,exports){
+},{"../styles/auto-prefix":97,"../utils/immutability-helper":158,"_process":168}],167:[function(require,module,exports){
+"use strict";
+
+var index = 0;
+
+module.exports = {
+  generate: function generate() {
+    return "mui-id-" + index++;
+  }
+};
+},{}],168:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -3953,15 +21142,232 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],55:[function(require,module,exports){
+},{}],169:[function(require,module,exports){
 module.exports = require('react/lib/ReactFragment').create;
-},{"react/lib/ReactFragment":118}],56:[function(require,module,exports){
+},{"react/lib/ReactFragment":235}],170:[function(require,module,exports){
 module.exports = require('react/lib/ReactComponentWithPureRenderMixin');
-},{"react/lib/ReactComponentWithPureRenderMixin":91}],57:[function(require,module,exports){
+},{"react/lib/ReactComponentWithPureRenderMixin":208}],171:[function(require,module,exports){
 module.exports = require('react/lib/ReactTransitionGroup');
-},{"react/lib/ReactTransitionGroup":143}],58:[function(require,module,exports){
+},{"react/lib/ReactTransitionGroup":260}],172:[function(require,module,exports){
 module.exports = require('react/lib/update');
-},{"react/lib/update":191}],59:[function(require,module,exports){
+},{"react/lib/update":308}],173:[function(require,module,exports){
+arguments[4][20][0].apply(exports,arguments)
+},{"dup":20}],174:[function(require,module,exports){
+/**
+ * Copyright 2013-2014 Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @providesModule TapEventPlugin
+ * @typechecks static-only
+ */
+
+"use strict";
+
+var EventConstants = require('react/lib/EventConstants');
+var EventPluginUtils = require('react/lib/EventPluginUtils');
+var EventPropagators = require('react/lib/EventPropagators');
+var SyntheticUIEvent = require('react/lib/SyntheticUIEvent');
+var TouchEventUtils = require('./TouchEventUtils');
+var ViewportMetrics = require('react/lib/ViewportMetrics');
+
+var keyOf = require('fbjs/lib/keyOf');
+var topLevelTypes = EventConstants.topLevelTypes;
+
+var isStartish = EventPluginUtils.isStartish;
+var isEndish = EventPluginUtils.isEndish;
+
+var isTouch = function(topLevelType) {
+  var touchTypes = [
+    topLevelTypes.topTouchCancel,
+    topLevelTypes.topTouchEnd,
+    topLevelTypes.topTouchStart,
+    topLevelTypes.topTouchMove
+  ];
+  return touchTypes.indexOf(topLevelType) >= 0;
+}
+
+/**
+ * Number of pixels that are tolerated in between a `touchStart` and `touchEnd`
+ * in order to still be considered a 'tap' event.
+ */
+var tapMoveThreshold = 10;
+var ignoreMouseThreshold = 750;
+var startCoords = {x: null, y: null};
+var lastTouchEvent = null;
+
+var Axis = {
+  x: {page: 'pageX', client: 'clientX', envScroll: 'currentPageScrollLeft'},
+  y: {page: 'pageY', client: 'clientY', envScroll: 'currentPageScrollTop'}
+};
+
+function getAxisCoordOfEvent(axis, nativeEvent) {
+  var singleTouch = TouchEventUtils.extractSingleTouch(nativeEvent);
+  if (singleTouch) {
+    return singleTouch[axis.page];
+  }
+  return axis.page in nativeEvent ?
+    nativeEvent[axis.page] :
+    nativeEvent[axis.client] + ViewportMetrics[axis.envScroll];
+}
+
+function getDistance(coords, nativeEvent) {
+  var pageX = getAxisCoordOfEvent(Axis.x, nativeEvent);
+  var pageY = getAxisCoordOfEvent(Axis.y, nativeEvent);
+  return Math.pow(
+    Math.pow(pageX - coords.x, 2) + Math.pow(pageY - coords.y, 2),
+    0.5
+  );
+}
+
+var touchEvents = [
+  topLevelTypes.topTouchStart,
+  topLevelTypes.topTouchCancel,
+  topLevelTypes.topTouchEnd,
+  topLevelTypes.topTouchMove,
+];
+
+var dependencies = [
+  topLevelTypes.topMouseDown,
+  topLevelTypes.topMouseMove,
+  topLevelTypes.topMouseUp,
+].concat(touchEvents);
+
+var eventTypes = {
+  touchTap: {
+    phasedRegistrationNames: {
+      bubbled: keyOf({onTouchTap: null}),
+      captured: keyOf({onTouchTapCapture: null})
+    },
+    dependencies: dependencies
+  }
+};
+
+var now = (function() {
+  if (Date.now) {
+    return Date.now;
+  } else {
+    // IE8 support: http://stackoverflow.com/questions/9430357/please-explain-why-and-how-new-date-works-as-workaround-for-date-now-in
+    return function () {
+      return +new Date;
+    }
+  }
+})();
+
+var TapEventPlugin = {
+
+  tapMoveThreshold: tapMoveThreshold,
+
+  ignoreMouseThreshold: ignoreMouseThreshold,
+
+  eventTypes: eventTypes,
+
+  /**
+   * @param {string} topLevelType Record from `EventConstants`.
+   * @param {DOMEventTarget} topLevelTarget The listening component root node.
+   * @param {string} topLevelTargetID ID of `topLevelTarget`.
+   * @param {object} nativeEvent Native browser event.
+   * @return {*} An accumulation of synthetic events.
+   * @see {EventPluginHub.extractEvents}
+   */
+  extractEvents: function(
+      topLevelType,
+      topLevelTarget,
+      topLevelTargetID,
+      nativeEvent,
+      nativeEventTarget) {
+
+    if (isTouch(topLevelType)) {
+      lastTouchEvent = now();
+    } else {
+      if (lastTouchEvent && (now() - lastTouchEvent) < ignoreMouseThreshold) {
+        return null;
+      }
+    }
+
+    if (!isStartish(topLevelType) && !isEndish(topLevelType)) {
+      return null;
+    }
+    var event = null;
+    var distance = getDistance(startCoords, nativeEvent);
+    if (isEndish(topLevelType) && distance < tapMoveThreshold) {
+      event = SyntheticUIEvent.getPooled(
+        eventTypes.touchTap,
+        topLevelTargetID,
+        nativeEvent,
+        nativeEventTarget
+      );
+    }
+    if (isStartish(topLevelType)) {
+      startCoords.x = getAxisCoordOfEvent(Axis.x, nativeEvent);
+      startCoords.y = getAxisCoordOfEvent(Axis.y, nativeEvent);
+    } else if (isEndish(topLevelType)) {
+      startCoords.x = 0;
+      startCoords.y = 0;
+    }
+    EventPropagators.accumulateTwoPhaseDispatches(event);
+    return event;
+  }
+
+};
+
+module.exports = TapEventPlugin;
+
+},{"./TouchEventUtils":175,"fbjs/lib/keyOf":173,"react/lib/EventConstants":189,"react/lib/EventPluginUtils":192,"react/lib/EventPropagators":193,"react/lib/SyntheticUIEvent":277,"react/lib/ViewportMetrics":280}],175:[function(require,module,exports){
+/**
+ * Copyright 2013-2014 Facebook, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * @providesModule TouchEventUtils
+ */
+
+var TouchEventUtils = {
+  /**
+   * Utility function for common case of extracting out the primary touch from a
+   * touch event.
+   * - `touchEnd` events usually do not have the `touches` property.
+   *   http://stackoverflow.com/questions/3666929/
+   *   mobile-sarai-touchend-event-not-firing-when-last-touch-is-removed
+   *
+   * @param {Event} nativeEvent Native event that may or may not be a touch.
+   * @return {TouchesObject?} an object with pageX and pageY or null.
+   */
+  extractSingleTouch: function(nativeEvent) {
+    var touches = nativeEvent.touches;
+    var changedTouches = nativeEvent.changedTouches;
+    var hasTouches = touches && touches.length > 0;
+    var hasChangedTouches = changedTouches && changedTouches.length > 0;
+
+    return !hasTouches && hasChangedTouches ? changedTouches[0] :
+           hasTouches ? touches[0] :
+           nativeEvent;
+  }
+};
+
+module.exports = TouchEventUtils;
+
+},{}],176:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -3998,7 +21404,7 @@ var AutoFocusUtils = {
 };
 
 module.exports = AutoFocusUtils;
-},{"./ReactMount":125,"./findDOMNode":170,"fbjs/lib/focusNode":10}],60:[function(require,module,exports){
+},{"./ReactMount":242,"./findDOMNode":287,"fbjs/lib/focusNode":10}],177:[function(require,module,exports){
 /**
  * Copyright 2013-2015 Facebook, Inc.
  * All rights reserved.
@@ -4404,7 +21810,7 @@ var BeforeInputEventPlugin = {
 };
 
 module.exports = BeforeInputEventPlugin;
-},{"./EventConstants":72,"./EventPropagators":76,"./FallbackCompositionState":77,"./SyntheticCompositionEvent":152,"./SyntheticInputEvent":156,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/keyOf":20}],61:[function(require,module,exports){
+},{"./EventConstants":189,"./EventPropagators":193,"./FallbackCompositionState":194,"./SyntheticCompositionEvent":269,"./SyntheticInputEvent":273,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/keyOf":20}],178:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -4544,7 +21950,7 @@ var CSSProperty = {
 };
 
 module.exports = CSSProperty;
-},{}],62:[function(require,module,exports){
+},{}],179:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -4722,7 +22128,7 @@ ReactPerf.measureMethods(CSSPropertyOperations, 'CSSPropertyOperations', {
 
 module.exports = CSSPropertyOperations;
 }).call(this,require('_process'))
-},{"./CSSProperty":61,"./ReactPerf":131,"./dangerousStyleValue":167,"_process":54,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/camelizeStyleName":4,"fbjs/lib/hyphenateStyleName":15,"fbjs/lib/memoizeStringOnly":22,"fbjs/lib/warning":27}],63:[function(require,module,exports){
+},{"./CSSProperty":178,"./ReactPerf":248,"./dangerousStyleValue":284,"_process":168,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/camelizeStyleName":4,"fbjs/lib/hyphenateStyleName":15,"fbjs/lib/memoizeStringOnly":22,"fbjs/lib/warning":27}],180:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -4818,7 +22224,7 @@ PooledClass.addPoolingTo(CallbackQueue);
 
 module.exports = CallbackQueue;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"./PooledClass":81,"_process":54,"fbjs/lib/invariant":16}],64:[function(require,module,exports){
+},{"./Object.assign":197,"./PooledClass":198,"_process":168,"fbjs/lib/invariant":16}],181:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5140,7 +22546,7 @@ var ChangeEventPlugin = {
 };
 
 module.exports = ChangeEventPlugin;
-},{"./EventConstants":72,"./EventPluginHub":73,"./EventPropagators":76,"./ReactUpdates":145,"./SyntheticEvent":154,"./getEventTarget":176,"./isEventSupported":181,"./isTextInputElement":182,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/keyOf":20}],65:[function(require,module,exports){
+},{"./EventConstants":189,"./EventPluginHub":190,"./EventPropagators":193,"./ReactUpdates":262,"./SyntheticEvent":271,"./getEventTarget":293,"./isEventSupported":298,"./isTextInputElement":299,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/keyOf":20}],182:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5164,7 +22570,7 @@ var ClientReactRootIndex = {
 };
 
 module.exports = ClientReactRootIndex;
-},{}],66:[function(require,module,exports){
+},{}],183:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5296,7 +22702,7 @@ ReactPerf.measureMethods(DOMChildrenOperations, 'DOMChildrenOperations', {
 
 module.exports = DOMChildrenOperations;
 }).call(this,require('_process'))
-},{"./Danger":69,"./ReactMultiChildUpdateTypes":127,"./ReactPerf":131,"./setInnerHTML":186,"./setTextContent":187,"_process":54,"fbjs/lib/invariant":16}],67:[function(require,module,exports){
+},{"./Danger":186,"./ReactMultiChildUpdateTypes":244,"./ReactPerf":248,"./setInnerHTML":303,"./setTextContent":304,"_process":168,"fbjs/lib/invariant":16}],184:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5533,7 +22939,7 @@ var DOMProperty = {
 
 module.exports = DOMProperty;
 }).call(this,require('_process'))
-},{"_process":54,"fbjs/lib/invariant":16}],68:[function(require,module,exports){
+},{"_process":168,"fbjs/lib/invariant":16}],185:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5761,7 +23167,7 @@ ReactPerf.measureMethods(DOMPropertyOperations, 'DOMPropertyOperations', {
 
 module.exports = DOMPropertyOperations;
 }).call(this,require('_process'))
-},{"./DOMProperty":67,"./ReactPerf":131,"./quoteAttributeValueForBrowser":184,"_process":54,"fbjs/lib/warning":27}],69:[function(require,module,exports){
+},{"./DOMProperty":184,"./ReactPerf":248,"./quoteAttributeValueForBrowser":301,"_process":168,"fbjs/lib/warning":27}],186:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -5909,7 +23315,7 @@ var Danger = {
 
 module.exports = Danger;
 }).call(this,require('_process'))
-},{"_process":54,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/createNodesFromMarkup":7,"fbjs/lib/emptyFunction":8,"fbjs/lib/getMarkupWrap":12,"fbjs/lib/invariant":16}],70:[function(require,module,exports){
+},{"_process":168,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/createNodesFromMarkup":7,"fbjs/lib/emptyFunction":8,"fbjs/lib/getMarkupWrap":12,"fbjs/lib/invariant":16}],187:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -5937,7 +23343,7 @@ var keyOf = require('fbjs/lib/keyOf');
 var DefaultEventPluginOrder = [keyOf({ ResponderEventPlugin: null }), keyOf({ SimpleEventPlugin: null }), keyOf({ TapEventPlugin: null }), keyOf({ EnterLeaveEventPlugin: null }), keyOf({ ChangeEventPlugin: null }), keyOf({ SelectEventPlugin: null }), keyOf({ BeforeInputEventPlugin: null })];
 
 module.exports = DefaultEventPluginOrder;
-},{"fbjs/lib/keyOf":20}],71:[function(require,module,exports){
+},{"fbjs/lib/keyOf":20}],188:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -6062,7 +23468,7 @@ var EnterLeaveEventPlugin = {
 };
 
 module.exports = EnterLeaveEventPlugin;
-},{"./EventConstants":72,"./EventPropagators":76,"./ReactMount":125,"./SyntheticMouseEvent":158,"fbjs/lib/keyOf":20}],72:[function(require,module,exports){
+},{"./EventConstants":189,"./EventPropagators":193,"./ReactMount":242,"./SyntheticMouseEvent":275,"fbjs/lib/keyOf":20}],189:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -6155,7 +23561,7 @@ var EventConstants = {
 };
 
 module.exports = EventConstants;
-},{"fbjs/lib/keyMirror":19}],73:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":19}],190:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6437,7 +23843,7 @@ var EventPluginHub = {
 
 module.exports = EventPluginHub;
 }).call(this,require('_process'))
-},{"./EventPluginRegistry":74,"./EventPluginUtils":75,"./ReactErrorUtils":115,"./accumulateInto":164,"./forEachAccumulated":172,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],74:[function(require,module,exports){
+},{"./EventPluginRegistry":191,"./EventPluginUtils":192,"./ReactErrorUtils":232,"./accumulateInto":281,"./forEachAccumulated":289,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],191:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6660,7 +24066,7 @@ var EventPluginRegistry = {
 
 module.exports = EventPluginRegistry;
 }).call(this,require('_process'))
-},{"_process":54,"fbjs/lib/invariant":16}],75:[function(require,module,exports){
+},{"_process":168,"fbjs/lib/invariant":16}],192:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -6865,7 +24271,7 @@ var EventPluginUtils = {
 
 module.exports = EventPluginUtils;
 }).call(this,require('_process'))
-},{"./EventConstants":72,"./ReactErrorUtils":115,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],76:[function(require,module,exports){
+},{"./EventConstants":189,"./ReactErrorUtils":232,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],193:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7003,7 +24409,7 @@ var EventPropagators = {
 
 module.exports = EventPropagators;
 }).call(this,require('_process'))
-},{"./EventConstants":72,"./EventPluginHub":73,"./accumulateInto":164,"./forEachAccumulated":172,"_process":54,"fbjs/lib/warning":27}],77:[function(require,module,exports){
+},{"./EventConstants":189,"./EventPluginHub":190,"./accumulateInto":281,"./forEachAccumulated":289,"_process":168,"fbjs/lib/warning":27}],194:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -7099,7 +24505,7 @@ assign(FallbackCompositionState.prototype, {
 PooledClass.addPoolingTo(FallbackCompositionState);
 
 module.exports = FallbackCompositionState;
-},{"./Object.assign":80,"./PooledClass":81,"./getTextContentAccessor":179}],78:[function(require,module,exports){
+},{"./Object.assign":197,"./PooledClass":198,"./getTextContentAccessor":296}],195:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -7330,7 +24736,7 @@ var HTMLDOMPropertyConfig = {
 };
 
 module.exports = HTMLDOMPropertyConfig;
-},{"./DOMProperty":67,"fbjs/lib/ExecutionEnvironment":2}],79:[function(require,module,exports){
+},{"./DOMProperty":184,"fbjs/lib/ExecutionEnvironment":2}],196:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7467,7 +24873,7 @@ var LinkedValueUtils = {
 
 module.exports = LinkedValueUtils;
 }).call(this,require('_process'))
-},{"./ReactPropTypeLocations":133,"./ReactPropTypes":134,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],80:[function(require,module,exports){
+},{"./ReactPropTypeLocations":250,"./ReactPropTypes":251,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],197:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -7515,7 +24921,7 @@ function assign(target, sources) {
 }
 
 module.exports = assign;
-},{}],81:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7637,7 +25043,7 @@ var PooledClass = {
 
 module.exports = PooledClass;
 }).call(this,require('_process'))
-},{"_process":54,"fbjs/lib/invariant":16}],82:[function(require,module,exports){
+},{"_process":168,"fbjs/lib/invariant":16}],199:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -7677,7 +25083,7 @@ assign(React, {
 React.__SECRET_DOM_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = ReactDOM;
 
 module.exports = React;
-},{"./Object.assign":80,"./ReactDOM":94,"./ReactDOMServer":104,"./ReactIsomorphic":123,"./deprecated":168}],83:[function(require,module,exports){
+},{"./Object.assign":197,"./ReactDOM":211,"./ReactDOMServer":221,"./ReactIsomorphic":240,"./deprecated":285}],200:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -7716,7 +25122,7 @@ var ReactBrowserComponentMixin = {
 
 module.exports = ReactBrowserComponentMixin;
 }).call(this,require('_process'))
-},{"./ReactInstanceMap":122,"./findDOMNode":170,"_process":54,"fbjs/lib/warning":27}],84:[function(require,module,exports){
+},{"./ReactInstanceMap":239,"./findDOMNode":287,"_process":168,"fbjs/lib/warning":27}],201:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -8041,7 +25447,7 @@ ReactPerf.measureMethods(ReactBrowserEventEmitter, 'ReactBrowserEventEmitter', {
 });
 
 module.exports = ReactBrowserEventEmitter;
-},{"./EventConstants":72,"./EventPluginHub":73,"./EventPluginRegistry":74,"./Object.assign":80,"./ReactEventEmitterMixin":116,"./ReactPerf":131,"./ViewportMetrics":163,"./isEventSupported":181}],85:[function(require,module,exports){
+},{"./EventConstants":189,"./EventPluginHub":190,"./EventPluginRegistry":191,"./Object.assign":197,"./ReactEventEmitterMixin":233,"./ReactPerf":248,"./ViewportMetrics":280,"./isEventSupported":298}],202:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -8166,7 +25572,7 @@ var ReactChildReconciler = {
 
 module.exports = ReactChildReconciler;
 }).call(this,require('_process'))
-},{"./ReactReconciler":136,"./instantiateReactComponent":180,"./shouldUpdateReactComponent":189,"./traverseAllChildren":190,"_process":54,"fbjs/lib/warning":27}],86:[function(require,module,exports){
+},{"./ReactReconciler":253,"./instantiateReactComponent":297,"./shouldUpdateReactComponent":306,"./traverseAllChildren":307,"_process":168,"fbjs/lib/warning":27}],203:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -8349,7 +25755,7 @@ var ReactChildren = {
 };
 
 module.exports = ReactChildren;
-},{"./PooledClass":81,"./ReactElement":111,"./traverseAllChildren":190,"fbjs/lib/emptyFunction":8}],87:[function(require,module,exports){
+},{"./PooledClass":198,"./ReactElement":228,"./traverseAllChildren":307,"fbjs/lib/emptyFunction":8}],204:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -9123,7 +26529,7 @@ var ReactClass = {
 
 module.exports = ReactClass;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"./ReactComponent":88,"./ReactElement":111,"./ReactNoopUpdateQueue":129,"./ReactPropTypeLocationNames":132,"./ReactPropTypeLocations":133,"_process":54,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/keyMirror":19,"fbjs/lib/keyOf":20,"fbjs/lib/warning":27}],88:[function(require,module,exports){
+},{"./Object.assign":197,"./ReactComponent":205,"./ReactElement":228,"./ReactNoopUpdateQueue":246,"./ReactPropTypeLocationNames":249,"./ReactPropTypeLocations":250,"_process":168,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/keyMirror":19,"fbjs/lib/keyOf":20,"fbjs/lib/warning":27}],205:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -9248,7 +26654,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = ReactComponent;
 }).call(this,require('_process'))
-},{"./ReactNoopUpdateQueue":129,"./canDefineProperty":166,"_process":54,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],89:[function(require,module,exports){
+},{"./ReactNoopUpdateQueue":246,"./canDefineProperty":283,"_process":168,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],206:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -9290,7 +26696,7 @@ var ReactComponentBrowserEnvironment = {
 };
 
 module.exports = ReactComponentBrowserEnvironment;
-},{"./ReactDOMIDOperations":99,"./ReactMount":125}],90:[function(require,module,exports){
+},{"./ReactDOMIDOperations":216,"./ReactMount":242}],207:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -9344,7 +26750,7 @@ var ReactComponentEnvironment = {
 
 module.exports = ReactComponentEnvironment;
 }).call(this,require('_process'))
-},{"_process":54,"fbjs/lib/invariant":16}],91:[function(require,module,exports){
+},{"_process":168,"fbjs/lib/invariant":16}],208:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -9391,7 +26797,7 @@ var ReactComponentWithPureRenderMixin = {
 };
 
 module.exports = ReactComponentWithPureRenderMixin;
-},{"./shallowCompare":188}],92:[function(require,module,exports){
+},{"./shallowCompare":305}],209:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -10088,7 +27494,7 @@ var ReactCompositeComponent = {
 
 module.exports = ReactCompositeComponent;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"./ReactComponentEnvironment":90,"./ReactCurrentOwner":93,"./ReactElement":111,"./ReactInstanceMap":122,"./ReactPerf":131,"./ReactPropTypeLocationNames":132,"./ReactPropTypeLocations":133,"./ReactReconciler":136,"./ReactUpdateQueue":144,"./shouldUpdateReactComponent":189,"_process":54,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],93:[function(require,module,exports){
+},{"./Object.assign":197,"./ReactComponentEnvironment":207,"./ReactCurrentOwner":210,"./ReactElement":228,"./ReactInstanceMap":239,"./ReactPerf":248,"./ReactPropTypeLocationNames":249,"./ReactPropTypeLocations":250,"./ReactReconciler":253,"./ReactUpdateQueue":261,"./shouldUpdateReactComponent":306,"_process":168,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],210:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -10119,7 +27525,7 @@ var ReactCurrentOwner = {
 };
 
 module.exports = ReactCurrentOwner;
-},{}],94:[function(require,module,exports){
+},{}],211:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -10214,7 +27620,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = React;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":93,"./ReactDOMTextComponent":105,"./ReactDefaultInjection":108,"./ReactInstanceHandles":121,"./ReactMount":125,"./ReactPerf":131,"./ReactReconciler":136,"./ReactUpdates":145,"./ReactVersion":146,"./findDOMNode":170,"./renderSubtreeIntoContainer":185,"_process":54,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/warning":27}],95:[function(require,module,exports){
+},{"./ReactCurrentOwner":210,"./ReactDOMTextComponent":222,"./ReactDefaultInjection":225,"./ReactInstanceHandles":238,"./ReactMount":242,"./ReactPerf":248,"./ReactReconciler":253,"./ReactUpdates":262,"./ReactVersion":263,"./findDOMNode":287,"./renderSubtreeIntoContainer":302,"_process":168,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/warning":27}],212:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -10265,7 +27671,7 @@ var ReactDOMButton = {
 };
 
 module.exports = ReactDOMButton;
-},{}],96:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -11230,7 +28636,7 @@ assign(ReactDOMComponent.prototype, ReactDOMComponent.Mixin, ReactMultiChild.Mix
 
 module.exports = ReactDOMComponent;
 }).call(this,require('_process'))
-},{"./AutoFocusUtils":59,"./CSSPropertyOperations":62,"./DOMProperty":67,"./DOMPropertyOperations":68,"./EventConstants":72,"./Object.assign":80,"./ReactBrowserEventEmitter":84,"./ReactComponentBrowserEnvironment":89,"./ReactDOMButton":95,"./ReactDOMInput":100,"./ReactDOMOption":101,"./ReactDOMSelect":102,"./ReactDOMTextarea":106,"./ReactMount":125,"./ReactMultiChild":126,"./ReactPerf":131,"./ReactUpdateQueue":144,"./canDefineProperty":166,"./escapeTextContentForBrowser":169,"./isEventSupported":181,"./setInnerHTML":186,"./setTextContent":187,"./validateDOMNesting":192,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/keyOf":20,"fbjs/lib/shallowEqual":25,"fbjs/lib/warning":27}],97:[function(require,module,exports){
+},{"./AutoFocusUtils":176,"./CSSPropertyOperations":179,"./DOMProperty":184,"./DOMPropertyOperations":185,"./EventConstants":189,"./Object.assign":197,"./ReactBrowserEventEmitter":201,"./ReactComponentBrowserEnvironment":206,"./ReactDOMButton":212,"./ReactDOMInput":217,"./ReactDOMOption":218,"./ReactDOMSelect":219,"./ReactDOMTextarea":223,"./ReactMount":242,"./ReactMultiChild":243,"./ReactPerf":248,"./ReactUpdateQueue":261,"./canDefineProperty":283,"./escapeTextContentForBrowser":286,"./isEventSupported":298,"./setInnerHTML":303,"./setTextContent":304,"./validateDOMNesting":309,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/keyOf":20,"fbjs/lib/shallowEqual":25,"fbjs/lib/warning":27}],214:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -11410,7 +28816,7 @@ var ReactDOMFactories = mapObject({
 
 module.exports = ReactDOMFactories;
 }).call(this,require('_process'))
-},{"./ReactElement":111,"./ReactElementValidator":112,"_process":54,"fbjs/lib/mapObject":21}],98:[function(require,module,exports){
+},{"./ReactElement":228,"./ReactElementValidator":229,"_process":168,"fbjs/lib/mapObject":21}],215:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -11429,7 +28835,7 @@ var ReactDOMFeatureFlags = {
 };
 
 module.exports = ReactDOMFeatureFlags;
-},{}],99:[function(require,module,exports){
+},{}],216:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -11526,7 +28932,7 @@ ReactPerf.measureMethods(ReactDOMIDOperations, 'ReactDOMIDOperations', {
 
 module.exports = ReactDOMIDOperations;
 }).call(this,require('_process'))
-},{"./DOMChildrenOperations":66,"./DOMPropertyOperations":68,"./ReactMount":125,"./ReactPerf":131,"_process":54,"fbjs/lib/invariant":16}],100:[function(require,module,exports){
+},{"./DOMChildrenOperations":183,"./DOMPropertyOperations":185,"./ReactMount":242,"./ReactPerf":248,"_process":168,"fbjs/lib/invariant":16}],217:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -11682,7 +29088,7 @@ function _handleChange(event) {
 
 module.exports = ReactDOMInput;
 }).call(this,require('_process'))
-},{"./LinkedValueUtils":79,"./Object.assign":80,"./ReactDOMIDOperations":99,"./ReactMount":125,"./ReactUpdates":145,"_process":54,"fbjs/lib/invariant":16}],101:[function(require,module,exports){
+},{"./LinkedValueUtils":196,"./Object.assign":197,"./ReactDOMIDOperations":216,"./ReactMount":242,"./ReactUpdates":262,"_process":168,"fbjs/lib/invariant":16}],218:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -11771,7 +29177,7 @@ var ReactDOMOption = {
 
 module.exports = ReactDOMOption;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"./ReactChildren":86,"./ReactDOMSelect":102,"_process":54,"fbjs/lib/warning":27}],102:[function(require,module,exports){
+},{"./Object.assign":197,"./ReactChildren":203,"./ReactDOMSelect":219,"_process":168,"fbjs/lib/warning":27}],219:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -11962,7 +29368,7 @@ function _handleChange(event) {
 
 module.exports = ReactDOMSelect;
 }).call(this,require('_process'))
-},{"./LinkedValueUtils":79,"./Object.assign":80,"./ReactMount":125,"./ReactUpdates":145,"_process":54,"fbjs/lib/warning":27}],103:[function(require,module,exports){
+},{"./LinkedValueUtils":196,"./Object.assign":197,"./ReactMount":242,"./ReactUpdates":262,"_process":168,"fbjs/lib/warning":27}],220:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -12175,7 +29581,7 @@ var ReactDOMSelection = {
 };
 
 module.exports = ReactDOMSelection;
-},{"./getNodeForCharacterOffset":178,"./getTextContentAccessor":179,"fbjs/lib/ExecutionEnvironment":2}],104:[function(require,module,exports){
+},{"./getNodeForCharacterOffset":295,"./getTextContentAccessor":296,"fbjs/lib/ExecutionEnvironment":2}],221:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -12202,7 +29608,7 @@ var ReactDOMServer = {
 };
 
 module.exports = ReactDOMServer;
-},{"./ReactDefaultInjection":108,"./ReactServerRendering":140,"./ReactVersion":146}],105:[function(require,module,exports){
+},{"./ReactDefaultInjection":225,"./ReactServerRendering":257,"./ReactVersion":263}],222:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12332,7 +29738,7 @@ assign(ReactDOMTextComponent.prototype, {
 
 module.exports = ReactDOMTextComponent;
 }).call(this,require('_process'))
-},{"./DOMChildrenOperations":66,"./DOMPropertyOperations":68,"./Object.assign":80,"./ReactComponentBrowserEnvironment":89,"./ReactMount":125,"./escapeTextContentForBrowser":169,"./setTextContent":187,"./validateDOMNesting":192,"_process":54}],106:[function(require,module,exports){
+},{"./DOMChildrenOperations":183,"./DOMPropertyOperations":185,"./Object.assign":197,"./ReactComponentBrowserEnvironment":206,"./ReactMount":242,"./escapeTextContentForBrowser":286,"./setTextContent":304,"./validateDOMNesting":309,"_process":168}],223:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12448,7 +29854,7 @@ function _handleChange(event) {
 
 module.exports = ReactDOMTextarea;
 }).call(this,require('_process'))
-},{"./LinkedValueUtils":79,"./Object.assign":80,"./ReactDOMIDOperations":99,"./ReactUpdates":145,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],107:[function(require,module,exports){
+},{"./LinkedValueUtils":196,"./Object.assign":197,"./ReactDOMIDOperations":216,"./ReactUpdates":262,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],224:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -12516,7 +29922,7 @@ var ReactDefaultBatchingStrategy = {
 };
 
 module.exports = ReactDefaultBatchingStrategy;
-},{"./Object.assign":80,"./ReactUpdates":145,"./Transaction":162,"fbjs/lib/emptyFunction":8}],108:[function(require,module,exports){
+},{"./Object.assign":197,"./ReactUpdates":262,"./Transaction":279,"fbjs/lib/emptyFunction":8}],225:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -12616,7 +30022,7 @@ module.exports = {
   inject: inject
 };
 }).call(this,require('_process'))
-},{"./BeforeInputEventPlugin":60,"./ChangeEventPlugin":64,"./ClientReactRootIndex":65,"./DefaultEventPluginOrder":70,"./EnterLeaveEventPlugin":71,"./HTMLDOMPropertyConfig":78,"./ReactBrowserComponentMixin":83,"./ReactComponentBrowserEnvironment":89,"./ReactDOMComponent":96,"./ReactDOMTextComponent":105,"./ReactDefaultBatchingStrategy":107,"./ReactDefaultPerf":109,"./ReactEventListener":117,"./ReactInjection":119,"./ReactInstanceHandles":121,"./ReactMount":125,"./ReactReconcileTransaction":135,"./SVGDOMPropertyConfig":147,"./SelectEventPlugin":148,"./ServerReactRootIndex":149,"./SimpleEventPlugin":150,"_process":54,"fbjs/lib/ExecutionEnvironment":2}],109:[function(require,module,exports){
+},{"./BeforeInputEventPlugin":177,"./ChangeEventPlugin":181,"./ClientReactRootIndex":182,"./DefaultEventPluginOrder":187,"./EnterLeaveEventPlugin":188,"./HTMLDOMPropertyConfig":195,"./ReactBrowserComponentMixin":200,"./ReactComponentBrowserEnvironment":206,"./ReactDOMComponent":213,"./ReactDOMTextComponent":222,"./ReactDefaultBatchingStrategy":224,"./ReactDefaultPerf":226,"./ReactEventListener":234,"./ReactInjection":236,"./ReactInstanceHandles":238,"./ReactMount":242,"./ReactReconcileTransaction":252,"./SVGDOMPropertyConfig":264,"./SelectEventPlugin":265,"./ServerReactRootIndex":266,"./SimpleEventPlugin":267,"_process":168,"fbjs/lib/ExecutionEnvironment":2}],226:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -12854,7 +30260,7 @@ var ReactDefaultPerf = {
 };
 
 module.exports = ReactDefaultPerf;
-},{"./DOMProperty":67,"./ReactDefaultPerfAnalysis":110,"./ReactMount":125,"./ReactPerf":131,"fbjs/lib/performanceNow":24}],110:[function(require,module,exports){
+},{"./DOMProperty":184,"./ReactDefaultPerfAnalysis":227,"./ReactMount":242,"./ReactPerf":248,"fbjs/lib/performanceNow":24}],227:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -13054,7 +30460,7 @@ var ReactDefaultPerfAnalysis = {
 };
 
 module.exports = ReactDefaultPerfAnalysis;
-},{"./Object.assign":80}],111:[function(require,module,exports){
+},{"./Object.assign":197}],228:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -13304,7 +30710,7 @@ ReactElement.isValidElement = function (object) {
 
 module.exports = ReactElement;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"./ReactCurrentOwner":93,"./canDefineProperty":166,"_process":54}],112:[function(require,module,exports){
+},{"./Object.assign":197,"./ReactCurrentOwner":210,"./canDefineProperty":283,"_process":168}],229:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -13588,7 +30994,7 @@ var ReactElementValidator = {
 
 module.exports = ReactElementValidator;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":93,"./ReactElement":111,"./ReactPropTypeLocationNames":132,"./ReactPropTypeLocations":133,"./canDefineProperty":166,"./getIteratorFn":177,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],113:[function(require,module,exports){
+},{"./ReactCurrentOwner":210,"./ReactElement":228,"./ReactPropTypeLocationNames":249,"./ReactPropTypeLocations":250,"./canDefineProperty":283,"./getIteratorFn":294,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],230:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -13640,7 +31046,7 @@ assign(ReactEmptyComponent.prototype, {
 ReactEmptyComponent.injection = ReactEmptyComponentInjection;
 
 module.exports = ReactEmptyComponent;
-},{"./Object.assign":80,"./ReactElement":111,"./ReactEmptyComponentRegistry":114,"./ReactReconciler":136}],114:[function(require,module,exports){
+},{"./Object.assign":197,"./ReactElement":228,"./ReactEmptyComponentRegistry":231,"./ReactReconciler":253}],231:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -13689,7 +31095,7 @@ var ReactEmptyComponentRegistry = {
 };
 
 module.exports = ReactEmptyComponentRegistry;
-},{}],115:[function(require,module,exports){
+},{}],232:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -13769,7 +31175,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = ReactErrorUtils;
 }).call(this,require('_process'))
-},{"_process":54}],116:[function(require,module,exports){
+},{"_process":168}],233:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -13808,7 +31214,7 @@ var ReactEventEmitterMixin = {
 };
 
 module.exports = ReactEventEmitterMixin;
-},{"./EventPluginHub":73}],117:[function(require,module,exports){
+},{"./EventPluginHub":190}],234:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14020,7 +31426,7 @@ var ReactEventListener = {
 };
 
 module.exports = ReactEventListener;
-},{"./Object.assign":80,"./PooledClass":81,"./ReactInstanceHandles":121,"./ReactMount":125,"./ReactUpdates":145,"./getEventTarget":176,"fbjs/lib/EventListener":1,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/getUnboundedScrollPosition":13}],118:[function(require,module,exports){
+},{"./Object.assign":197,"./PooledClass":198,"./ReactInstanceHandles":238,"./ReactMount":242,"./ReactUpdates":262,"./getEventTarget":293,"fbjs/lib/EventListener":1,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/getUnboundedScrollPosition":13}],235:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -14087,7 +31493,7 @@ var ReactFragment = {
 
 module.exports = ReactFragment;
 }).call(this,require('_process'))
-},{"./ReactChildren":86,"./ReactElement":111,"_process":54,"fbjs/lib/emptyFunction":8,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],119:[function(require,module,exports){
+},{"./ReactChildren":203,"./ReactElement":228,"_process":168,"fbjs/lib/emptyFunction":8,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],236:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14126,7 +31532,7 @@ var ReactInjection = {
 };
 
 module.exports = ReactInjection;
-},{"./DOMProperty":67,"./EventPluginHub":73,"./ReactBrowserEventEmitter":84,"./ReactClass":87,"./ReactComponentEnvironment":90,"./ReactEmptyComponent":113,"./ReactNativeComponent":128,"./ReactPerf":131,"./ReactRootIndex":138,"./ReactUpdates":145}],120:[function(require,module,exports){
+},{"./DOMProperty":184,"./EventPluginHub":190,"./ReactBrowserEventEmitter":201,"./ReactClass":204,"./ReactComponentEnvironment":207,"./ReactEmptyComponent":230,"./ReactNativeComponent":245,"./ReactPerf":248,"./ReactRootIndex":255,"./ReactUpdates":262}],237:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14251,7 +31657,7 @@ var ReactInputSelection = {
 };
 
 module.exports = ReactInputSelection;
-},{"./ReactDOMSelection":103,"fbjs/lib/containsNode":5,"fbjs/lib/focusNode":10,"fbjs/lib/getActiveElement":11}],121:[function(require,module,exports){
+},{"./ReactDOMSelection":220,"fbjs/lib/containsNode":5,"fbjs/lib/focusNode":10,"fbjs/lib/getActiveElement":11}],238:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -14556,7 +31962,7 @@ var ReactInstanceHandles = {
 
 module.exports = ReactInstanceHandles;
 }).call(this,require('_process'))
-},{"./ReactRootIndex":138,"_process":54,"fbjs/lib/invariant":16}],122:[function(require,module,exports){
+},{"./ReactRootIndex":255,"_process":168,"fbjs/lib/invariant":16}],239:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14604,7 +32010,7 @@ var ReactInstanceMap = {
 };
 
 module.exports = ReactInstanceMap;
-},{}],123:[function(require,module,exports){
+},{}],240:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -14681,7 +32087,7 @@ var React = {
 
 module.exports = React;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"./ReactChildren":86,"./ReactClass":87,"./ReactComponent":88,"./ReactDOMFactories":97,"./ReactElement":111,"./ReactElementValidator":112,"./ReactPropTypes":134,"./ReactVersion":146,"./onlyChild":183,"_process":54}],124:[function(require,module,exports){
+},{"./Object.assign":197,"./ReactChildren":203,"./ReactClass":204,"./ReactComponent":205,"./ReactDOMFactories":214,"./ReactElement":228,"./ReactElementValidator":229,"./ReactPropTypes":251,"./ReactVersion":263,"./onlyChild":300,"_process":168}],241:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -14727,7 +32133,7 @@ var ReactMarkupChecksum = {
 };
 
 module.exports = ReactMarkupChecksum;
-},{"./adler32":165}],125:[function(require,module,exports){
+},{"./adler32":282}],242:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -15580,7 +32986,7 @@ ReactPerf.measureMethods(ReactMount, 'ReactMount', {
 
 module.exports = ReactMount;
 }).call(this,require('_process'))
-},{"./DOMProperty":67,"./Object.assign":80,"./ReactBrowserEventEmitter":84,"./ReactCurrentOwner":93,"./ReactDOMFeatureFlags":98,"./ReactElement":111,"./ReactEmptyComponentRegistry":114,"./ReactInstanceHandles":121,"./ReactInstanceMap":122,"./ReactMarkupChecksum":124,"./ReactPerf":131,"./ReactReconciler":136,"./ReactUpdateQueue":144,"./ReactUpdates":145,"./instantiateReactComponent":180,"./setInnerHTML":186,"./shouldUpdateReactComponent":189,"./validateDOMNesting":192,"_process":54,"fbjs/lib/containsNode":5,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],126:[function(require,module,exports){
+},{"./DOMProperty":184,"./Object.assign":197,"./ReactBrowserEventEmitter":201,"./ReactCurrentOwner":210,"./ReactDOMFeatureFlags":215,"./ReactElement":228,"./ReactEmptyComponentRegistry":231,"./ReactInstanceHandles":238,"./ReactInstanceMap":239,"./ReactMarkupChecksum":241,"./ReactPerf":248,"./ReactReconciler":253,"./ReactUpdateQueue":261,"./ReactUpdates":262,"./instantiateReactComponent":297,"./setInnerHTML":303,"./shouldUpdateReactComponent":306,"./validateDOMNesting":309,"_process":168,"fbjs/lib/containsNode":5,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],243:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -16079,7 +33485,7 @@ var ReactMultiChild = {
 
 module.exports = ReactMultiChild;
 }).call(this,require('_process'))
-},{"./ReactChildReconciler":85,"./ReactComponentEnvironment":90,"./ReactCurrentOwner":93,"./ReactMultiChildUpdateTypes":127,"./ReactReconciler":136,"./flattenChildren":171,"_process":54}],127:[function(require,module,exports){
+},{"./ReactChildReconciler":202,"./ReactComponentEnvironment":207,"./ReactCurrentOwner":210,"./ReactMultiChildUpdateTypes":244,"./ReactReconciler":253,"./flattenChildren":288,"_process":168}],244:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16112,7 +33518,7 @@ var ReactMultiChildUpdateTypes = keyMirror({
 });
 
 module.exports = ReactMultiChildUpdateTypes;
-},{"fbjs/lib/keyMirror":19}],128:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":19}],245:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -16209,7 +33615,7 @@ var ReactNativeComponent = {
 
 module.exports = ReactNativeComponent;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"_process":54,"fbjs/lib/invariant":16}],129:[function(require,module,exports){
+},{"./Object.assign":197,"_process":168,"fbjs/lib/invariant":16}],246:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -16330,7 +33736,7 @@ var ReactNoopUpdateQueue = {
 
 module.exports = ReactNoopUpdateQueue;
 }).call(this,require('_process'))
-},{"_process":54,"fbjs/lib/warning":27}],130:[function(require,module,exports){
+},{"_process":168,"fbjs/lib/warning":27}],247:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -16424,7 +33830,7 @@ var ReactOwner = {
 
 module.exports = ReactOwner;
 }).call(this,require('_process'))
-},{"_process":54,"fbjs/lib/invariant":16}],131:[function(require,module,exports){
+},{"_process":168,"fbjs/lib/invariant":16}],248:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -16523,7 +33929,7 @@ function _noMeasure(objName, fnName, func) {
 
 module.exports = ReactPerf;
 }).call(this,require('_process'))
-},{"_process":54}],132:[function(require,module,exports){
+},{"_process":168}],249:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -16550,7 +33956,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = ReactPropTypeLocationNames;
 }).call(this,require('_process'))
-},{"_process":54}],133:[function(require,module,exports){
+},{"_process":168}],250:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16573,7 +33979,7 @@ var ReactPropTypeLocations = keyMirror({
 });
 
 module.exports = ReactPropTypeLocations;
-},{"fbjs/lib/keyMirror":19}],134:[function(require,module,exports){
+},{"fbjs/lib/keyMirror":19}],251:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -16930,7 +34336,7 @@ function getClassName(propValue) {
 }
 
 module.exports = ReactPropTypes;
-},{"./ReactElement":111,"./ReactPropTypeLocationNames":132,"./getIteratorFn":177,"fbjs/lib/emptyFunction":8}],135:[function(require,module,exports){
+},{"./ReactElement":228,"./ReactPropTypeLocationNames":249,"./getIteratorFn":294,"fbjs/lib/emptyFunction":8}],252:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17082,7 +34488,7 @@ assign(ReactReconcileTransaction.prototype, Transaction.Mixin, Mixin);
 PooledClass.addPoolingTo(ReactReconcileTransaction);
 
 module.exports = ReactReconcileTransaction;
-},{"./CallbackQueue":63,"./Object.assign":80,"./PooledClass":81,"./ReactBrowserEventEmitter":84,"./ReactDOMFeatureFlags":98,"./ReactInputSelection":120,"./Transaction":162}],136:[function(require,module,exports){
+},{"./CallbackQueue":180,"./Object.assign":197,"./PooledClass":198,"./ReactBrowserEventEmitter":201,"./ReactDOMFeatureFlags":215,"./ReactInputSelection":237,"./Transaction":279}],253:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17190,7 +34596,7 @@ var ReactReconciler = {
 };
 
 module.exports = ReactReconciler;
-},{"./ReactRef":137}],137:[function(require,module,exports){
+},{"./ReactRef":254}],254:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17269,7 +34675,7 @@ ReactRef.detachRefs = function (instance, element) {
 };
 
 module.exports = ReactRef;
-},{"./ReactOwner":130}],138:[function(require,module,exports){
+},{"./ReactOwner":247}],255:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17299,7 +34705,7 @@ var ReactRootIndex = {
 };
 
 module.exports = ReactRootIndex;
-},{}],139:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -17323,7 +34729,7 @@ var ReactServerBatchingStrategy = {
 };
 
 module.exports = ReactServerBatchingStrategy;
-},{}],140:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -17409,7 +34815,7 @@ module.exports = {
   renderToStaticMarkup: renderToStaticMarkup
 };
 }).call(this,require('_process'))
-},{"./ReactDefaultBatchingStrategy":107,"./ReactElement":111,"./ReactInstanceHandles":121,"./ReactMarkupChecksum":124,"./ReactServerBatchingStrategy":139,"./ReactServerRenderingTransaction":141,"./ReactUpdates":145,"./instantiateReactComponent":180,"_process":54,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16}],141:[function(require,module,exports){
+},{"./ReactDefaultBatchingStrategy":224,"./ReactElement":228,"./ReactInstanceHandles":238,"./ReactMarkupChecksum":241,"./ReactServerBatchingStrategy":256,"./ReactServerRenderingTransaction":258,"./ReactUpdates":262,"./instantiateReactComponent":297,"_process":168,"fbjs/lib/emptyObject":9,"fbjs/lib/invariant":16}],258:[function(require,module,exports){
 /**
  * Copyright 2014-2015, Facebook, Inc.
  * All rights reserved.
@@ -17497,7 +34903,7 @@ assign(ReactServerRenderingTransaction.prototype, Transaction.Mixin, Mixin);
 PooledClass.addPoolingTo(ReactServerRenderingTransaction);
 
 module.exports = ReactServerRenderingTransaction;
-},{"./CallbackQueue":63,"./Object.assign":80,"./PooledClass":81,"./Transaction":162,"fbjs/lib/emptyFunction":8}],142:[function(require,module,exports){
+},{"./CallbackQueue":180,"./Object.assign":197,"./PooledClass":198,"./Transaction":279,"fbjs/lib/emptyFunction":8}],259:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17596,7 +35002,7 @@ var ReactTransitionChildMapping = {
 };
 
 module.exports = ReactTransitionChildMapping;
-},{"./flattenChildren":171}],143:[function(require,module,exports){
+},{"./flattenChildren":288}],260:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -17802,7 +35208,7 @@ var ReactTransitionGroup = React.createClass({
 });
 
 module.exports = ReactTransitionGroup;
-},{"./Object.assign":80,"./React":82,"./ReactTransitionChildMapping":142,"fbjs/lib/emptyFunction":8}],144:[function(require,module,exports){
+},{"./Object.assign":197,"./React":199,"./ReactTransitionChildMapping":259,"fbjs/lib/emptyFunction":8}],261:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -18062,7 +35468,7 @@ var ReactUpdateQueue = {
 
 module.exports = ReactUpdateQueue;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"./ReactCurrentOwner":93,"./ReactElement":111,"./ReactInstanceMap":122,"./ReactUpdates":145,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],145:[function(require,module,exports){
+},{"./Object.assign":197,"./ReactCurrentOwner":210,"./ReactElement":228,"./ReactInstanceMap":239,"./ReactUpdates":262,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],262:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -18288,7 +35694,7 @@ var ReactUpdates = {
 
 module.exports = ReactUpdates;
 }).call(this,require('_process'))
-},{"./CallbackQueue":63,"./Object.assign":80,"./PooledClass":81,"./ReactPerf":131,"./ReactReconciler":136,"./Transaction":162,"_process":54,"fbjs/lib/invariant":16}],146:[function(require,module,exports){
+},{"./CallbackQueue":180,"./Object.assign":197,"./PooledClass":198,"./ReactPerf":248,"./ReactReconciler":253,"./Transaction":279,"_process":168,"fbjs/lib/invariant":16}],263:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18303,7 +35709,7 @@ module.exports = ReactUpdates;
 'use strict';
 
 module.exports = '0.14.2';
-},{}],147:[function(require,module,exports){
+},{}],264:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18431,7 +35837,7 @@ var SVGDOMPropertyConfig = {
 };
 
 module.exports = SVGDOMPropertyConfig;
-},{"./DOMProperty":67}],148:[function(require,module,exports){
+},{"./DOMProperty":184}],265:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18633,7 +36039,7 @@ var SelectEventPlugin = {
 };
 
 module.exports = SelectEventPlugin;
-},{"./EventConstants":72,"./EventPropagators":76,"./ReactInputSelection":120,"./SyntheticEvent":154,"./isTextInputElement":182,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/getActiveElement":11,"fbjs/lib/keyOf":20,"fbjs/lib/shallowEqual":25}],149:[function(require,module,exports){
+},{"./EventConstants":189,"./EventPropagators":193,"./ReactInputSelection":237,"./SyntheticEvent":271,"./isTextInputElement":299,"fbjs/lib/ExecutionEnvironment":2,"fbjs/lib/getActiveElement":11,"fbjs/lib/keyOf":20,"fbjs/lib/shallowEqual":25}],266:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -18663,7 +36069,7 @@ var ServerReactRootIndex = {
 };
 
 module.exports = ServerReactRootIndex;
-},{}],150:[function(require,module,exports){
+},{}],267:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -19253,7 +36659,7 @@ var SimpleEventPlugin = {
 
 module.exports = SimpleEventPlugin;
 }).call(this,require('_process'))
-},{"./EventConstants":72,"./EventPropagators":76,"./ReactMount":125,"./SyntheticClipboardEvent":151,"./SyntheticDragEvent":153,"./SyntheticEvent":154,"./SyntheticFocusEvent":155,"./SyntheticKeyboardEvent":157,"./SyntheticMouseEvent":158,"./SyntheticTouchEvent":159,"./SyntheticUIEvent":160,"./SyntheticWheelEvent":161,"./getEventCharCode":173,"_process":54,"fbjs/lib/EventListener":1,"fbjs/lib/emptyFunction":8,"fbjs/lib/invariant":16,"fbjs/lib/keyOf":20}],151:[function(require,module,exports){
+},{"./EventConstants":189,"./EventPropagators":193,"./ReactMount":242,"./SyntheticClipboardEvent":268,"./SyntheticDragEvent":270,"./SyntheticEvent":271,"./SyntheticFocusEvent":272,"./SyntheticKeyboardEvent":274,"./SyntheticMouseEvent":275,"./SyntheticTouchEvent":276,"./SyntheticUIEvent":277,"./SyntheticWheelEvent":278,"./getEventCharCode":290,"_process":168,"fbjs/lib/EventListener":1,"fbjs/lib/emptyFunction":8,"fbjs/lib/invariant":16,"fbjs/lib/keyOf":20}],268:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19293,7 +36699,7 @@ function SyntheticClipboardEvent(dispatchConfig, dispatchMarker, nativeEvent, na
 SyntheticEvent.augmentClass(SyntheticClipboardEvent, ClipboardEventInterface);
 
 module.exports = SyntheticClipboardEvent;
-},{"./SyntheticEvent":154}],152:[function(require,module,exports){
+},{"./SyntheticEvent":271}],269:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19331,7 +36737,7 @@ function SyntheticCompositionEvent(dispatchConfig, dispatchMarker, nativeEvent, 
 SyntheticEvent.augmentClass(SyntheticCompositionEvent, CompositionEventInterface);
 
 module.exports = SyntheticCompositionEvent;
-},{"./SyntheticEvent":154}],153:[function(require,module,exports){
+},{"./SyntheticEvent":271}],270:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19369,7 +36775,7 @@ function SyntheticDragEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeE
 SyntheticMouseEvent.augmentClass(SyntheticDragEvent, DragEventInterface);
 
 module.exports = SyntheticDragEvent;
-},{"./SyntheticMouseEvent":158}],154:[function(require,module,exports){
+},{"./SyntheticMouseEvent":275}],271:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -19549,7 +36955,7 @@ PooledClass.addPoolingTo(SyntheticEvent, PooledClass.fourArgumentPooler);
 
 module.exports = SyntheticEvent;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"./PooledClass":81,"_process":54,"fbjs/lib/emptyFunction":8,"fbjs/lib/warning":27}],155:[function(require,module,exports){
+},{"./Object.assign":197,"./PooledClass":198,"_process":168,"fbjs/lib/emptyFunction":8,"fbjs/lib/warning":27}],272:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19587,7 +36993,7 @@ function SyntheticFocusEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticFocusEvent, FocusEventInterface);
 
 module.exports = SyntheticFocusEvent;
-},{"./SyntheticUIEvent":160}],156:[function(require,module,exports){
+},{"./SyntheticUIEvent":277}],273:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19626,7 +37032,7 @@ function SyntheticInputEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticEvent.augmentClass(SyntheticInputEvent, InputEventInterface);
 
 module.exports = SyntheticInputEvent;
-},{"./SyntheticEvent":154}],157:[function(require,module,exports){
+},{"./SyntheticEvent":271}],274:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19712,7 +37118,7 @@ function SyntheticKeyboardEvent(dispatchConfig, dispatchMarker, nativeEvent, nat
 SyntheticUIEvent.augmentClass(SyntheticKeyboardEvent, KeyboardEventInterface);
 
 module.exports = SyntheticKeyboardEvent;
-},{"./SyntheticUIEvent":160,"./getEventCharCode":173,"./getEventKey":174,"./getEventModifierState":175}],158:[function(require,module,exports){
+},{"./SyntheticUIEvent":277,"./getEventCharCode":290,"./getEventKey":291,"./getEventModifierState":292}],275:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19786,7 +37192,7 @@ function SyntheticMouseEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticMouseEvent, MouseEventInterface);
 
 module.exports = SyntheticMouseEvent;
-},{"./SyntheticUIEvent":160,"./ViewportMetrics":163,"./getEventModifierState":175}],159:[function(require,module,exports){
+},{"./SyntheticUIEvent":277,"./ViewportMetrics":280,"./getEventModifierState":292}],276:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19833,7 +37239,7 @@ function SyntheticTouchEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticUIEvent.augmentClass(SyntheticTouchEvent, TouchEventInterface);
 
 module.exports = SyntheticTouchEvent;
-},{"./SyntheticUIEvent":160,"./getEventModifierState":175}],160:[function(require,module,exports){
+},{"./SyntheticUIEvent":277,"./getEventModifierState":292}],277:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19894,7 +37300,7 @@ function SyntheticUIEvent(dispatchConfig, dispatchMarker, nativeEvent, nativeEve
 SyntheticEvent.augmentClass(SyntheticUIEvent, UIEventInterface);
 
 module.exports = SyntheticUIEvent;
-},{"./SyntheticEvent":154,"./getEventTarget":176}],161:[function(require,module,exports){
+},{"./SyntheticEvent":271,"./getEventTarget":293}],278:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -19950,7 +37356,7 @@ function SyntheticWheelEvent(dispatchConfig, dispatchMarker, nativeEvent, native
 SyntheticMouseEvent.augmentClass(SyntheticWheelEvent, WheelEventInterface);
 
 module.exports = SyntheticWheelEvent;
-},{"./SyntheticMouseEvent":158}],162:[function(require,module,exports){
+},{"./SyntheticMouseEvent":275}],279:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20184,7 +37590,7 @@ var Transaction = {
 
 module.exports = Transaction;
 }).call(this,require('_process'))
-},{"_process":54,"fbjs/lib/invariant":16}],163:[function(require,module,exports){
+},{"_process":168,"fbjs/lib/invariant":16}],280:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20212,7 +37618,7 @@ var ViewportMetrics = {
 };
 
 module.exports = ViewportMetrics;
-},{}],164:[function(require,module,exports){
+},{}],281:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2014-2015, Facebook, Inc.
@@ -20274,7 +37680,7 @@ function accumulateInto(current, next) {
 
 module.exports = accumulateInto;
 }).call(this,require('_process'))
-},{"_process":54,"fbjs/lib/invariant":16}],165:[function(require,module,exports){
+},{"_process":168,"fbjs/lib/invariant":16}],282:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20317,7 +37723,7 @@ function adler32(data) {
 }
 
 module.exports = adler32;
-},{}],166:[function(require,module,exports){
+},{}],283:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20344,7 +37750,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = canDefineProperty;
 }).call(this,require('_process'))
-},{"_process":54}],167:[function(require,module,exports){
+},{"_process":168}],284:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20400,7 +37806,7 @@ function dangerousStyleValue(name, value) {
 }
 
 module.exports = dangerousStyleValue;
-},{"./CSSProperty":61}],168:[function(require,module,exports){
+},{"./CSSProperty":178}],285:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20451,7 +37857,7 @@ function deprecated(fnName, newModule, newPackage, ctx, fn) {
 
 module.exports = deprecated;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"_process":54,"fbjs/lib/warning":27}],169:[function(require,module,exports){
+},{"./Object.assign":197,"_process":168,"fbjs/lib/warning":27}],286:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20490,7 +37896,7 @@ function escapeTextContentForBrowser(text) {
 }
 
 module.exports = escapeTextContentForBrowser;
-},{}],170:[function(require,module,exports){
+},{}],287:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20542,7 +37948,7 @@ function findDOMNode(componentOrElement) {
 
 module.exports = findDOMNode;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":93,"./ReactInstanceMap":122,"./ReactMount":125,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],171:[function(require,module,exports){
+},{"./ReactCurrentOwner":210,"./ReactInstanceMap":239,"./ReactMount":242,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],288:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -20593,7 +37999,7 @@ function flattenChildren(children) {
 
 module.exports = flattenChildren;
 }).call(this,require('_process'))
-},{"./traverseAllChildren":190,"_process":54,"fbjs/lib/warning":27}],172:[function(require,module,exports){
+},{"./traverseAllChildren":307,"_process":168,"fbjs/lib/warning":27}],289:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20623,7 +38029,7 @@ var forEachAccumulated = function (arr, cb, scope) {
 };
 
 module.exports = forEachAccumulated;
-},{}],173:[function(require,module,exports){
+},{}],290:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20674,7 +38080,7 @@ function getEventCharCode(nativeEvent) {
 }
 
 module.exports = getEventCharCode;
-},{}],174:[function(require,module,exports){
+},{}],291:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20778,7 +38184,7 @@ function getEventKey(nativeEvent) {
 }
 
 module.exports = getEventKey;
-},{"./getEventCharCode":173}],175:[function(require,module,exports){
+},{"./getEventCharCode":290}],292:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20823,7 +38229,7 @@ function getEventModifierState(nativeEvent) {
 }
 
 module.exports = getEventModifierState;
-},{}],176:[function(require,module,exports){
+},{}],293:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20853,7 +38259,7 @@ function getEventTarget(nativeEvent) {
 }
 
 module.exports = getEventTarget;
-},{}],177:[function(require,module,exports){
+},{}],294:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20894,7 +38300,7 @@ function getIteratorFn(maybeIterable) {
 }
 
 module.exports = getIteratorFn;
-},{}],178:[function(require,module,exports){
+},{}],295:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -20968,7 +38374,7 @@ function getNodeForCharacterOffset(root, offset) {
 }
 
 module.exports = getNodeForCharacterOffset;
-},{}],179:[function(require,module,exports){
+},{}],296:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21002,7 +38408,7 @@ function getTextContentAccessor() {
 }
 
 module.exports = getTextContentAccessor;
-},{"fbjs/lib/ExecutionEnvironment":2}],180:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":2}],297:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21117,7 +38523,7 @@ function instantiateReactComponent(node) {
 
 module.exports = instantiateReactComponent;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"./ReactCompositeComponent":92,"./ReactEmptyComponent":113,"./ReactNativeComponent":128,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],181:[function(require,module,exports){
+},{"./Object.assign":197,"./ReactCompositeComponent":209,"./ReactEmptyComponent":230,"./ReactNativeComponent":245,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],298:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21178,7 +38584,7 @@ function isEventSupported(eventNameSuffix, capture) {
 }
 
 module.exports = isEventSupported;
-},{"fbjs/lib/ExecutionEnvironment":2}],182:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":2}],299:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21219,7 +38625,7 @@ function isTextInputElement(elem) {
 }
 
 module.exports = isTextInputElement;
-},{}],183:[function(require,module,exports){
+},{}],300:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21255,7 +38661,7 @@ function onlyChild(children) {
 
 module.exports = onlyChild;
 }).call(this,require('_process'))
-},{"./ReactElement":111,"_process":54,"fbjs/lib/invariant":16}],184:[function(require,module,exports){
+},{"./ReactElement":228,"_process":168,"fbjs/lib/invariant":16}],301:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21282,7 +38688,7 @@ function quoteAttributeValueForBrowser(value) {
 }
 
 module.exports = quoteAttributeValueForBrowser;
-},{"./escapeTextContentForBrowser":169}],185:[function(require,module,exports){
+},{"./escapeTextContentForBrowser":286}],302:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21299,7 +38705,7 @@ module.exports = quoteAttributeValueForBrowser;
 var ReactMount = require('./ReactMount');
 
 module.exports = ReactMount.renderSubtreeIntoContainer;
-},{"./ReactMount":125}],186:[function(require,module,exports){
+},{"./ReactMount":242}],303:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21390,7 +38796,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = setInnerHTML;
-},{"fbjs/lib/ExecutionEnvironment":2}],187:[function(require,module,exports){
+},{"fbjs/lib/ExecutionEnvironment":2}],304:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21431,7 +38837,7 @@ if (ExecutionEnvironment.canUseDOM) {
 }
 
 module.exports = setTextContent;
-},{"./escapeTextContentForBrowser":169,"./setInnerHTML":186,"fbjs/lib/ExecutionEnvironment":2}],188:[function(require,module,exports){
+},{"./escapeTextContentForBrowser":286,"./setInnerHTML":303,"fbjs/lib/ExecutionEnvironment":2}],305:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21456,7 +38862,7 @@ function shallowCompare(instance, nextProps, nextState) {
 }
 
 module.exports = shallowCompare;
-},{"fbjs/lib/shallowEqual":25}],189:[function(require,module,exports){
+},{"fbjs/lib/shallowEqual":25}],306:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
  * All rights reserved.
@@ -21500,7 +38906,7 @@ function shouldUpdateReactComponent(prevElement, nextElement) {
 }
 
 module.exports = shouldUpdateReactComponent;
-},{}],190:[function(require,module,exports){
+},{}],307:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21692,7 +39098,7 @@ function traverseAllChildren(children, callback, traverseContext) {
 
 module.exports = traverseAllChildren;
 }).call(this,require('_process'))
-},{"./ReactCurrentOwner":93,"./ReactElement":111,"./ReactInstanceHandles":121,"./getIteratorFn":177,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],191:[function(require,module,exports){
+},{"./ReactCurrentOwner":210,"./ReactElement":228,"./ReactInstanceHandles":238,"./getIteratorFn":294,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/warning":27}],308:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -21802,7 +39208,7 @@ function update(value, spec) {
 
 module.exports = update;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"_process":54,"fbjs/lib/invariant":16,"fbjs/lib/keyOf":20}],192:[function(require,module,exports){
+},{"./Object.assign":197,"_process":168,"fbjs/lib/invariant":16,"fbjs/lib/keyOf":20}],309:[function(require,module,exports){
 (function (process){
 /**
  * Copyright 2015, Facebook, Inc.
@@ -22168,277 +39574,97 @@ if (process.env.NODE_ENV !== 'production') {
 
 module.exports = validateDOMNesting;
 }).call(this,require('_process'))
-},{"./Object.assign":80,"_process":54,"fbjs/lib/emptyFunction":8,"fbjs/lib/warning":27}],"material-ui/lib/raised-button":[function(require,module,exports){
+},{"./Object.assign":197,"_process":168,"fbjs/lib/emptyFunction":8,"fbjs/lib/warning":27}],"material-ui":[function(require,module,exports){
 'use strict';
 
-var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
-
-function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
-
-var React = require('react');
-var ReactDOM = require('react-dom');
-var StylePropable = require('./mixins/style-propable');
-var Transitions = require('./styles/transitions');
-var ColorManipulator = require('./utils/color-manipulator');
-var Typography = require('./styles/typography');
-var EnhancedButton = require('./enhanced-button');
-var Paper = require('./paper');
-var DefaultRawTheme = require('./styles/raw-themes/light-raw-theme');
-var ThemeManager = require('./styles/theme-manager');
-
-function validateLabel(props, propName, componentName) {
-  if (!props.children && !props.label) {
-    return new Error('Required prop label or children was not ' + 'specified in ' + componentName + '.');
-  }
-}
-
-var RaisedButton = React.createClass({
-  displayName: 'RaisedButton',
-
-  mixins: [StylePropable],
-
-  contextTypes: {
-    muiTheme: React.PropTypes.object
+module.exports = {
+  AppBar: require('./app-bar'),
+  AppCanvas: require('./app-canvas'),
+  Avatar: require('./avatar'),
+  BeforeAfterWrapper: require('./before-after-wrapper'),
+  Card: require('./card/card'),
+  CardActions: require('./card/card-actions'),
+  CardExpandable: require('./card/card-expandable'),
+  CardHeader: require('./card/card-header'),
+  CardMedia: require('./card/card-media'),
+  CardText: require('./card/card-text'),
+  CardTitle: require('./card/card-title'),
+  Checkbox: require('./checkbox'),
+  CircularProgress: require('./circular-progress'),
+  ClearFix: require('./clearfix'),
+  DatePicker: require('./date-picker/date-picker'),
+  DatePickerDialog: require('./date-picker/date-picker-dialog'),
+  Dialog: require('./dialog'),
+  DropDownIcon: require('./drop-down-icon'),
+  DropDownMenu: require('./drop-down-menu'),
+  EnhancedButton: require('./enhanced-button'),
+  FlatButton: require('./flat-button'),
+  FloatingActionButton: require('./floating-action-button'),
+  FontIcon: require('./font-icon'),
+  GridList: require('./grid-list/grid-list'),
+  GridTile: require('./grid-list/grid-tile'),
+  IconButton: require('./icon-button'),
+  IconMenu: require('./menus/icon-menu'),
+  LeftNav: require('./left-nav'),
+  LinearProgress: require('./linear-progress'),
+  List: require('./lists/list'),
+  ListDivider: require('./lists/list-divider'),
+  ListItem: require('./lists/list-item'),
+  Menu: require('./menu/menu'),
+  MenuItem: require('./menu/menu-item'),
+  Mixins: require('./mixins/'),
+  Overlay: require('./overlay'),
+  Paper: require('./paper'),
+  RadioButton: require('./radio-button'),
+  RadioButtonGroup: require('./radio-button-group'),
+  RaisedButton: require('./raised-button'),
+  RefreshIndicator: require('./refresh-indicator'),
+  Ripples: require('./ripples/'),
+  SelectField: require('./select-field'),
+  Slider: require('./slider'),
+  SvgIcon: require('./svg-icon'),
+  Icons: {
+    NavigationMenu: require('./svg-icons/navigation/menu'),
+    NavigationChevronLeft: require('./svg-icons/navigation/chevron-left'),
+    NavigationChevronRight: require('./svg-icons/navigation/chevron-right')
   },
-
-  //for passing default theme context to children
-  childContextTypes: {
-    muiTheme: React.PropTypes.object
-  },
-
-  getChildContext: function getChildContext() {
-    return {
-      muiTheme: this.state.muiTheme
-    };
-  },
-
-  propTypes: {
-    className: React.PropTypes.string,
-    disabled: React.PropTypes.bool,
-    label: validateLabel,
-    onMouseDown: React.PropTypes.func,
-    onMouseUp: React.PropTypes.func,
-    onMouseLeave: React.PropTypes.func,
-    onTouchEnd: React.PropTypes.func,
-    onTouchStart: React.PropTypes.func,
-    primary: React.PropTypes.bool,
-    secondary: React.PropTypes.bool,
-    labelStyle: React.PropTypes.object,
-    backgroundColor: React.PropTypes.string,
-    labelColor: React.PropTypes.string,
-    disabledBackgroundColor: React.PropTypes.string,
-    disabledLabelColor: React.PropTypes.string,
-    fullWidth: React.PropTypes.bool
-  },
-
-  getInitialState: function getInitialState() {
-    var zDepth = this.props.disabled ? 0 : 1;
-    return {
-      hovered: false,
-      touched: false,
-      initialZDepth: zDepth,
-      zDepth: zDepth,
-      muiTheme: this.context.muiTheme ? this.context.muiTheme : ThemeManager.getMuiTheme(DefaultRawTheme)
-    };
-  },
-
-  componentWillReceiveProps: function componentWillReceiveProps(nextProps, nextContext) {
-    var zDepth = nextProps.disabled ? 0 : 1;
-    var newMuiTheme = nextContext.muiTheme ? nextContext.muiTheme : this.state.muiTheme;
-    this.setState({
-      zDepth: zDepth,
-      initialZDepth: zDepth,
-      muiTheme: newMuiTheme
-    });
-  },
-
-  _getBackgroundColor: function _getBackgroundColor() {
-    var disabledColor = this.props.disabledBackgroundColor ? this.props.disabledBackgroundColor : this.getTheme().disabledColor;
-
-    return this.props.disabled ? disabledColor : this.props.backgroundColor ? this.props.backgroundColor : this.props.primary ? this.getTheme().primaryColor : this.props.secondary ? this.getTheme().secondaryColor : this.getTheme().color;
-  },
-
-  _getLabelColor: function _getLabelColor() {
-    var disabledColor = this.props.disabledLabelColor ? this.props.disabledLabelColor : this.getTheme().disabledTextColor;
-
-    return this.props.disabled ? disabledColor : this.props.labelColor ? this.props.labelColor : this.props.primary ? this.getTheme().primaryTextColor : this.props.secondary ? this.getTheme().secondaryTextColor : this.getTheme().textColor;
-  },
-
-  getThemeButton: function getThemeButton() {
-    return this.state.muiTheme.button;
-  },
-
-  getTheme: function getTheme() {
-    return this.state.muiTheme.raisedButton;
-  },
-
-  getStyles: function getStyles() {
-
-    var amount = this.props.primary || this.props.secondary ? 0.4 : 0.08;
-    var styles = {
-      root: {
-        backgroundColor: 'none',
-        display: 'inline-block',
-        minWidth: this.props.fullWidth ? '100%' : this.getThemeButton().minWidth,
-        height: this.getThemeButton().height,
-        transition: Transitions.easeOut()
-      },
-      container: {
-        position: 'relative',
-        height: '100%',
-        width: '100%',
-        padding: 0,
-        overflow: 'hidden',
-        borderRadius: 2,
-        transition: Transitions.easeOut(),
-        backgroundColor: this._getBackgroundColor(),
-
-        //This is need so that ripples do not bleed
-        //past border radius.
-        //See: http://stackoverflow.com/questions/17298739/css-overflow-hidden-not-working-in-chrome-when-parent-has-border-radius-and-chil
-        transform: 'translate3d(0, 0, 0)'
-      },
-      label: {
-        position: 'relative',
-        opacity: 1,
-        fontSize: '14px',
-        letterSpacing: 0,
-        textTransform: this.getTheme().textTransform ? this.getTheme().textTransform : this.getThemeButton().textTransform ? this.getThemeButton().textTransform : 'uppercase',
-        fontWeight: Typography.fontWeightMedium,
-        margin: 0,
-        padding: '0px ' + this.state.muiTheme.rawTheme.spacing.desktopGutterLess + 'px',
-        userSelect: 'none',
-        lineHeight: this.props.style && this.props.style.height ? this.props.style.height : this.getThemeButton().height + 'px',
-        color: this._getLabelColor()
-      },
-      overlay: {
-        transition: Transitions.easeOut(),
-        top: 0
-      },
-      overlayWhenHovered: {
-        backgroundColor: ColorManipulator.fade(this._getLabelColor(), amount)
-      }
-    };
-    return styles;
-  },
-
-  render: function render() {
-    var _props = this.props;
-    var disabled = _props.disabled;
-    var label = _props.label;
-    var primary = _props.primary;
-    var secondary = _props.secondary;
-
-    var other = _objectWithoutProperties(_props, ['disabled', 'label', 'primary', 'secondary']);
-
-    var styles = this.getStyles();
-
-    var labelElement = undefined;
-    if (label) {
-      labelElement = React.createElement(
-        'span',
-        { style: this.prepareStyles(styles.label, this.props.labelStyle) },
-        label
-      );
-    }
-
-    var rippleColor = styles.label.color;
-    var rippleOpacity = !(primary || secondary) ? 0.1 : 0.16;
-
-    var buttonEventHandlers = disabled ? null : {
-      onMouseDown: this._handleMouseDown,
-      onMouseUp: this._handleMouseUp,
-      onMouseLeave: this._handleMouseLeave,
-      onMouseEnter: this._handleMouseEnter,
-      onTouchStart: this._handleTouchStart,
-      onTouchEnd: this._handleTouchEnd,
-      onKeyboardFocus: this._handleKeyboardFocus
-    };
-
-    return React.createElement(
-      Paper,
-      {
-        style: this.mergeStyles(styles.root, this.props.style),
-        zDepth: this.state.zDepth },
-      React.createElement(
-        EnhancedButton,
-        _extends({}, other, buttonEventHandlers, {
-          ref: 'container',
-          disabled: disabled,
-          style: this.mergeStyles(styles.container),
-          focusRippleColor: rippleColor,
-          touchRippleColor: rippleColor,
-          focusRippleOpacity: rippleOpacity,
-          touchRippleOpacity: rippleOpacity }),
-        React.createElement(
-          'div',
-          { ref: 'overlay', style: this.prepareStyles(styles.overlay, this.state.hovered && !this.props.disabled && styles.overlayWhenHovered) },
-          labelElement,
-          this.props.children
-        )
-      )
-    );
-  },
-
-  _handleMouseDown: function _handleMouseDown(e) {
-    //only listen to left clicks
-    if (e.button === 0) {
-      this.setState({ zDepth: this.state.initialZDepth + 1 });
-    }
-    if (this.props.onMouseDown) this.props.onMouseDown(e);
-  },
-
-  _handleMouseUp: function _handleMouseUp(e) {
-    this.setState({ zDepth: this.state.initialZDepth });
-    if (this.props.onMouseUp) this.props.onMouseUp(e);
-  },
-
-  _handleMouseLeave: function _handleMouseLeave(e) {
-    if (!this.refs.container.isKeyboardFocused()) this.setState({ zDepth: this.state.initialZDepth, hovered: false });
-    if (this.props.onMouseLeave) this.props.onMouseLeave(e);
-  },
-
-  _handleMouseEnter: function _handleMouseEnter(e) {
-    if (!this.refs.container.isKeyboardFocused() && !this.state.touch) {
-      this.setState({ hovered: true });
-    }
-    if (this.props.onMouseEnter) this.props.onMouseEnter(e);
-  },
-
-  _handleTouchStart: function _handleTouchStart(e) {
-    this.setState({
-      touch: true,
-      zDepth: this.state.initialZDepth + 1
-    });
-    if (this.props.onTouchStart) this.props.onTouchStart(e);
-  },
-
-  _handleTouchEnd: function _handleTouchEnd(e) {
-    this.setState({ zDepth: this.state.initialZDepth });
-    if (this.props.onTouchEnd) this.props.onTouchEnd(e);
-  },
-
-  _handleKeyboardFocus: function _handleKeyboardFocus(e, keyboardFocused) {
-    if (keyboardFocused && !this.props.disabled) {
-      this.setState({ zDepth: this.state.initialZDepth + 1 });
-      var amount = this.props.primary || this.props.secondary ? 0.4 : 0.08;
-      ReactDOM.findDOMNode(this.refs.overlay).style.backgroundColor = ColorManipulator.fade(this.prepareStyles(this.getStyles().label, this.props.labelStyle).color, amount);
-    } else if (!this.state.hovered) {
-      this.setState({ zDepth: this.state.initialZDepth });
-      ReactDOM.findDOMNode(this.refs.overlay).style.backgroundColor = 'transparent';
-    }
-  }
-});
-
-module.exports = RaisedButton;
-},{"./enhanced-button":28,"./mixins/style-propable":29,"./paper":30,"./styles/raw-themes/light-raw-theme":36,"./styles/theme-manager":38,"./styles/transitions":39,"./styles/typography":40,"./utils/color-manipulator":44,"react":"react","react-dom":"react-dom"}],"react-dom":[function(require,module,exports){
+  Styles: require('./styles/'),
+  Snackbar: require('./snackbar'),
+  Tab: require('./tabs/tab'),
+  Tabs: require('./tabs/tabs'),
+  Table: require('./table/table'),
+  TableBody: require('./table/table-body'),
+  TableFooter: require('./table/table-footer'),
+  TableHeader: require('./table/table-header'),
+  TableHeaderColumn: require('./table/table-header-column'),
+  TableRow: require('./table/table-row'),
+  TableRowColumn: require('./table/table-row-column'),
+  Toggle: require('./toggle'),
+  ThemeWrapper: require('./theme-wrapper'),
+  TimePicker: require('./time-picker'),
+  TextField: require('./text-field'),
+  Toolbar: require('./toolbar/toolbar'),
+  ToolbarGroup: require('./toolbar/toolbar-group'),
+  ToolbarSeparator: require('./toolbar/toolbar-separator'),
+  ToolbarTitle: require('./toolbar/toolbar-title'),
+  Tooltip: require('./tooltip'),
+  Utils: require('./utils/')
+};
+},{"./app-bar":28,"./app-canvas":29,"./avatar":30,"./before-after-wrapper":31,"./card/card":39,"./card/card-actions":33,"./card/card-expandable":34,"./card/card-header":35,"./card/card-media":36,"./card/card-text":37,"./card/card-title":38,"./checkbox":40,"./circular-progress":41,"./clearfix":42,"./date-picker/date-picker":49,"./date-picker/date-picker-dialog":48,"./dialog":52,"./drop-down-icon":53,"./drop-down-menu":54,"./enhanced-button":55,"./flat-button":58,"./floating-action-button":59,"./font-icon":60,"./grid-list/grid-list":61,"./grid-list/grid-tile":62,"./icon-button":63,"./left-nav":65,"./linear-progress":66,"./lists/list":69,"./lists/list-divider":67,"./lists/list-item":68,"./menu/menu":73,"./menu/menu-item":72,"./menus/icon-menu":75,"./mixins/":80,"./overlay":84,"./paper":85,"./radio-button":87,"./radio-button-group":86,"./raised-button":88,"./refresh-indicator":89,"./ripples/":92,"./select-field":94,"./slider":95,"./snackbar":96,"./styles/":99,"./svg-icon":107,"./svg-icons/navigation/chevron-left":112,"./svg-icons/navigation/chevron-right":113,"./svg-icons/navigation/menu":114,"./table/table":125,"./table/table-body":119,"./table/table-footer":120,"./table/table-header":122,"./table/table-header-column":121,"./table/table-row":124,"./table/table-row-column":123,"./tabs/tab":126,"./tabs/tabs":128,"./text-field":129,"./theme-wrapper":130,"./time-picker":137,"./toggle":141,"./toolbar/toolbar":145,"./toolbar/toolbar-group":142,"./toolbar/toolbar-separator":143,"./toolbar/toolbar-title":144,"./tooltip":146,"./utils/":159}],"react-dom":[function(require,module,exports){
 'use strict';
 
 module.exports = require('react/lib/ReactDOM');
 
-},{"react/lib/ReactDOM":94}],"react":[function(require,module,exports){
+},{"react/lib/ReactDOM":211}],"react-tap-event-plugin":[function(require,module,exports){
+module.exports = function injectTapEventPlugin () {
+  require('react/lib/EventPluginHub').injection.injectEventPluginsByName({
+    "TapEventPlugin":       require('./TapEventPlugin.js')
+  });
+};
+
+},{"./TapEventPlugin.js":174,"react/lib/EventPluginHub":190}],"react":[function(require,module,exports){
 'use strict';
 
 module.exports = require('./lib/React');
 
-},{"./lib/React":82}]},{},[]);
+},{"./lib/React":199}]},{},[]);

@@ -1,18 +1,32 @@
 'use strict';
 
 var gulp = require('gulp');
+var watch = require('gulp-watch');
 
 var browserify = require('browserify');
+var strictify = require('strictify');
 var reactify = require('reactify');
+var babelify = require('babelify');
 var source = require('vinyl-source-stream');
 var resolve = require('resolve');
 
-var libs = ['react', 'react-dom', 'material-ui/lib/raised-button'];
+var libs = ['react', 'react-dom', 'material-ui', 'react-tap-event-plugin'];
+
+gulp.task('watch', function() {
+  gulp.watch('src/**/*.js', ['build-app']);
+});
+
+function onError(error) {
+  console.error('error:', error);
+  this.emit('end');
+}
 
 gulp.task('build-app', function() {
   var bundler = browserify({
     entries: ['./src/app.js'], // Only need initial file, browserify finds the deps
-    transform: [reactify], // We want to convert JSX to normal javascript
+    transform: [strictify, [reactify, {
+      "es6": true
+    }]], // We want to convert JSX to normal javascript
     debug: true, // Gives us sourcemapping
   });
 
@@ -21,6 +35,7 @@ gulp.task('build-app', function() {
   });
 
   bundler.bundle()
+    .on('error', onError)
     .pipe(source('main.js'))
     .pipe(gulp.dest('./dist/js/'));
 });
@@ -28,7 +43,7 @@ gulp.task('build-app', function() {
 gulp.task('build-vendor', function() {
   var bundler = browserify({
     debug: false, // Gives us sourcemapping
-    transform: [reactify], // We want to convert JSX to normal javascript
+    transform: [strictify, reactify], // We want to convert JSX to normal javascript
   });
 
   libs.forEach(function(lib) {
